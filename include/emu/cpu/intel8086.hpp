@@ -1,6 +1,7 @@
 #pragma once
 
 #include "primitives.hpp"
+#include "emu/memory.hpp"
 
 namespace emu::cpu {
     /// Absolute address on the 8086 are 20-bit however no 20-bit unsigned integer type exists in C++ so a 32-bit
@@ -9,6 +10,9 @@ namespace emu::cpu {
 
     /// Offset addresses within a given segment are 16-bit wide.
     using OffsetAddr = u16;
+
+    /// Values stored in memory.
+    using MemValue = u8;
 
     /**
      * Class representing the main Intel 8086 microprocessor. Handles decoding and execution of instructions fetched
@@ -41,7 +45,7 @@ namespace emu::cpu {
          * @param memory Reference to the memory to fetch the instruction data from.
          * @return Decoded instruction object.
          */
-        std::unique_ptr<Instruction> fetchDecodeInstruction(AbsAddr address, Memory &memory) const;
+        std::unique_ptr<Instruction> fetchDecodeInstruction(AbsAddr address, Memory<MemValue, AbsAddr>& memory) const;
 
         /**
          * Executes a decoded instruction on this CPU.
