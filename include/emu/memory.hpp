@@ -28,7 +28,7 @@ namespace emu {
          * @return Wether the address is within bounds or not.
          */
         bool withinBounds(Address address) const {
-            return address < size && addr >= 0;
+            return address < size && address >= 0;
         }
 
         /**
@@ -59,13 +59,13 @@ namespace emu {
          * @param amount Number of values to read.
          * @return Vector of values read.
          */
-        std::vector<Value> read(Addr startAddress, Addr amount) const {
+        std::vector<Value> read(Address startAddress, Address amount) const {
             std::vector<Value> values;
 
             Address address;
             Value value;
 
-            for(Addr offset = 0; offset < amount; offset++) {
+            for(Address offset = 0; offset < amount; offset++) {
                 address = startAddress + offset;
                 value = read(address);
 
@@ -96,7 +96,7 @@ namespace emu {
             Address address;
             Value value;
 
-            for(Addr offset = 0; offset < values.size(); offset++) {
+            for(Address offset = 0; offset < values.size(); offset++) {
                 address = startAddress + offset;
                 value = values[offset];
 
