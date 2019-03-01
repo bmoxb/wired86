@@ -1,7 +1,9 @@
 #pragma once
 
+#include <memory>
 #include "primitives.hpp"
 #include "emu/memory.hpp"
+#include "emu/cpu/registerindexes.hpp"
 
 namespace emu::cpu {
     /// Absolute address on the 8086 are 20-bit however no 20-bit unsigned integer type exists in C++ so a 32-bit
@@ -25,10 +27,10 @@ namespace emu::cpu {
          * stored in an unsigned 32-bit integer since there is no 20-bit integer type available in C++).
          *
          * @param offset The memory offset within the given segment.
-         * @param segment Segment register enum value indicating which segment to resolve the offset within.
+         * @param segment Segment register index indicating which segment to resolve the offset within.
          * @return Absolute 20-bit address within memory.
          */
-        AbsAddr resolveAddress(OffsetAddr offset, SegmentRegister segment) const;
+        AbsAddr resolveAddress(OffsetAddr offset, SegmentIndex segment) const;
 
         /**
          * Calculate the address of the next instruction in memory based on the value of the instruction pointer and the

@@ -1,27 +1,39 @@
 #include "emu/cpu/registerindexes.hpp"
 
 namespace emu::cpu {
-    RegisterIndex::RegisterIndex(std::string assembly) : assemblyName(assembly) {}
+    RegisterIndex::RegisterIndex(std::string indexName, std::string indexDescription)
+    : name(indexName), description(indexDescription) {}
 
-    std::string RegisterIndex::toAssembly(std::string indexName, bool intelSyntax) {
-        if(intelSyntax) return indexName;
-        else return "%" + indexName;
+    std::string RegisterIndex::toAssembly() const {
+        return name;
     }
 
-    std::string RegisterIndex::toAssembly(bool intelSyntax) {
-        return toAssembly(assemblyName, intelSyntax);
+    std::string RegisterIndex::getInfo() const {
+        if(description.size()) return name + " - " + description + " Register";
+        else return name + " - Register";
     }
 
-    RegisterIndexLowHigh::RegisterIndexLowHigh(std::string assembly, std::string assemblyLow, std::string assemblyHigh)
-    : RegisterIndex(assembly), assemblyLowName(assemblyLow), assemblyHighName(assemblyHigh) {}
+    RegisterIndexLowHigh::RegisterIndexLowHigh(std::string name, std::string description)
+    : RegisterIndex(name, description), lowName(name + "(low)"), highName(name + "(high)") {}
 
-    std::string RegisterIndexLowHigh::toAssembly(RegisterPart part, bool intelSyntax) {
+    RegisterIndexLowHigh::RegisterIndexLowHigh(std::string name, std::string low, std::string high, std::string description)
+    : RegisterIndex(name, description), lowName(low), highName(high) {}
+
+    std::string RegisterIndexLowHigh::toAssembly(RegisterPart part) const {
         switch(part) {
-        case FULL_WORD: return toAssembly(assemblyName, intelSyntax);
-        case LOW_BYTE: return toAssembly(assemblyLowName, intelSyntax);
-        case HIGH_BYTE: return toAssembly(assemblyHighName, intelSyntax);
+        case LOW_BYTE: return lowName;
+        case HIGH_BYTE: return highName;
+        default: return toAssembly();
         }
     }
 
-    GeneralIndex GeneralIndex::AX("AX", "AL", "AH");
+    const GeneralIndex GeneralIndex::AX("AX", "AL", "AH"),
+                       GeneralIndex::BX("BX", "BL", "BH"),
+                       GeneralIndex::CX("CX", "CL", "CH"),
+                       GeneralIndex::DX("DX", "DL", "DH");
+
+    const SegmentIndex SegmentIndex::CODE("CS"),
+                       SegmentIndex::DATA("DS"),
+                       SegmentIndex::EXTRA("ES"),
+                       SegmentIndex::STACK("SS");
 }

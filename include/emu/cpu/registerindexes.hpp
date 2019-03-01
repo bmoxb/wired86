@@ -7,45 +7,51 @@ namespace emu::cpu {
 
     /**
      * Class used to indicate which register is required within a collect of registers. Should be used somewhat like a
-     * Java-style enum by extending this call and then having each enum item as a static instance of that same class.
+     * Java-style enum by extending this call and then having each enum item as a static const instance of that same
+     * class.
      */
     class RegisterIndex {
     protected:
-        RegisterIndex(std::string assembly);
+        RegisterIndex(std::string indexName, std::string indexDescription = "");
 
     public:
-        // TODO: Document! Fix docs for other toAssembly methods.
-        static std::string toAssembly(std::string indexName, bool intelSyntax = true);
-
         /**
-         * Converts this register index to its name in x86 assembly. When using Intel syntax then the short-hand name
-         * is simply returned (e.g. 'ax') while using AT&T syntax '%' is prepended to the name (e.g. '%ax').
+         * Converts this register index to its name in x86 assembly. Since Intel syntax is used the short-hand name
+         * is simply returned (e.g. 'ax').
          *
-         * @param intelSyntax Use Intel syntax when true and AT&T syntax when false.
          * @return Assembly representation of this register index.
          */
-        std::string toAssembly(bool intelSyntax = true);
+        std::string toAssembly() const;
+
+        std::string getInfo() const;
 
     private:
-        const std::string assemblyName;
+        const std::string name, description;
     };
 
+    /**
+     * Used in a fashion similar to RegisterIndex but with the added option to have separate names depending on whether
+     * the entire register is accessed or just its high or low bytes.
+     */
     class RegisterIndexLowHigh : public RegisterIndex {
     protected:
-        RegisterIndexLowHigh(std::string assembly, std::string assemblyLow, std::string assemblyHigh);
+        RegisterIndexLowHigh(std::string name, std::string description = "");
+        RegisterIndexLowHigh(std::string name, std::string low, std::string high, std::string description = "");
 
     public:
-        std::string toAssembly(RegisterPart part, bool intelSyntax = true);
+        std::string toAssembly(RegisterPart part = FULL_WORD) const;
 
     private:
-        std::string assemblyLowName, assemblyHighName;
+        const std::string lowName, highName;
     };
 
     class GeneralIndex : public RegisterIndexLowHigh {
-    public: static GeneralIndex AX, BX, CX, DX;
+    public:     static const GeneralIndex AX, BX, CX, DX;
+    protected:  using RegisterIndexLowHigh::RegisterIndexLowHigh;
     };
 
     class SegmentIndex : public RegisterIndex {
-    public: static SegmentIndex CODE, DATA, EXTRA, STACK;
+    public:     static const SegmentIndex CODE, DATA, EXTRA, STACK;
+    protected:  using RegisterIndex::RegisterIndex;
     };
 }
