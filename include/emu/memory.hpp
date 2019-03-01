@@ -16,7 +16,7 @@ namespace emu {
             OutOfBounds(Address addr) : address(addr) {}
 
             const Address address;
-        }
+        };
 
     public:
         Memory(Address memorySize) : size(memorySize), mem(new Value[size]) { fill(); }
