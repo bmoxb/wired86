@@ -8,6 +8,7 @@ project(Wired86
 set(LIB_NAME common)
 
 set(SRC_FILES # Define all source files (execept main).
+    src/conversion
     src/emu/cpu/registerindexes
 )
 

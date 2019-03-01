@@ -2,6 +2,7 @@
 
 #include <map>
 #include "primitives.hpp"
+#include "conversion.hpp"
 #include "emu/cpu/registerindexes.hpp"
 
 namespace emu::cpu {
@@ -28,10 +29,16 @@ namespace emu::cpu {
     class RegistersLowHigh : public Registers<Index, u16> {
     public:
         /// Get least significant byte of 16-bit register.
-        u8 getLow(Index index) { return (get(index) >> 8) & 0xFF; }
+        u8 getLow(Index index) {
+            u16 value = get(index);
+            return conversion::getLowByte(value);
+        }
 
         /// Get most significant byte of 16-bit register.
-        u8 getHigh(Index index) { return get(index) & 0xFF; }
+        u8 getHigh(Index index) {
+            u16 value = get(index);
+            return conversion::getHighByte(value);
+        }
 
         /**
          * Fetch a specific part of a register. Note that return value will always be 16-bit wide even if only a single
