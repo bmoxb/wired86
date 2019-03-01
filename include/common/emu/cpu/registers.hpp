@@ -1,9 +1,9 @@
 #pragma once
 
 #include <map>
-#include "primitives.hpp"
-#include "conversion.hpp"
-#include "emu/cpu/registerindexes.hpp"
+#include "common/primitives.hpp"
+#include "common/conversion.hpp"
+#include "common/emu/cpu/registerindexes.hpp"
 
 namespace emu::cpu {
     /**

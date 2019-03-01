@@ -1,10 +1,10 @@
 #pragma once
 
 #include <memory>
-#include "primitives.hpp"
-#include "emu/memory.hpp"
-#include "emu/cpu/registerindexes.hpp"
-#include "emu/cpu/registers.hpp"
+#include "common/primitives.hpp"
+#include "common/emu/memory.hpp"
+#include "common/emu/cpu/registerindexes.hpp"
+#include "common/emu/cpu/registers.hpp"
 
 namespace emu::cpu {
     /// Absolute address on the 8086 are 20-bit however no 20-bit unsigned integer type exists in C++ so a 32-bit
