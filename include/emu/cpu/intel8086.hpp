@@ -4,6 +4,7 @@
 #include "primitives.hpp"
 #include "emu/memory.hpp"
 #include "emu/cpu/registerindexes.hpp"
+#include "emu/cpu/registers.hpp"
 
 namespace emu::cpu {
     /// Absolute address on the 8086 are 20-bit however no 20-bit unsigned integer type exists in C++ so a 32-bit
@@ -15,6 +16,8 @@ namespace emu::cpu {
 
     /// Values stored in memory are 8-bit wide.
     using MemValue = u8;
+
+    class Instruction; // TODO: Temporary!
 
     /**
      * Class representing the main Intel 8086 microprocessor. Handles decoding and execution of instructions fetched
@@ -59,5 +62,8 @@ namespace emu::cpu {
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
         OffsetAddr instructionPointer = 0;
+
+        RegistersLowHigh<GeneralIndex> generalRegisters;
+        Registers<SegmentIndex, u16> segmentRegisters;
     };
 }

@@ -23,6 +23,11 @@ namespace emu::cpu {
          */
         std::string toAssembly() const;
 
+        /**
+         * Builds a string displaying information about this register index.
+         *
+         * @return Informational string.
+         */
         std::string getInfo() const;
 
     private:
