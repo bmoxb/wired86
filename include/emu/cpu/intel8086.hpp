@@ -11,7 +11,7 @@ namespace emu::cpu {
     /// Offset addresses within a given segment are 16-bit wide.
     using OffsetAddr = u16;
 
-    /// Values stored in memory.
+    /// Values stored in memory are 8-bit wide.
     using MemValue = u8;
 
     /**
@@ -52,7 +52,7 @@ namespace emu::cpu {
          *
          * @param instruction Reference to the std::unique_ptr holding the instruction.
          */
-        void executeInstruction(std::unique_ptr<Instruction> &instruction);
+        void executeInstruction(std::unique_ptr<Instruction>& instruction);
 
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
