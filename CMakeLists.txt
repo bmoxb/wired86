@@ -1,13 +1,23 @@
 cmake_minimum_required(VERSION 3.12)
-project(Wired86 LANGUAGES CXX)
+project(Wired86
+    LANGUAGES CXX
+    DESCRIPTION "Fully-documented emulator for the Intel 8086 CPU, the 8253 PIT and the 8259 PIC.")
 
 # The emulator code is initially built as a library so that multiple builds (such as a CLI build, GUI build, etc) can
 # be made without having to compile the same files multiple times.
 set(LIB_NAME common)
-add_library(${LIB_NAME} src/emu/cpu/intel8086)
+
+set(SRC_FILES # Define all source files (execept main).
+    src/emu/cpu/registerindexes
+)
+
+add_library(${LIB_NAME} STATIC ${SRC_FILES}) # Create common library.
+
+target_compile_features(${LIB_NAME} PRIVATE cxx_std_17) # Library uses c++ 17 standard.
+target_compile_options(${LIB_NAME} PRIVATE -Wall -Wextra -pedantic -Werror) # Enable strict errors and warnings (GCC).
 target_include_directories(${LIB_NAME} PUBLIC include) # All builds using this library share the dependency on the
                                                        # include/ directory.
 
 set(CLI_NAME cli)
 add_executable(${CLI_NAME} src/main)
-target_link_libraries(${CLI_NAME} ${LIB_NAME})
+target_link_libraries(${CLI_NAME} ${LIB_NAME}) # Link command-line build against common library.
