@@ -5,6 +5,8 @@
 #include <sstream>
 
 namespace logging {
+    Logger common("common"), cli("cli"), gui("gui"), test("test");
+
     const std::string Logger::MESSAGE_END = "\033[0m\n"; // Reset formatting/colouring plus newline.
 
     const std::string Logger::CYAN_ON_BLACK_TEXT = "\033[36;40m",
@@ -12,7 +14,9 @@ namespace logging {
                       Logger::YELLOW_ON_BLACK_TEXT = "\033[33;40m",
                       Logger::RED_ON_BLACK_TEXT = "\033[31;40m";
 
-    Logger::Logger(std::string loggerName) : name(loggerName) {}
+    Logger::Logger(std::string loggerName, std::ostream& stream) : name(loggerName) {
+        addStream(stream);
+    }
 
     void Logger::addStream(std::ostream& stream) {
         streams.push_back(&stream);

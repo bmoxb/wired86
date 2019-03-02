@@ -4,6 +4,7 @@
 #include <ostream>
 #include <vector>
 #include <optional>
+#include <iostream>
 
 /*
  * __PRETTY_FUNCTION__ produces the function name along with argument types and namespaces though it is unfortunately
@@ -33,7 +34,7 @@ namespace logging {
      */
     class Logger {
     public:
-        Logger(std::string loggerName);
+        Logger(std::string loggerName, std::ostream& stream = std::cout);
 
         /**
          * Add a new output stream to this logger.
@@ -80,4 +81,7 @@ namespace logging {
         std::string name;
         std::vector<std::ostream*> streams;
     };
+
+    /// General loggers for each of the key environments are defined here.
+    extern Logger common, cli, gui, test;
 }
