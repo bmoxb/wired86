@@ -34,7 +34,12 @@ namespace logging {
      */
     class Logger {
     public:
-        Logger(std::string loggerName, std::ostream& stream = std::cout);
+        /**
+         * Create a new logger.
+         *
+         * @param stream Initial stream to output via.
+         */
+        Logger(std::ostream& stream = std::cout);
 
         /**
          * Add a new output stream to this logger.
@@ -78,10 +83,8 @@ namespace logging {
         std::string fetchCurrentTimeString();
 
     private:
-        std::string name;
         std::vector<std::ostream*> streams;
     };
 
-    /// General loggers for each of the key environments are defined here.
-    extern Logger common, cli, gui, test;
+    extern Logger standard; /// Standard logger used for most purposes.
 }

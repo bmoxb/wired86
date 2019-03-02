@@ -5,7 +5,7 @@
 #include <sstream>
 
 namespace logging {
-    Logger common("common"), cli("cli"), gui("gui"), test("test");
+    Logger standard(std::cout);
 
     const std::string Logger::MESSAGE_END = "\033[0m\n"; // Reset formatting/colouring plus newline.
 
@@ -14,7 +14,7 @@ namespace logging {
                       Logger::YELLOW_ON_BLACK_TEXT = "\033[33;40m",
                       Logger::RED_ON_BLACK_TEXT = "\033[31;40m";
 
-    Logger::Logger(std::string loggerName, std::ostream& stream) : name(loggerName) {
+    Logger::Logger(std::ostream& stream) {
         addStream(stream);
     }
 
@@ -45,14 +45,14 @@ namespace logging {
         
         if(info) {
             fullMsg = escapeSequence +
-                      "[" + name + " - " + logType + " - " + fetchCurrentTimeString() +
+                      "[" + logType + " - " + fetchCurrentTimeString() +
                       " - line " + std::to_string(info->line) +
                       " of " + info->file + " - " + info->function + "] " +
                       msg + MESSAGE_END;
         }
         else {
             fullMsg = escapeSequence +
-                      "[" + name + " - " + logType + " - " + fetchCurrentTimeString() + "] " +
+                      "[" + logType + " - " + fetchCurrentTimeString() + "] " +
                       msg + MESSAGE_END;
         }
 
