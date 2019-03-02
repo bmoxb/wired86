@@ -1,4 +1,4 @@
-#include "common/emu/cpu/registerindexes.hpp"
+#include "emu/cpu/registerindexes.hpp"
 
 namespace emu::cpu {
     RegisterIndex::RegisterIndex(std::string indexName, std::string indexDescription)

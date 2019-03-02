@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/primitives.hpp"
+#include "primitives.hpp"
 
 namespace conversion {
     /**
