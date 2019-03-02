@@ -52,11 +52,11 @@ namespace emu::cpu {
 
     class GeneralIndex : public RegisterIndexLowHigh {
     public:     static const GeneralIndex AX, BX, CX, DX;
-    protected:  using RegisterIndexLowHigh::RegisterIndexLowHigh;
+    private:    using RegisterIndexLowHigh::RegisterIndexLowHigh;
     };
 
     class SegmentIndex : public RegisterIndex {
     public:     static const SegmentIndex CODE, DATA, EXTRA, STACK;
-    protected:  using RegisterIndex::RegisterIndex;
+    private:    using RegisterIndex::RegisterIndex;
     };
 }
