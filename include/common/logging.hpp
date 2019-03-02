@@ -43,6 +43,9 @@ namespace logging {
         /// Log general information.
         Logger& info(std::string msg, std::optional<LoggingInfo> info = {});
 
+        /// Log message indicating an operation completed successfully.
+        Logger& success(std::string msg, std::optional<LoggingInfo> info = {});
+
         /// Log warning (non-fatal).
         Logger& warn(std::string msg, std::optional<LoggingInfo> info = {});
 
@@ -50,7 +53,7 @@ namespace logging {
         Logger& error(std::string msg, std::optional<LoggingInfo> info = {});
 
         static const std::string MESSAGE_END;
-        static const std::string WHITE_ON_BLACK_TEXT, YELLOW_ON_BLACK_TEXT, RED_ON_BLACK_TEXT;
+        static const std::string CYAN_ON_BLACK_TEXT, WHITE_ON_BLACK_TEXT, YELLOW_ON_BLACK_TEXT, RED_ON_BLACK_TEXT;
 
     protected:
         /**

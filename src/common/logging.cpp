@@ -7,7 +7,8 @@
 namespace logging {
     const std::string Logger::MESSAGE_END = "\033[0m\n"; // Reset formatting/colouring plus newline.
 
-    const std::string Logger::WHITE_ON_BLACK_TEXT = "\033[37;40m",
+    const std::string Logger::CYAN_ON_BLACK_TEXT = "\033[36;40m",
+                      Logger::WHITE_ON_BLACK_TEXT = "\033[37;40m",
                       Logger::YELLOW_ON_BLACK_TEXT = "\033[33;40m",
                       Logger::RED_ON_BLACK_TEXT = "\033[31;40m";
 
@@ -19,6 +20,10 @@ namespace logging {
 
     Logger& Logger::info(std::string msg, std::optional<LoggingInfo> info) {
         return log(msg, "INFO", WHITE_ON_BLACK_TEXT, info);
+    }
+
+    Logger& Logger::success(std::string msg, std::optional<LoggingInfo> info) {
+        return log(msg, "SUCCESS", CYAN_ON_BLACK_TEXT, info);
     }
 
     Logger& Logger::warn(std::string msg, std::optional<LoggingInfo> info) {
