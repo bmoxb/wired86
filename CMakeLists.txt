@@ -10,6 +10,7 @@ set(LIB_NAME "common-${PROJECT_NAME}")
 set(SRC_FILES # Define all source files (execept main).
     src/common/conversion
     src/common/emu/cpu/registerindexes
+    src/common/logging
 )
 set(CLI_SRC_FILES src/cli/main)
 set(GUI_SRC_FILES src/gui/main)
