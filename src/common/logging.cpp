@@ -1,5 +1,9 @@
 #include "logging.hpp"
 
+#include <iomanip>
+#include <ctime>
+#include <sstream>
+
 namespace logging {
     const std::string Logger::MESSAGE_END = "\033[0m\n"; // Reset formatting/colouring plus newline.
 
@@ -32,13 +36,14 @@ namespace logging {
         
         if(info) {
             fullMsg = escapeSequence +
-                      "[" + name + " - " + logType + " - line " + std::to_string(info->line) +
+                      "[" + name + " - " + logType + " - " + fetchCurrentTimeString() +
+                      " - line " + std::to_string(info->line) +
                       " of " + info->file + " - " + info->function + "] " +
                       msg + MESSAGE_END;
         }
         else {
             fullMsg = escapeSequence +
-                      "[" + name + " - " + logType + "] " +
+                      "[" + name + " - " + logType + " - " + fetchCurrentTimeString() + "] " +
                       msg + MESSAGE_END;
         }
 
@@ -49,5 +54,15 @@ namespace logging {
 
     void Logger::outThroughAllStreams(std::string msg) {
         for(std::ostream* stream : streams) (*stream) << msg;
+    }
+
+    std::string Logger::fetchCurrentTimeString() {
+        std::time_t t = std::time(nullptr);
+        std::tm tm = *std::localtime(&t);
+
+        std::stringstream ss;
+        ss << std::put_time(&tm, "%H:%M:%S");
+
+        return ss.str();
     }
 }
