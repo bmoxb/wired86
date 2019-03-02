@@ -18,7 +18,7 @@ set(TEST_SRC_FILES src/test/main)
 
 add_library(${LIB_NAME} STATIC ${SRC_FILES}) # Create common library.
 
-target_compile_features(${LIB_NAME} PRIVATE cxx_std_17) # Library uses C++ 17 standard.
+target_compile_features(${LIB_NAME} PUBLIC cxx_std_17) # All builds use C++ 17.
 target_compile_options(${LIB_NAME} PRIVATE -Wall -Wextra -pedantic -Werror) # Enable strict errors and warnings (GCC).
 target_include_directories(${LIB_NAME} PUBLIC include/common) # All builds using this library share a dependency on the
                                                               # include/common directory.
