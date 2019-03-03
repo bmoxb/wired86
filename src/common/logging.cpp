@@ -58,7 +58,7 @@ namespace logging {
         }
     }
 
-    std::string Logger::fetchCurrentTimeString() {
+    std::string Logger::fetchCurrentTimeString() const {
         std::time_t t = std::time(nullptr);
         std::tm tm = *std::localtime(&t);
 

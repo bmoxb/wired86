@@ -66,7 +66,7 @@ namespace logging {
         void outThroughAllStreams(std::string msg);
 
         /// Returns a string of the current time expressed in HH:MM:SS format.
-        std::string fetchCurrentTimeString();
+        std::string fetchCurrentTimeString() const;
 
     private:
         std::vector<std::ostream*> streams;
