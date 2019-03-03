@@ -3,7 +3,6 @@
 #include <string>
 #include <ostream>
 #include <vector>
-#include <optional>
 #include <iostream>
 
 /*
@@ -12,9 +11,9 @@
  * standard).
  */
 #ifdef __GNUG__
-    #define ADDITIONAL_LOGGING_INFO std::make_optional<logging::LoggingInfo>({ __LINE__, __FILE__, __PRETTY_FUNCTION__ })
+    #define ADDITIONAL_LOGGING_INFO { __LINE__, __FILE__, __PRETTY_FUNCTION__ }
 #else
-    #define ADDITIONAL_LOGGING_INFO std::make_optional<logging::LoggingInfo>({ __LINE__, __FILE__, __func__ })
+    #define ADDITIONAL_LOGGING_INFO { __LINE__, __FILE__, __func__ }
 #endif
 
 namespace logging {
@@ -34,57 +33,48 @@ namespace logging {
      */
     class Logger {
     public:
+        Logger(std::string loggerLogType, std::string loggerEscapeSequence, std::ostream& initialStream = std::cout);
+
         /**
-         * Create a new logger.
+         * Display message via all output streams.
          *
-         * @param stream Initial stream to output via.
+         * @param message Message to display (should not contain timestamps or logging type as that information will be
+         *                added automatically).
          */
-        Logger(std::ostream& stream = std::cout);
+        void operator()(std::string message);
 
         /**
-         * Add a new output stream to this logger.
+         * Display message with additional information about where the call was made to all output streams.
+         *
+         * @param info Additional information about where the call to log was made. Should not be created manually -
+         *             instead use the ADDITIONAL_LOGGING_INFO macro.
          */
+        void operator()(std::string message, LoggingInfo info);
+
+        /// Add a new output stream to this logger.
         void addStream(std::ostream& stream);
-
-        /// Log general information.
-        Logger& info(std::string msg, std::optional<LoggingInfo> info = {});
-
-        /// Log message indicating an operation completed successfully.
-        Logger& success(std::string msg, std::optional<LoggingInfo> info = {});
-
-        /// Log warning (non-fatal).
-        Logger& warn(std::string msg, std::optional<LoggingInfo> info = {});
-
-        /// Log error (fatal).
-        Logger& error(std::string msg, std::optional<LoggingInfo> info = {});
+        /// Remove an output stream from this logger.
+        void removeStream(std::ostream& stream);
+        /// Check if this logger has at least 1 output stream.
+        bool hasStreams() const;
 
         static const std::string MESSAGE_END;
         static const std::string CYAN_ON_BLACK_TEXT, WHITE_ON_BLACK_TEXT, YELLOW_ON_BLACK_TEXT, RED_ON_BLACK_TEXT;
 
     protected:
-        /**
-         * Output logging information to all streams.
-         *
-         * @param msg Logging message to output.
-         * @param logType String indicating the logging type (e.g. WARNING, ERROR).
-         * @param escapeSequence ANSI escape sequence to apply to colours to the output.
-         * @param info Optional additional information about where the log method was called from.
-         */
-        Logger& log(std::string msg, std::string logType, std::string escapeSequence, std::optional<LoggingInfo>& info);
-
-        /**
-         * Output a string through every output stream used by this logger.
-         */
+        /// Output a string through every output stream used by this logger.
         void outThroughAllStreams(std::string msg);
 
-        /**
-         * Return a string of the current time expressed in HH:MM:SS format.
-         */
+        /// Returns a string of the current time expressed in HH:MM:SS format.
         std::string fetchCurrentTimeString();
 
     private:
         std::vector<std::ostream*> streams;
+        std::string logType, escapeSequence;
     };
 
-    extern Logger standard; /// Standard logger used for most purposes.
+    extern Logger info, /// For logging general information.
+                  success, /// For logging information indicating an operation completed successfully.
+                  warning, /// For logging warning messages (non-fatal).
+                  error; /// For logging errors (fatal).
 }
