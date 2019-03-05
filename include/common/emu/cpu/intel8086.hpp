@@ -17,8 +17,6 @@ namespace emu::cpu {
     /// Values stored in memory are 8-bit wide.
     using MemValue = u8;
 
-    class Instruction; // TODO: Temporary!
-
     /**
      * Class representing the main Intel 8086 microprocessor. Handles decoding and execution of instructions fetched
      * from memory.
@@ -50,14 +48,15 @@ namespace emu::cpu {
          * @param memory Reference to the memory to fetch the instruction data from.
          * @return Decoded instruction object.
          */
-        std::unique_ptr<Instruction> fetchDecodeInstruction(AbsAddr address, Memory<MemValue, AbsAddr>& memory) const;
+        std::unique_ptr<Instruction> fetchDecodeInstruction(AbsAddr address,
+                                                            const Memory<MemValue, AbsAddr>& memory) const;
 
         /**
          * Executes a decoded instruction on this CPU.
          *
          * @param instruction Reference to the std::unique_ptr holding the instruction.
          */
-        void executeInstruction(std::unique_ptr<Instruction>& instruction);
+        void executeInstruction(std::unique_ptr<Instruction>& instruction, const Memory<MemValue, AbsAddr>& memory);
 
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
