@@ -58,8 +58,12 @@ namespace logging {
         /// Check if this logger has at least 1 output stream.
         bool hasStreams() const;
 
-        static const std::string MESSAGE_END;
-        static const std::string CYAN_ON_BLACK_TEXT, WHITE_ON_BLACK_TEXT, YELLOW_ON_BLACK_TEXT, RED_ON_BLACK_TEXT;
+        static constexpr auto MESSAGE_END = "\033[0m\n"; // Reset formatting/colouring plus newline.
+
+        static constexpr auto CYAN_ON_BLACK_TEXT    = "\033[36;40m",
+                              WHITE_ON_BLACK_TEXT   = "\033[37;40m",
+                              YELLOW_ON_BLACK_TEXT  = "\033[33;40m",
+                              RED_ON_BLACK_TEXT     = "\033[31;40m";
 
     protected:
         /// Output a string through every output stream used by this logger.

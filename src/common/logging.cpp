@@ -6,13 +6,6 @@
 #include <algorithm>
 
 namespace logging {
-    const std::string Logger::MESSAGE_END = "\033[0m\n"; // Reset formatting/colouring plus newline.
-
-    const std::string Logger::CYAN_ON_BLACK_TEXT = "\033[36;40m",
-                      Logger::WHITE_ON_BLACK_TEXT = "\033[37;40m",
-                      Logger::YELLOW_ON_BLACK_TEXT = "\033[33;40m",
-                      Logger::RED_ON_BLACK_TEXT = "\033[31;40m";
-
     Logger info("INFO", Logger::WHITE_ON_BLACK_TEXT);
     Logger success("SUCCESS", Logger::CYAN_ON_BLACK_TEXT);
     Logger warning("WARNING", Logger::YELLOW_ON_BLACK_TEXT, std::cerr);
