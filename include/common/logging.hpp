@@ -74,7 +74,7 @@ namespace logging {
 
     private:
         std::vector<std::ostream*> streams;
-        std::string logType, escapeSequence;
+        const std::string logType, escapeSequence;
     };
 
     extern Logger info, /// For logging general information.
