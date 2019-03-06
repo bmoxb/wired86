@@ -15,7 +15,7 @@ class UnitTestFailed : public std::exception {
     }
 };
 
-template <typename... Args>
+template <typename Return, typename... Args>
 class UnitTest {
 public:
     /**
@@ -24,7 +24,7 @@ public:
      * @param description Description of what is being tested.
      * @param testFunction The function to test with.
      */
-    UnitTest(std::string description, std::function<bool(Args...)> testFunction,
+    UnitTest(std::string description, std::function<Return(Args...)> testFunction,
              std::string testArgumentSeparator = ", ")
     : function(testFunction), argumentSeparator(testArgumentSeparator) {
         logging::info("Test created: " + description);
@@ -35,28 +35,30 @@ public:
      * standard success and error loggers. Will throw UnitTestFailed should the test function return false or throw
      * an unexpected exception.
      */
-    UnitTest& testNoArgsDisplay(Args... args) {
-        bool result = false;
+    UnitTest& testNoArgsDisplay(Return expected, Args... args) {
+        Return result;
 
         try {
             result = function(args...);
         }
         catch(const std::exception& e) {
             std::string msg = e.what();
-            logging::error("Failed - test function threw unexpected exeception: " + msg);
+            logging::error("Failed - test function threw exeception: " + msg);
             throw UnitTestFailed();
         }
         catch(...) {
-            logging::error("Failed - test function threw unexpected exception that does not derrive from "
+            logging::error("Failed - test function threw exception that does not derrive from "
                            "std::exception class.");
             throw UnitTestFailed();
         }
 
-        if(result) {
-            logging::success("Passed - test function returned true with given arguments.");
+        if(result == expected) {
+            logging::success("Passed - test function returned expected value of " + std::to_string(expected) +
+                             " with given arguments.");
         }
         else {
-            logging::error("Failed - test function returned false with given arguments.");
+            logging::error("Failed - test function failed to return expected value of " + std::to_string(expected) +
+                           " with given arguments.");
             throw UnitTestFailed();
         }
 
@@ -66,7 +68,7 @@ public:
     /**
      * Outputs the values passed as arguments via info logger before calling UnitTest::testNoArgsDisplay method.
      */
-    UnitTest& test(Args... args) {
+    UnitTest& test(Return expected, Args... args) {
         std::stringstream stream;
         ((stream << argumentSeparator << args), ...); // Expand the arguments of the parameter pack.
 
@@ -76,13 +78,32 @@ public:
 
         logging::info("Passing arguments to test function: " + argsString);
 
-        return testNoArgsDisplay(args...);
+        return testNoArgsDisplay(expected, args...);
     }
 
+    /**
+     * Throws an exception indicating the test failed when the specified exception is not thrown.
+     */
     template <typename Exception>
-    UnitTest& testForException(Args... args) { /* TODO: ... */ }
+    UnitTest& testForException(Args... args) {
+        try {
+            function(args...);
+        }
+        catch(const Exception& e) {
+            std::string msg = e.what();
+            logging::success("Passed - test function threw expected exception: " + msg);
+
+            return *this;
+        }
+        catch(...) {
+            logging::error("Failed - test unexpected exception that does not derrive from std::exception class.");
+        }
+
+        throw UnitTestFailed();
+        return *this;
+    }
 
 private:
-    const std::function<bool(Args...)> function;
+    const std::function<Return(Args...)> function;
     const std::string argumentSeparator;
 };
