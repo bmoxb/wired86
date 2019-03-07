@@ -5,6 +5,7 @@
 #include "primitives.hpp"
 #include "convert.hpp"
 #include "emu/memory.hpp"
+#include "emu/cpu/registers.hpp"
 
 TEST_CASE("Tests conversions.", "[conversions]") {
     using namespace convert;
@@ -71,5 +72,39 @@ TEST_CASE("Test emulator memory.", "[emu][memory]") {
         for(Address addr = 0; addr < memory.size; addr++) {
             REQUIRE(memory.read(addr) == value);
         }
+    }
+}
+
+TEST_CASE("Test CPU registers.", "[emu][cpu][registers]") {
+    enum Index { REG };
+    emu::cpu::Registers<Index, u32> regs;
+
+    SECTION("Ensure registers are initialised to 0.") {
+        REQUIRE(regs.get(REG) == 0);
+    }
+
+    SECTION("Test setting/getting register values.") {
+        regs.set(REG, 0xBED);
+        REQUIRE(regs.get(REG) == 0xBED);
+    }
+}
+
+TEST_CASE("Test 16-bit CPU registers that can be accessed as individual high and low bytes.", "[emu][cpu][registers]") {
+    enum Index { REG };
+    emu::cpu::RegistersLowHigh<Index> regs;
+
+    SECTION("Test individual access of high/low bytes of registers.") {
+        regs.setLow(REG, 0xA);
+        regs.setHigh(REG, 0xB);
+
+        REQUIRE(regs.getLow(REG) == 0xA);
+        REQUIRE(regs.get(REG, emu::cpu::LOW_BYTE) == 0xA);
+
+        REQUIRE(regs.getHigh(REG) == 0xB);
+        REQUIRE(regs.get(REG, emu::cpu::HIGH_BYTE) == 0xB);
+
+
+        REQUIRE(regs.get(REG) == 0x0B0A);
+        REQUIRE(regs.get(REG, emu::cpu::FULL_WORD) == 0x0B0A);
     }
 }

@@ -4,6 +4,7 @@
 #include "primitives.hpp"
 #include "convert.hpp"
 #include "emu/cpu/registerindexes.hpp"
+#include "emu/cpu/registers.hpp"
 
 namespace emu::cpu {
     /**
@@ -28,6 +29,9 @@ namespace emu::cpu {
     template <typename Index>
     class RegistersLowHigh : public Registers<Index, u16> {
     public:
+        using Registers<Index, u16>::get;
+        using Registers<Index, u16>::set;
+
         /// Get least significant byte of 16-bit register.
         u8 getLow(Index index) {
             u16 value = get(index);
@@ -56,14 +60,14 @@ namespace emu::cpu {
         void setLow(Index index, u8 low) {
             u16 high = getHigh(index);
             u16 value = convert::createWordFromBytes(low, high);
-            set(value);
+            set(index, value);
         }
 
         /// Set most significant byte of 16-bit register (least significant byte unaffected).
         void setHigh(Index index, u8 high) {
             u16 low = getLow(index);
             u16 value = convert::createWordFromBytes(low, high);
-            set(value);
+            set(index, value);
         }
 
         /**
