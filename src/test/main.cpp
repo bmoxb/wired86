@@ -1,71 +1,68 @@
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
 #include <vector>
-
-#include "testing.hpp"
-
 #include "primitives.hpp"
-#include "logging.hpp"
 #include "conversion.hpp"
 #include "emu/memory.hpp"
 
-void testMemory() {
+TEST_CASE("Tests conversions.", "[conversion]") {
+    using namespace conversion;
+
+    SECTION("Test the fetching of high low bytes of 16-bit values.") {
+        REQUIRE(getHighByte(0) == 0);
+        REQUIRE(getHighByte(0xAB) == 0);
+        REQUIRE(getHighByte(0xABCD) == 0xAB);
+
+        REQUIRE(getLowByte(0) == 0);
+        REQUIRE(getLowByte(0xAB) == 0xAB);
+        REQUIRE(getLowByte(0xABCD) == 0xCD);
+    }
+}
+
+TEST_CASE("Test emulator memory.", "[emu][memory]") {
     using Address = u32;
     using Value = u16;
     using Memory = emu::Memory<Value, Address>;
 
-    Memory memory(0xAA);
+    Memory memory(0xF);
 
-    UnitTest<bool, Address, Value>("reading/writing of memory",
-        [&](auto addr, auto value) {
+    SECTION("Ensure accurate checking of whether an address is out of bounds.") {
+        REQUIRE(memory.withinBounds(0));
+        REQUIRE(memory.withinBounds(memory.size - 1));
+        REQUIRE_FALSE(memory.withinBounds(memory.size));
+    }
+
+    SECTION("Test read/writing of memory.") {
+        const Value value = 123;
+
+        for(Address addr = 0; addr < memory.size; addr++) {
             memory.write(addr, value);
-            return memory.read(addr) == value;
+            REQUIRE(memory.read(addr) == value);
         }
-    ).test(true, 0, 12)
-     .test(true, 34, 56)
-     .testForException<Memory::OutOfBounds>(0xAA, 10);
 
-    UnitTest<bool, Address, std::vector<Value>>("read/writing of multiple values from/to memory",
-        [&](auto addr, auto values) {
-            memory.write(addr, values);
-            return memory.read(addr, values.size()) == values;
-        }
-    ).test(true, 10, { 12, 34, 56 })
-     .testForException<Memory::OutOfBounds>(0xAA - 1, { 12, 34, 56 });
-
-    UnitTest<bool, Address>("within bounds checks for memory",
-        [&](auto addr) {
-            return memory.withinBounds(addr);
-        }
-    ).test(true, 0xAA - 1).test(false, 0xAA);
-}
-
-void testConversions() {
-    UnitTest<bool, u16, u8>("conversion::getHighByte function",
-        [&](auto full, auto high) {
-            return conversion::getHighByte(full) == high;
-        }
-    ).test(true, 0, 0)
-     .test(true, 0xBB, 0)
-     .test(true, 0xAABB, 0xAA);
-
-    UnitTest<bool, u16, u8>("conversion::getLowByte function",
-        [&](auto full, auto low) {
-            return conversion::getLowByte(full) == low;
-        }
-    ).test(true, 0, 0)
-     .test(true, 0xBB, 0xBB)
-     .test(true, 0xAABB, 0xBB);
-}
-
-int main(int argc, char* argv[]) {
-    try {
-        testMemory();
-        testConversions();
-    }
-    catch(UnitTestFailed&) {
-        logging::error("Unit tests failed to complete successfully!");
-        return -1;
+        REQUIRE_THROWS_AS(memory.write(memory.size, value), Memory::OutOfBounds);
+        REQUIRE_THROWS_AS(memory.read(memory.size), Memory::OutOfBounds);
     }
 
-    logging::success("All unit tests passed!");
-    return 0;
+    SECTION("Test reading/writing of multiple values from/to memory.") {
+        std::vector<Value> values = { 12, 34, 56 };
+
+        Address addr = memory.size - values.size() - 1;
+        memory.write(addr, values);
+        REQUIRE(memory.read(addr, values.size()) == values);
+
+        REQUIRE_THROWS_AS(memory.write(memory.size - 2, values), Memory::OutOfBounds);
+        REQUIRE_THROWS_AS(memory.read(memory.size - 3, 5), Memory::OutOfBounds);
+    }
+
+    SECTION("Test filling of all memory.") {
+        const Value value = 456;
+
+        memory.fill(value);
+
+        for(Address addr = 0; addr < memory.size; addr++) {
+            REQUIRE(memory.read(addr) == value);
+        }
+    }
 }
