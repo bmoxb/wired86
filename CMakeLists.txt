@@ -5,12 +5,12 @@ project(Wired86
 
 # The emulator code is initially built as a library so that multiple builds (such as a CLI build, GUI build, etc) can
 # be made without having to compile the same files multiple times.
-set(LIB_NAME "common-${PROJECT_NAME}")
+set(LIB_NAME "common")
 
-set(SRC_FILES # Define all source files (execept main).
+set(SRC_FILES # Define all common library source files.
+    src/common/logging
     src/common/conversion
     src/common/emu/cpu/registerindexes
-    src/common/logging
 )
 set(CLI_SRC_FILES src/cli/main)
 set(GUI_SRC_FILES src/gui/main)
@@ -18,51 +18,48 @@ set(TEST_SRC_FILES src/test/main)
 
 add_library(${LIB_NAME} STATIC ${SRC_FILES}) # Create common library.
 
-target_compile_features(${LIB_NAME} PUBLIC cxx_std_17) # All builds use C++ 17.
+target_compile_features(${LIB_NAME} PUBLIC cxx_std_17) # Common library uses C++ 17.
+target_compile_features(${LIB_NAME} INTERFACE cxx_std_11) # Uses of the common library require minimum C++ 11.
 target_compile_options(${LIB_NAME} PRIVATE -Wall -Wextra -pedantic -Werror) # Enable strict errors and warnings (GCC).
 target_include_directories(${LIB_NAME} PUBLIC include/common) # All builds using this library share a dependency on the
                                                               # include/common directory.
 
-option(CLI "Create command-line interface build?" ON)
-option(GUI "Create graphical user interface build?" OFF)
-option(TEST "Create testing build?" OFF)
+
 
 # COMMAND-LINE INTERFACE
-if(CLI)
-    set(CLI_NAME "cli-${PROJECT_NAME}")
-    message("Creating command-line interface build: ${CLI_NAME}")
+set(CLI_NAME "cli")
+message("Creating command-line interface build: ${CLI_NAME}")
 
-    add_executable(${CLI_NAME} ${CLI_SRC_FILES})
+add_executable(${CLI_NAME} ${CLI_SRC_FILES})
 
-    target_include_directories(${CLI_NAME} PRIVATE include/cli)
-    target_link_libraries(${CLI_NAME} PRIVATE ${LIB_NAME})
-endif()
+target_include_directories(${CLI_NAME} PRIVATE include/cli)
+target_link_libraries(${CLI_NAME} PRIVATE ${LIB_NAME})
+
+
 
 # GRAPHICAL USER INTERFACE
-if(GUI)
-    set(GUI_NAME "gui-${PROJECT_NAME}")
-    message("Creating graphical user interface build: ${GUI_NAME}")
+set(GUI_NAME "gui")
+message("Creating graphical user interface build: ${GUI_NAME}")
 
-    find_package(FLTK REQUIRED)
+find_package(FLTK REQUIRED)
 
-    message("FLTK found: ${FLTK_FOUND}")
-    message("FLTK include directory: ${FLTK_INCLUDE_DIR}")
+message("FLTK found: ${FLTK_FOUND}")
+message("FLTK include directory: ${FLTK_INCLUDE_DIR}")
 
-    add_executable(${GUI_NAME} ${GUI_SRC_FILES})
+add_executable(${GUI_NAME} ${GUI_SRC_FILES})
 
-    target_include_directories(${GUI_NAME} PRIVATE include/gui)
-    target_include_directories(${GUI_NAME} PRIVATE ${FLTK_INCLUDE_DIR})
-    target_link_libraries(${GUI_NAME} PRIVATE fltk)
-    target_link_libraries(${GUI_NAME} PRIVATE ${LIB_NAME})
-endif()
+target_include_directories(${GUI_NAME} PRIVATE include/gui)
+target_include_directories(${GUI_NAME} PRIVATE ${FLTK_INCLUDE_DIR})
+target_link_libraries(${GUI_NAME} PRIVATE fltk)
+target_link_libraries(${GUI_NAME} PRIVATE ${LIB_NAME})
+
+
 
 # TESTING
-if(TEST)
-    set(TEST_NAME "test-${PROJECT_NAME}")
-    message("Creating testing build: ${TEST_NAME}")
+set(TEST_NAME "test")
+message("Creating testing build: ${TEST_NAME}")
 
-    add_executable(${TEST_NAME} ${TEST_SRC_FILES})
+add_executable(${TEST_NAME} ${TEST_SRC_FILES})
 
-    target_include_directories(${TEST_NAME} PRIVATE include/test)
-    target_link_libraries(${TEST_NAME} PRIVATE ${LIB_NAME})
-endif()
+target_include_directories(${TEST_NAME} PRIVATE include/test)
+target_link_libraries(${TEST_NAME} PRIVATE ${LIB_NAME})
