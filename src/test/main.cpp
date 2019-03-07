@@ -3,11 +3,11 @@
 
 #include <vector>
 #include "primitives.hpp"
-#include "conversion.hpp"
+#include "convert.hpp"
 #include "emu/memory.hpp"
 
-TEST_CASE("Tests conversions.", "[conversion]") {
-    using namespace conversion;
+TEST_CASE("Tests conversions.", "[conversions]") {
+    using namespace convert;
 
     SECTION("Test the fetching of high low bytes of 16-bit values.") {
         REQUIRE(getHighByte(0) == 0);

@@ -2,7 +2,7 @@
 
 #include "primitives.hpp"
 
-namespace conversion {
+namespace convert {
     /**
      * Returns the most significant byte of the given value.
      *

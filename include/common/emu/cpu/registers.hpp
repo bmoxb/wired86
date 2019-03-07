@@ -2,7 +2,7 @@
 
 #include <map>
 #include "primitives.hpp"
-#include "conversion.hpp"
+#include "convert.hpp"
 #include "emu/cpu/registerindexes.hpp"
 
 namespace emu::cpu {
@@ -31,13 +31,13 @@ namespace emu::cpu {
         /// Get least significant byte of 16-bit register.
         u8 getLow(Index index) {
             u16 value = get(index);
-            return conversion::getLowByte(value);
+            return convert::getLowByte(value);
         }
 
         /// Get most significant byte of 16-bit register.
         u8 getHigh(Index index) {
             u16 value = get(index);
-            return conversion::getHighByte(value);
+            return convert::getHighByte(value);
         }
 
         /**

@@ -9,7 +9,7 @@ set(LIB_NAME "common")
 
 set(SRC_FILES # Define all common library source files.
     src/common/logging
-    src/common/conversion
+    src/common/convert
     src/common/emu/cpu/registerindexes
 )
 set(CLI_SRC_FILES src/cli/main)

@@ -1,6 +1,6 @@
-#include "conversion.hpp"
+#include "convert.hpp"
 
-namespace conversion {
+namespace convert {
     u8 getHighByte(u16 value) {
         return (value >> 8) & 0xFF;
     }
