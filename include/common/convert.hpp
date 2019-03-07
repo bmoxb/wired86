@@ -18,4 +18,13 @@ namespace convert {
      * @return Least significant byte of value.
      */
     u8 getLowByte(u16 value);
+
+    /**
+     * Create a 16-bit word from a low and a high byte.
+     *
+     * @param low The least significant byte.
+     * @param high The most significant byte.
+     * @return 16-bit word constructed from the low/high bytes.
+     */
+    u16 createWordFromBytes(u8 low, u8 high);
 }

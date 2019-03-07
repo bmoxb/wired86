@@ -52,8 +52,32 @@ namespace emu::cpu {
             }
         }
 
-        void setLow(Index index, u8 value) {}
-        void setHigh(Index index, u8 value) {}
-        void set(Index index, RegisterPart part, u16 value) {}
+        /// Set least significant byte of 16-bit register (most significant byte unaffected).
+        void setLow(Index index, u8 low) {
+            u16 high = getHigh(index);
+            u16 value = convert::createWordFromBytes(low, high);
+            set(value);
+        }
+
+        /// Set most significant byte of 16-bit register (least significant byte unaffected).
+        void setHigh(Index index, u8 high) {
+            u16 low = getLow(index);
+            u16 value = convert::createWordFromBytes(low, high);
+            set(value);
+        }
+
+        /**
+         * Set a specific part of a register. Note that the value argument is 16-bit wide but will be cast to 8-bits
+         * when only a setting a high or low byte of a register and not the entire 16-bit value.
+         */
+        void set(Index index, RegisterPart part, u16 value) {
+            u8 byte = static_cast<u8>(value);
+
+            switch(part) {
+            case LOW_BYTE: setLow(index, byte); break;
+            case HIGH_BYTE: setHigh(index, byte); break;
+            default: set(index, value);
+            }
+        }
     };
 }

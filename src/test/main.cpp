@@ -9,7 +9,7 @@
 TEST_CASE("Tests conversions.", "[conversions]") {
     using namespace convert;
 
-    SECTION("Test the fetching of high low bytes of 16-bit values.") {
+    SECTION("Test the fetching of high and low bytes from 16-bit values.") {
         REQUIRE(getHighByte(0) == 0);
         REQUIRE(getHighByte(0xAB) == 0);
         REQUIRE(getHighByte(0xABCD) == 0xAB);
@@ -17,6 +17,13 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         REQUIRE(getLowByte(0) == 0);
         REQUIRE(getLowByte(0xAB) == 0xAB);
         REQUIRE(getLowByte(0xABCD) == 0xCD);
+    }
+
+    SECTION("Test the creation of 16-bit values from a high/low 8-bit byte.") {
+        REQUIRE(createWordFromBytes(0, 0) == 0);
+        REQUIRE(createWordFromBytes(0xAB, 0) == 0xAB);
+        REQUIRE(createWordFromBytes(0, 0xCD) == 0xCD00);
+        REQUIRE(createWordFromBytes(0xAB, 0xCD) == 0xCDAB);
     }
 }
 
