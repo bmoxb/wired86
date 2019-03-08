@@ -1,10 +1,12 @@
 #include "emu/cpu/instr/opcode.hpp"
 
+#include "convert.hpp"
+
 namespace emu::cpu::instr {
     Opcode::Opcode(u8 opcodeValue) : value(opcodeValue) {}
 
     bool Opcode::getWordBit() const {
-        return value & 1; // Least significant bit.
+        return convert::getBitFrom(value, 0); // Least significant bit.
     }
 
     DataSize Opcode::getDataSize() const {
@@ -13,7 +15,7 @@ namespace emu::cpu::instr {
     }
 
     bool Opcode::getDirectionBit() const {
-        return (value >> 1) & 1; // Second-to-least significant bit.
+        return convert::getBitFrom(value, 1); // Second-to-least significant bit.
     }
 
     RegDirection Opcode::getDirection() const {

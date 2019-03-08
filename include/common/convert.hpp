@@ -27,4 +27,33 @@ namespace convert {
      * @return 16-bit word constructed from the low/high bytes.
      */
     u16 createWordFromBytes(u8 low, u8 high);
+
+    /**
+     * Fetch a specific bit of a numerical value (expressed as a boolean).
+     *
+     * @tparam T Numerical type to fetch bit from.
+     * @param value Value to fetch bit of.
+     * @param index Specify which bit to fetch. Indexing begins from 0 with the least significant bit up to the most
+     *              significant.
+     * @return The fetched bit expressed as a boolean value.
+     */
+    template <typename T>
+    bool getBitFrom(T value, unsigned int index) {
+        return (value >> index) & 1;
+    }
+
+    /**
+     * Fetch multiple bits from a numerical value.
+     *
+     * @tparam T Numerical type to fetch bits from.
+     * @param value Value to fetch bits from.
+     * @param index Specify the beginning of the sequence of bits to fetch (indexing beginning from 0).
+     * @param count The number of bits to fetch starting from the specified index.
+     * @return The fetched sequence of bits.
+     */
+    template <typename T>
+    T getBitsFrom(T value, unsigned int index, unsigned int count) {
+        T mask = (1 << count) - 1; // (2 ^ count) - 1
+        return (value >> index) & mask;
+    }
 }

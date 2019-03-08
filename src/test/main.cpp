@@ -27,6 +27,14 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         REQUIRE(createWordFromBytes(0, 0xCD) == 0xCD00);
         REQUIRE(createWordFromBytes(0xAB, 0xCD) == 0xCDAB);
     }
+
+    SECTION("Test function templates for fetching specific bits of numerical values.") {
+        REQUIRE(getBitFrom<u8>(0b10000, 4));
+        REQUIRE_FALSE(getBitFrom<u8>(0b01, 1));
+
+        REQUIRE(getBitsFrom<u16>(0b101010100, 2, 7) == 0b1010101);
+        REQUIRE(getBitsFrom<u8>(0b10111000, 3, 3) == 0b111);
+    }
 }
 
 TEST_CASE("Test emulator memory.", "[emu][memory]") {
