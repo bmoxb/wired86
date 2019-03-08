@@ -6,6 +6,7 @@
 #include "convert.hpp"
 #include "emu/memory.hpp"
 #include "emu/cpu/registers.hpp"
+#include "emu/cpu/instr/opcode.hpp"
 
 TEST_CASE("Tests conversions.", "[conversions]") {
     using namespace convert;
@@ -106,5 +107,27 @@ TEST_CASE("Test 16-bit CPU registers that can be accessed as individual high and
 
         REQUIRE(regs.get(REG) == 0x0B0A);
         REQUIRE(regs.get(REG, emu::cpu::FULL_WORD) == 0x0B0A);
+    }
+}
+
+TEST_CASE("Test CPU instruction representation.", "[emu][cpu][registers]") {
+    using namespace emu::cpu;
+
+    SECTION("Test checking the direction and data size of instruction based on opcode value") {
+        instr::Opcode firstOpcode(0b10);
+
+        REQUIRE(firstOpcode.getWordBit() == false);
+        REQUIRE(firstOpcode.getDataSize() == instr::BYTE_DATA_SIZE);
+
+        REQUIRE(firstOpcode.getDirectionBit() == true);
+        REQUIRE(firstOpcode.getDirection() == instr::REG_IS_DESTINATION);
+
+        instr::Opcode secondOpcode(0b01);
+
+        REQUIRE(secondOpcode.getWordBit() == true);
+        REQUIRE(secondOpcode.getDataSize() == instr::WORD_DATA_SIZE);
+
+        REQUIRE(secondOpcode.getDirectionBit() == false);
+        REQUIRE(secondOpcode.getDirection() == instr::REG_IS_SOURCE);
     }
 }
