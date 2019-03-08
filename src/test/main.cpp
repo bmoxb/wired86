@@ -88,46 +88,42 @@ TEST_CASE("Test CPU registers.", "[emu][cpu][registers]") {
         regs.set(REG, 0xBED);
         REQUIRE(regs.get(REG) == 0xBED);
     }
-}
 
-TEST_CASE("Test 16-bit CPU registers that can be accessed as individual high and low bytes.", "[emu][cpu][registers]") {
-    enum Index { REG };
-    emu::cpu::RegistersLowHigh<Index> regs;
+    emu::cpu::RegistersLowHigh<Index> regsLowHigh;
 
     SECTION("Test individual access of high/low bytes of registers.") {
-        regs.setLow(REG, 0xA);
-        regs.setHigh(REG, 0xB);
+        regsLowHigh.setLow(REG, 0xA);
+        regsLowHigh.setHigh(REG, 0xB);
 
-        REQUIRE(regs.getLow(REG) == 0xA);
-        REQUIRE(regs.get(REG, emu::cpu::LOW_BYTE) == 0xA);
+        REQUIRE(regsLowHigh.getLow(REG) == 0xA);
+        REQUIRE(regsLowHigh.get(REG, emu::cpu::LOW_BYTE) == 0xA);
 
-        REQUIRE(regs.getHigh(REG) == 0xB);
-        REQUIRE(regs.get(REG, emu::cpu::HIGH_BYTE) == 0xB);
+        REQUIRE(regsLowHigh.getHigh(REG) == 0xB);
+        REQUIRE(regsLowHigh.get(REG, emu::cpu::HIGH_BYTE) == 0xB);
 
-
-        REQUIRE(regs.get(REG) == 0x0B0A);
-        REQUIRE(regs.get(REG, emu::cpu::FULL_WORD) == 0x0B0A);
+        REQUIRE(regsLowHigh.get(REG) == 0x0B0A);
+        REQUIRE(regsLowHigh.get(REG, emu::cpu::FULL_WORD) == 0x0B0A);
     }
 }
 
-TEST_CASE("Test CPU instruction representation.", "[emu][cpu][registers]") {
+TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
     using namespace emu::cpu;
 
     SECTION("Test checking the direction and data size of instruction based on opcode value") {
         instr::Opcode firstOpcode(0b10);
 
-        REQUIRE(firstOpcode.getWordBit() == false);
+        REQUIRE_FALSE(firstOpcode.getWordBit());
         REQUIRE(firstOpcode.getDataSize() == instr::BYTE_DATA_SIZE);
 
-        REQUIRE(firstOpcode.getDirectionBit() == true);
+        REQUIRE(firstOpcode.getDirectionBit());
         REQUIRE(firstOpcode.getDirection() == instr::REG_IS_DESTINATION);
 
         instr::Opcode secondOpcode(0b01);
 
-        REQUIRE(secondOpcode.getWordBit() == true);
+        REQUIRE(secondOpcode.getWordBit());
         REQUIRE(secondOpcode.getDataSize() == instr::WORD_DATA_SIZE);
 
-        REQUIRE(secondOpcode.getDirectionBit() == false);
+        REQUIRE_FALSE(secondOpcode.getDirectionBit());
         REQUIRE(secondOpcode.getDirection() == instr::REG_IS_SOURCE);
     }
 }
