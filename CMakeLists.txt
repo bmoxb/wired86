@@ -12,6 +12,7 @@ set(SRC_FILES # Define all common library source files.
     src/common/convert
     src/common/emu/cpu/registerindexes
     src/common/emu/cpu/instr/opcode
+    src/common/emu/cpu/instr/modregrm
 )
 set(CLI_SRC_FILES src/cli/main)
 set(GUI_SRC_FILES src/gui/main)

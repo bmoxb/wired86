@@ -7,6 +7,7 @@
 #include "emu/memory.hpp"
 #include "emu/cpu/registers.hpp"
 #include "emu/cpu/instr/opcode.hpp"
+#include "emu/cpu/instr/modregrm.hpp"
 
 TEST_CASE("Tests conversions.", "[conversions]") {
     using namespace convert;
@@ -117,7 +118,7 @@ TEST_CASE("Test CPU registers.", "[emu][cpu][registers]") {
 TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
     using namespace emu::cpu;
 
-    SECTION("Test checking the direction and data size of instruction based on opcode value") {
+    SECTION("Test checking the direction and data size of instruction based on opcode value.") {
         instr::Opcode firstOpcode(0b10);
 
         REQUIRE_FALSE(firstOpcode.getWordBit());
@@ -133,5 +134,13 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
 
         REQUIRE_FALSE(secondOpcode.getDirectionBit());
         REQUIRE(secondOpcode.getDirection() == instr::REG_IS_SOURCE);
+    }
+
+    SECTION("Test fetching individual components of MOD-REG-R/M bytes.") {
+        instr::ModRegRm byte(0b10101010);
+
+        REQUIRE(byte.getRmBits() == 0b010);
+        REQUIRE(byte.getRegBits() == 0b101);
+        REQUIRE(byte.getModBits() == 0b10);
     }
 }
