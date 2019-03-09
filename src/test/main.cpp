@@ -142,9 +142,14 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
         REQUIRE(byte.getRmBits() == 0b010);
 
         REQUIRE(byte.getRegBits() == 0b101);
-        auto variant = byte.getRegisterIndex(instr::WORD_DATA_SIZE);
-        REQUIRE(std::holds_alternative<IndexIndex>(variant));
-        //REQUIRE(std::get<IndexIndex>(variant) == IndexIndex::base);
+        
+        auto wordReg = byte.getRegisterIndex(instr::WORD_DATA_SIZE);
+        REQUIRE(std::holds_alternative<IndexIndex>(wordReg));
+        REQUIRE(std::get<IndexIndex>(wordReg) == IndexIndex::base);
+
+        auto byteReg = byte.getRegisterIndex(instr::BYTE_DATA_SIZE);
+        REQUIRE(std::holds_alternative<GeneralIndex>(byteReg));
+        REQUIRE(std::get<GeneralIndex>(byteReg) == GeneralIndex::cx);
         
         REQUIRE(byte.getModBits() == 0b10);
         REQUIRE(byte.getAddressingMode() == instr::WORD_DISPLACEMENT);

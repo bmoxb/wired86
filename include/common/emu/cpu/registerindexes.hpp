@@ -30,6 +30,10 @@ namespace emu::cpu {
          */
         std::string getInfo() const;
 
+        // TODO: Make copy constructor deleted for greater efficiency.
+
+        bool operator==(const RegisterIndex& index) const;
+
     private:
         const std::string name, description;
     };

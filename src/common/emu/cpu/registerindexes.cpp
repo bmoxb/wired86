@@ -13,6 +13,10 @@ namespace emu::cpu {
         else return name + " - Register";
     }
 
+    bool RegisterIndex::operator==(const RegisterIndex& index) const {
+        return name == index.name; // TODO: This is an efficient method of comparison that needs replacing.
+    }
+
     RegisterIndexLowHigh::RegisterIndexLowHigh(std::string name, std::string description)
     : RegisterIndex(name, description), lowName(name + "(low)"), highName(name + "(high)") {}
 
