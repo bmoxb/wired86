@@ -8,7 +8,7 @@ namespace emu::cpu {
     }
 
     AbsAddr Intel8086::nextInstructionAddress() const {
-        return resolveAddress(instructionPointer, SegmentIndex::CODE);
+        return resolveAddress(instructionPointer, SegmentIndex::code);
     }
 
     std::unique_ptr<Instruction> Intel8086::fetchDecodeInstruction(AbsAddr address,

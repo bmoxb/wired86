@@ -27,13 +27,18 @@ namespace emu::cpu {
         }
     }
 
-    const GeneralIndex GeneralIndex::AX("AX", "AL", "AH"),
-                       GeneralIndex::BX("BX", "BL", "BH"),
-                       GeneralIndex::CX("CX", "CL", "CH"),
-                       GeneralIndex::DX("DX", "DL", "DH");
+    const GeneralIndex GeneralIndex::ax("AX", "AL", "AH"),
+                       GeneralIndex::bx("BX", "BL", "BH"),
+                       GeneralIndex::cx("CX", "CL", "CH"),
+                       GeneralIndex::dx("DX", "DL", "DH");
 
-    const SegmentIndex SegmentIndex::CODE("CS"),
-                       SegmentIndex::DATA("DS"),
-                       SegmentIndex::EXTRA("ES"),
-                       SegmentIndex::STACK("SS");
+    const IndexIndex   IndexIndex::source("SI"),
+                       IndexIndex::destination("DI"),
+                       IndexIndex::base("BP"),
+                       IndexIndex::stack("SP");
+
+    const SegmentIndex SegmentIndex::code("CS"),
+                       SegmentIndex::data("DS"),
+                       SegmentIndex::extra("ES"),
+                       SegmentIndex::stack("SS");
 }
