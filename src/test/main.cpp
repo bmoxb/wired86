@@ -13,13 +13,13 @@ TEST_CASE("Tests conversions.", "[conversions]") {
     using namespace convert;
 
     SECTION("Test the fetching of high and low bytes from 16-bit values.") {
-        REQUIRE(getHighByte(0) == 0);
-        REQUIRE(getHighByte(0xAB) == 0);
-        REQUIRE(getHighByte(0xABCD) == 0xAB);
+        REQUIRE(getMostSigByte(0) == 0);
+        REQUIRE(getMostSigByte(0xAB) == 0);
+        REQUIRE(getMostSigByte(0xABCD) == 0xAB);
 
-        REQUIRE(getLowByte(0) == 0);
-        REQUIRE(getLowByte(0xAB) == 0xAB);
-        REQUIRE(getLowByte(0xABCD) == 0xCD);
+        REQUIRE(getLeastSigByte(0) == 0);
+        REQUIRE(getLeastSigByte(0xAB) == 0xAB);
+        REQUIRE(getLeastSigByte(0xABCD) == 0xCD);
     }
 
     SECTION("Test the creation of 16-bit values from a high/low 8-bit byte.") {

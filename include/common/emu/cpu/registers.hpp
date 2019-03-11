@@ -35,13 +35,13 @@ namespace emu::cpu {
         /// Get least significant byte of 16-bit register.
         u8 getLow(Index index) {
             u16 value = get(index);
-            return convert::getLowByte(value);
+            return convert::getLeastSigByte(value);
         }
 
         /// Get most significant byte of 16-bit register.
         u8 getHigh(Index index) {
             u16 value = get(index);
-            return convert::getHighByte(value);
+            return convert::getMostSigByte(value);
         }
 
         /**
