@@ -1,27 +1,8 @@
 #pragma once
 
-#include <memory>
-#include "primitives.hpp"
-#include "emu/memory.hpp"
-#include "emu/cpu/registers.hpp"
-#include "emu/cpu/instr/instruction.hpp"
+#include "types.hpp"
 
 namespace emu::cpu {
-    /// Absolute address on the 8086 are 20-bit however no 20-bit unsigned integer type exists in C++ so a 32-bit
-    /// unsigned integer is used instead.
-    using AbsAddr = u32;
-
-    /// Offset addresses within a given segment are 16-bit wide.
-    using OffsetAddr = u16;
-
-    /// Values stored in memory are 8-bit wide.
-    using MemValue = u8;
-
-    /// Type of values stored by standard registers.
-    using RegSize = u16;
-
-    using InstructionUniquePtr = std::unique_ptr<instr::Instruction>;
-
     /**
      * Class representing the main Intel 8086 microprocessor. Handles decoding and execution of instructions fetched
      * from memory.
@@ -53,24 +34,22 @@ namespace emu::cpu {
          * @param memory Reference to the memory to fetch the instruction data from.
          * @return Decoded instruction object.
          */
-        InstructionUniquePtr fetchDecodeInstruction(AbsAddr address,
-                                                    const Memory<MemValue, AbsAddr>& memory) const;
+        InstructionPtr fetchDecodeInstruction(AbsAddr address, const Mem& memory) const;
 
         /**
          * Executes a decoded instruction on this CPU.
          *
          * @param instruction Reference to the std::unique_ptr holding the instruction.
          */
-        void executeInstruction(InstructionUniquePtr& instruction,
-                                const Memory<MemValue, AbsAddr>& memory);
+        void executeInstruction(InstructionPtr& instruction, const Mem& memory);
 
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
         OffsetAddr instructionPointer = 0;
 
-        RegistersLowHigh<GeneralRegister> generalRegisters;
-        Registers<IndexRegister, RegSize> indexRegisters;
-        Registers<SegmentRegister, RegSize> segmentRegisters;
-        Registers<Flag, bool> flags;
+        GeneralRegs generalRegisters;
+        IndexRegs indexRegisters;
+        SegmentRegs segmentRegisters;
+        Flags flags;
     };
 }

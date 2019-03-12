@@ -129,7 +129,9 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
     using namespace emu::cpu;
 
     SECTION("Test checking the direction and data size of instruction based on opcode value.") {
-        instr::Opcode firstOpcode(0b10);
+        instr::Opcode firstOpcode(0b10101010);
+
+        REQUIRE(firstOpcode.getUniqueValue() == 0b101010);
 
         REQUIRE_FALSE(firstOpcode.getWordBit());
         REQUIRE(firstOpcode.getDataSize() == instr::BYTE_DATA_SIZE);
@@ -137,7 +139,9 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
         REQUIRE(firstOpcode.getDirectionBit());
         REQUIRE(firstOpcode.getDirection() == instr::REG_IS_DESTINATION);
 
-        instr::Opcode secondOpcode(0b01);
+        instr::Opcode secondOpcode(0b1010101);
+
+        REQUIRE(secondOpcode.getUniqueValue() == 0b10101);
 
         REQUIRE(secondOpcode.getWordBit());
         REQUIRE(secondOpcode.getDataSize() == instr::WORD_DATA_SIZE);

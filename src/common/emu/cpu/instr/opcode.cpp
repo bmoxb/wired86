@@ -5,6 +5,18 @@
 namespace emu::cpu::instr {
     Opcode::Opcode(u8 opcodeValue) : value(opcodeValue) {}
 
+    std::string Opcode::toString() const {
+        bool d = getDirectionBit(), w = getWordBit();
+
+        return convert::toBinaryString<u8, 8>(value) +
+               " (" + convert::toBinaryString<u8, 6>(getUniqueValue(), "") + "dw : d=" + convert::bitAsStr(d) +
+               ", w=" + convert::bitAsStr(w) + ")";
+    }
+
+    u8 Opcode::getUniqueValue() const {
+        return convert::getBitsFrom(value, 2, 6);
+    }
+
     bool Opcode::getWordBit() const {
         return convert::getBitFrom(value, 0); // Least significant bit.
     }

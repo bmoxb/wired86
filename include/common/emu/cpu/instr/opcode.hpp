@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "primitives.hpp"
 
 namespace emu::cpu::instr {
@@ -9,6 +10,10 @@ namespace emu::cpu::instr {
     class Opcode {
     public:
         Opcode(u8 opcodeValue);
+
+        std::string toString() const;
+
+        u8 getUniqueValue() const;
 
         /**
          * Indicates whether the data size of this opcode is a word (when the w-bit is 1/true) or a byte (when the w-bit

@@ -31,6 +31,8 @@ namespace convert {
      */
     u16 createWordFromBytes(u8 low, u8 high);
 
+    std::string bitAsStr(bool bit);
+
     /**
      * Convert a numerical value to a string representation in binary format. This is done using a `std::bitset`.
      *
@@ -83,7 +85,7 @@ namespace convert {
      * @return The fetched bit expressed as a boolean value.
      */
     template <typename T>
-    bool getBitFrom(T value, unsigned int index) {
+    inline bool getBitFrom(T value, unsigned int index) {
         return (value >> index) & 1;
     }
 
@@ -97,7 +99,7 @@ namespace convert {
      * @return The fetched sequence of bits.
      */
     template <typename T>
-    T getBitsFrom(T value, unsigned int index, unsigned int count) {
+    inline T getBitsFrom(T value, unsigned int index, unsigned int count) {
         T mask = (1 << count) - 1; // (2 ^ count) - 1
         return (value >> index) & mask;
     }
