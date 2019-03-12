@@ -11,9 +11,9 @@ namespace emu::cpu {
         return resolveAddress(instructionPointer, SegmentIndex::code);
     }
 
-    std::unique_ptr<Instruction> Intel8086::fetchDecodeInstruction(AbsAddr address,
-                                                                   const Memory<MemValue, AbsAddr>& memory) const {}
+    InstructionUniquePtr Intel8086::fetchDecodeInstruction(AbsAddr address,
+                                                           const Memory<MemValue, AbsAddr>& memory) const {}
     
-    void Intel8086::executeInstruction(std::unique_ptr<Instruction>& instruction,
+    void Intel8086::executeInstruction(InstructionUniquePtr& instruction,
                                        const Memory<MemValue, AbsAddr>& memory) {}
 }

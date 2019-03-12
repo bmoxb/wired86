@@ -24,9 +24,9 @@ namespace emu::cpu::instr {
 
         const Opcode opcode;
 
-    private:
+    protected:
         std::optional<ModRegRm> modRegRmByte;
-        std::optional<Displacement> displacementValue;
-        std::optional<Immedate> immedateValue;
+        //std::optional<Displacement> displacementValue;
+        std::optional<Immediate> immediateValue;
     };
 }
