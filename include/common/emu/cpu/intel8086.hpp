@@ -17,6 +17,9 @@ namespace emu::cpu {
     /// Values stored in memory are 8-bit wide.
     using MemValue = u8;
 
+    /// Type of values stored by standard registers.
+    using RegSize = u16;
+
     using InstructionUniquePtr = std::unique_ptr<instr::Instruction>;
 
     /**
@@ -66,7 +69,7 @@ namespace emu::cpu {
         OffsetAddr instructionPointer = 0;
 
         RegistersLowHigh<GeneralRegister> generalRegisters;
-        Registers<IndexRegister, u16> indexRegisters;
-        Registers<SegmentRegister, u16> segmentRegisters;
+        Registers<IndexRegister, RegSize> indexRegisters;
+        Registers<SegmentRegister, RegSize> segmentRegisters;
     };
 }

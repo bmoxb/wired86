@@ -41,6 +41,11 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         REQUIRE(toHexString<u8>(0xFF) == "0xFF");
         REQUIRE(toHexString<u16>(0x55A, "", "h") == "55Ah");
     }
+
+    SECTION("Test conversion between a numerical value a binary string representation.") {
+        REQUIRE(toBinaryString<u8, 8>(0b10101010) == "0b10101010");
+        REQUIRE(toBinaryString<u16, 4>(0xFF, "", "b") == "1111b");
+    }
 }
 
 TEST_CASE("Test emulator memory.", "[emu][memory]") {

@@ -16,11 +16,11 @@ namespace emu::cpu {
 
     InstructionUniquePtr Intel8086::fetchDecodeInstruction(AbsAddr address,
                                                            const Memory<MemValue, AbsAddr>& memory) const {
-        auto opcodeValue = memory.read(address);
+        MemValue opcodeValue = memory.read(address);
         instr::Opcode opcode(opcodeValue);
 
         logging::info("From address " + convert::toHexString(address) +
-                      " fetched instruction opcode: " + convert::toHexString(opcodeValue));
+                      " fetched instruction opcode: " + convert::toBinaryString<MemValue, 8>(opcodeValue));
 
         return InstructionUniquePtr();
     }
