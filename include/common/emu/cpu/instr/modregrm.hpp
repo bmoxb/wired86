@@ -2,7 +2,7 @@
 
 #include <variant>
 #include "primitives.hpp"
-#include "emu/cpu/registerindexes.hpp"
+#include "emu/cpu/registers.hpp"
 #include "emu/cpu/instr/opcode.hpp"
 
 namespace emu::cpu::instr {
@@ -34,7 +34,7 @@ namespace emu::cpu::instr {
          * @return A variant (type-safe union) holding either a general-purpose register index or an indexing register
          *         index.
          */
-        std::variant<GeneralIndex, IndexIndex> getRegisterIndex(DataSize size) const;
+        std::variant<GeneralRegister, IndexRegister> getRegisterIndex(DataSize size) const;
 
         /**
          * Fetch the pair of bits that comprise the MOD component of this MOD-REG-R/M byte.

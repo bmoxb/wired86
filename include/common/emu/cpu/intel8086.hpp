@@ -33,7 +33,7 @@ namespace emu::cpu {
          * @param segment Segment register index indicating which segment to resolve the offset within.
          * @return Absolute 20-bit address within memory.
          */
-        AbsAddr resolveAddress(OffsetAddr offset, SegmentIndex segment) const;
+        AbsAddr resolveAddress(OffsetAddr offset, SegmentRegister segment) const;
 
         /**
          * Calculate the address of the next instruction in memory based on the value of the instruction pointer and the
@@ -65,8 +65,8 @@ namespace emu::cpu {
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
         OffsetAddr instructionPointer = 0;
 
-        RegistersLowHigh<GeneralIndex> generalRegisters;
-        Registers<IndexIndex, u16> indexRegisters;
-        Registers<SegmentIndex, u16> segmentRegisters;
+        RegistersLowHigh<GeneralRegister> generalRegisters;
+        Registers<IndexRegister, u16> indexRegisters;
+        Registers<SegmentRegister, u16> segmentRegisters;
     };
 }

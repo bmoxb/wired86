@@ -14,45 +14,45 @@ namespace emu::cpu::instr {
         return convert::getBitsFrom(value, 3, 3);
     }
 
-    std::variant<GeneralIndex, IndexIndex> ModRegRm::getRegisterIndex(DataSize size) const {
+    std::variant<GeneralRegister, IndexRegister> ModRegRm::getRegisterIndex(DataSize size) const {
         u8 bits = getRegBits();
 
         if(size == BYTE_DATA_SIZE) {
             switch(bits) {
             case 0b000: // AL
             case 0b100: // AH
-                return GeneralIndex::ax;
+                return AX_REGISTER;
 
             case 0b001: // CL
             case 0b101: // CH
-                return GeneralIndex::cx;
+                return CX_REGISTER;
 
             case 0b010: // DL
             case 0b110: // DH
-                return GeneralIndex::dx;
+                return DX_REGISTER;
 
             case 0b011: // BL
             case 0b111: // BH
-                return GeneralIndex::bx;
+                return BX_REGISTER;
             }
         }
 
         if(size == WORD_DATA_SIZE) {
             switch(bits) {
-            case 0b000: return GeneralIndex::ax;
-            case 0b001: return GeneralIndex::cx;
-            case 0b010: return GeneralIndex::dx;
-            case 0b011: return GeneralIndex::bx;
-            case 0b100: return IndexIndex::source;
-            case 0b101: return IndexIndex::base;
-            case 0b110: return IndexIndex::source;
-            case 0b111: return IndexIndex::destination;
+            case 0b000: return AX_REGISTER;
+            case 0b001: return CX_REGISTER;
+            case 0b010: return DX_REGISTER;
+            case 0b011: return BX_REGISTER;
+            case 0b100: return STACK_POINTER;
+            case 0b101: return BASE_POINTER;
+            case 0b110: return SOURCE_INDEX;
+            case 0b111: return DESTINATION_INDEX;
             }
         }
 
         logging::warning("Invalid register specified by REG component of MOD-REG-R/M byte: " +
                          std::to_string(bits)); // TODO: Display as binary.
-        return GeneralIndex::ax;
+        return AX_REGISTER;
     }
 
     u8 ModRegRm::getModBits() const {

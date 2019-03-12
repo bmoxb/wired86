@@ -3,10 +3,13 @@
 #include <map>
 #include "primitives.hpp"
 #include "convert.hpp"
-#include "emu/cpu/registerindexes.hpp"
-#include "emu/cpu/registers.hpp"
 
 namespace emu::cpu {
+    enum RegisterPart { FULL_WORD, LOW_BYTE, HIGH_BYTE };
+    enum GeneralRegister { AX_REGISTER, BX_REGISTER, CX_REGISTER, DX_REGISTER };
+    enum IndexRegister { SOURCE_INDEX, DESTINATION_INDEX, BASE_POINTER, STACK_POINTER };
+    enum SegmentRegister { CODE_SEGMENT, DATA_SEGMENT, EXTRA_SEGMENT, STACK_SEGMENT };
+
     /**
      * Generic class template for a collection of registers.
      *
@@ -17,7 +20,15 @@ namespace emu::cpu {
     class Registers {
     public:
         /// Register value getter.
-        Value get(Index index) { return regs[index]; }
+        Value get(Index index) const {
+            // Cannot have method declared `const` when using the operator[] as that method of indexing will create a
+            // default constructed value if one is not found at the index (thus modifying `this`). As such, the map will
+            // be searched for the index and will return a default value should a value not be found.
+            auto value = regs.find(index);
+
+            if(value != regs.end()) return value->second;
+            else return Value(); // Return default-constructed value if no actual value is found in map.
+        }
 
         /// Register value setter.
         void set(Index index, Value value) { regs[index] = value; }
@@ -33,13 +44,13 @@ namespace emu::cpu {
         using Registers<Index, u16>::set;
 
         /// Get least significant byte of 16-bit register.
-        u8 getLow(Index index) {
+        u8 getLow(Index index) const {
             u16 value = get(index);
             return convert::getLeastSigByte(value);
         }
 
         /// Get most significant byte of 16-bit register.
-        u8 getHigh(Index index) {
+        u8 getHigh(Index index) const {
             u16 value = get(index);
             return convert::getMostSigByte(value);
         }
@@ -48,7 +59,7 @@ namespace emu::cpu {
          * Fetch a specific part of a register. Note that return value will always be 16-bit wide even if only a single
          * byte of a register is accessed.
          */
-        u16 get(Index index, RegisterPart part) {
+        u16 get(Index index, RegisterPart part) const {
             switch(part) {
             case LOW_BYTE: return getLow(index);
             case HIGH_BYTE: return getHigh(index);
