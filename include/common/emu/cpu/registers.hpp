@@ -6,9 +6,40 @@
 
 namespace emu::cpu {
     enum RegisterPart { FULL_WORD, LOW_BYTE, HIGH_BYTE };
-    enum GeneralRegister { AX_REGISTER, BX_REGISTER, CX_REGISTER, DX_REGISTER };
-    enum IndexRegister { SOURCE_INDEX, DESTINATION_INDEX, BASE_POINTER, STACK_POINTER };
-    enum SegmentRegister { CODE_SEGMENT, DATA_SEGMENT, EXTRA_SEGMENT, STACK_SEGMENT };
+    
+    enum GeneralRegister {
+        AX_REGISTER,
+        BX_REGISTER,
+        CX_REGISTER,
+        DX_REGISTER
+    };
+
+    enum IndexRegister {
+        SOURCE_INDEX,
+        DESTINATION_INDEX,
+        BASE_POINTER,
+        STACK_POINTER
+    };
+
+    enum SegmentRegister {
+        CODE_SEGMENT,
+        DATA_SEGMENT,
+        EXTRA_SEGMENT,
+        STACK_SEGMENT
+    };
+
+    enum Flag {
+        CARRY_FLAG,
+        PARITY_FLAG,
+        AUX_CARRY_FLAG,
+        ZERO_FLAG,
+        SIGN_FLAG,
+        TRAP_FLAG,
+        INTERRUPT_FLAG,
+        DIRECTION_FLAG,
+        OVERFLOW_FLAG
+    };
+
 
     /**
      * Generic class template for a collection of registers.
@@ -19,7 +50,9 @@ namespace emu::cpu {
     template <typename Index, typename Value>
     class Registers {
     public:
-        /// Register value getter.
+        /**
+         * Register value getter.
+         */
         Value get(Index index) const {
             // Cannot have method declared `const` when using the operator[] as that method of indexing will create a
             // default constructed value if one is not found at the index (thus modifying `this`). As such, the map will
@@ -30,7 +63,9 @@ namespace emu::cpu {
             else return Value(); // Return default-constructed value if no actual value is found in map.
         }
 
-        /// Register value setter.
+        /**
+         * Register value setter.
+         */
         void set(Index index, Value value) { regs[index] = value; }
 
     private:
@@ -43,13 +78,17 @@ namespace emu::cpu {
         using Registers<Index, u16>::get;
         using Registers<Index, u16>::set;
 
-        /// Get least significant byte of 16-bit register.
+        /**
+         * Get least significant byte of 16-bit register.
+         */
         u8 getLow(Index index) const {
             u16 value = get(index);
             return convert::getLeastSigByte(value);
         }
 
-        /// Get most significant byte of 16-bit register.
+        /**
+         * Get most significant byte of 16-bit register.
+         */
         u8 getHigh(Index index) const {
             u16 value = get(index);
             return convert::getMostSigByte(value);
@@ -67,14 +106,18 @@ namespace emu::cpu {
             }
         }
 
-        /// Set least significant byte of 16-bit register (most significant byte unaffected).
+        /**
+         * Set least significant byte of 16-bit register (most significant byte unaffected).
+         */
         void setLow(Index index, u8 low) {
             u16 high = getHigh(index);
             u16 value = convert::createWordFromBytes(low, high);
             set(index, value);
         }
 
-        /// Set most significant byte of 16-bit register (least significant byte unaffected).
+        /**
+         * Set most significant byte of 16-bit register (least significant byte unaffected).
+         */
         void setHigh(Index index, u8 high) {
             u16 low = getLow(index);
             u16 value = convert::createWordFromBytes(low, high);

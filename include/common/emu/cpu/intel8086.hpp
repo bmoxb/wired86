@@ -71,5 +71,6 @@ namespace emu::cpu {
         RegistersLowHigh<GeneralRegister> generalRegisters;
         Registers<IndexRegister, RegSize> indexRegisters;
         Registers<SegmentRegister, RegSize> segmentRegisters;
+        Registers<Flag, bool> flags;
     };
 }
