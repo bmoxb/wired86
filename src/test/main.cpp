@@ -36,6 +36,11 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         REQUIRE(getBitsFrom<u16>(0b101010100, 2, 7) == 0b1010101);
         REQUIRE(getBitsFrom<u8>(0b10111000, 3, 3) == 0b111);
     }
+
+    SECTION("Test conversion between a numerical value and a hexadecimal string representation.") {
+        REQUIRE(toHexString<u8>(0xFF) == "0xFF");
+        REQUIRE(toHexString<u16>(0x55A, "", "h") == "55Ah");
+    }
 }
 
 TEST_CASE("Test emulator memory.", "[emu][memory]") {

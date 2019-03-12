@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <sstream>
 #include "primitives.hpp"
 
 namespace convert {
@@ -27,6 +29,18 @@ namespace convert {
      * @return 16-bit word constructed from the low/high bytes.
      */
     u16 createWordFromBytes(u8 low, u8 high);
+
+    template <typename T>
+    std::string toHexString(T value, std::string prefix = "0x", std::string suffix = "") {
+        std::stringstream stream;
+        
+        stream << std::hex << std::uppercase << std::noshowbase
+               << prefix
+               << +value // The '+' prefix ensures 'char' types are interpreted as numerical rather than as characters.
+               << suffix;
+
+        return stream.str();
+    }
 
     /**
      * Fetch a specific bit of a numerical value (expressed as a boolean).
