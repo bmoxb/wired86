@@ -22,11 +22,11 @@ namespace logging {
                              message + MESSAGE_END);
     }
 
-    void Logger::operator()(std::string message, LoggingInfo info) {
+    void Logger::operator()(std::string message, LoggingInfo additionalInfo) {
         outThroughAllStreams(escapeSequence +
                              "[" + logType + " - " + fetchCurrentTimeString() +
-                             " - line " + std::to_string(info.line) +
-                             " of " + info.file + " - " + info.function + "] " +
+                             " - line " + std::to_string(additionalInfo.line) +
+                             " of " + additionalInfo.file + " - " + additionalInfo.function + "] " +
                              message + MESSAGE_END);
     }
 

@@ -46,7 +46,6 @@ namespace emu::cpu::instr {
          */
         AddressingMode getAddressingMode() const;
 
-    private:
-        u8 value;
+        const u8 value;
     };
 }

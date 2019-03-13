@@ -1,8 +1,6 @@
 #include "emu/cpu/intel8086.hpp"
 
 #include "logging.hpp"
-#include "convert.hpp"
-#include "emu/cpu/instr/add.hpp"
 
 namespace emu::cpu {
     AbsAddr Intel8086::resolveAddress(OffsetAddr offset, SegmentRegister segment) const {
@@ -19,9 +17,6 @@ namespace emu::cpu {
         MemValue opcodeValue = memory.read(address);
         instr::Opcode opcode(opcodeValue);
 
-        logging::info("From address " + convert::toHexString(address) +
-                      " fetched instruction opcode: " + opcode.toString());
-
         switch(opcode.getUniqueValue()) { // The 6 most significant bits of the opcode (ignore w and d bits for now).
         /*
          * ADD instruction (with MOD-REG-R/M byte)
@@ -34,9 +29,18 @@ namespace emu::cpu {
             //return std::make_unique<instr::Add>(opcode/*, modRegRm*/);
         }
 
-        return std::unique_ptr<instr::Instruction>(); // Empty unique pointer returned otherwise.
+        return std::make_unique<instr::Instruction>("unknown", opcode);
     }
-/*
+
     void Intel8086::executeInstruction(std::unique_ptr<instr::Instruction>& instruction,
-                                       const Memory<MemValue, AbsAddr>& memory) {}*/
+                                       Memory<MemValue, AbsAddr>& memory) {
+        if(instruction) {
+            OffsetAddr newIp = instruction->execute(instructionPointer, memory,
+                                                    generalRegisters, indexRegisters, segmentRegisters, flags);
+
+            if(memory.withinBounds(newIp)) instructionPointer = newIp;
+            else logging::error("Instruction returned new instruction pointer value that is out of bounds!");
+        }
+        else logging::error("Empty instruction pointer passed to CPU.");
+    }
 }

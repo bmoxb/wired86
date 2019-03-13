@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "primitives.hpp"
 #include "emu/types.hpp"
 #include "emu/cpu/instr/opcode.hpp"
 #include "emu/cpu/instr/modregrm.hpp"
@@ -27,7 +26,7 @@ namespace emu::cpu::instr {
          * @return The new instruction pointer value after completing execution.
          */
         virtual OffsetAddr execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters, IndexRegs& indexRegisters,
-                                   SegmentRegs& segmentRegisters, Flags& flags) = 0;
+                                   SegmentRegs& segmentRegisters, Flags& flags);
 
         /**
          * Disassemble this instruction into Intel-syntax assembly code. Returns this as a string.
@@ -38,6 +37,11 @@ namespace emu::cpu::instr {
          * Fetch the raw 8-bit values that make this instruction include the opcode value.
          */
         std::vector<u8> getRawData() const;
+
+        /**
+         * Returns the number of bytes that make up this instruction.
+         */
+        OffsetAddr size() const;
 
         const std::string name;
         const Opcode opcode;

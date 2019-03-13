@@ -46,10 +46,10 @@ namespace logging {
         /**
          * Display message with additional information about where the call was made to all output streams.
          *
-         * @param info Additional information about where the call to log was made. Should not be created manually -
-         *             instead use the ADDITIONAL_LOGGING_INFO macro.
+         * @param additionalInfo Additional information about where the call to log was made. Should not be created
+         *                       manually - instead use the ADDITIONAL_LOGGING_INFO macro.
          */
-        void operator()(std::string message, LoggingInfo info);
+        void operator()(std::string message, LoggingInfo additionalInfo);
 
         /// Add a new output stream to this logger.
         void addStream(std::ostream& stream);

@@ -42,7 +42,7 @@ namespace emu::cpu {
          *
          * @param instruction Reference to the std::unique_ptr holding the instruction.
          */
-        void executeInstruction(std::unique_ptr<instr::Instruction>& instruction, const Mem& memory);
+        void executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory);
 
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
