@@ -4,7 +4,6 @@
 #include "primitives.hpp"
 #include "emu/memory.hpp"
 #include "emu/cpu/registers.hpp"
-#include "emu/cpu/instr/instruction.hpp"
 
 namespace emu {
     /// Absolute address on the 8086 are 20-bit however no 20-bit unsigned integer type exists in C++ so a 32-bit
@@ -22,9 +21,6 @@ namespace emu {
 
     /// Type of values stored by standard registers.
     using RegSize = u16;
-
-    /// Unique pointer to an cpu::instr::Instruction object.
-    using InstructionPtr = std::unique_ptr<cpu::instr::Instruction>;
 
     /// cpu::RegistersLowHigh template using cpu::GeneralRegister as indexes.
     using GeneralRegs = cpu::RegistersLowHigh<cpu::GeneralRegister>;

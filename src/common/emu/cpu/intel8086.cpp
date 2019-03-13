@@ -15,14 +15,14 @@ namespace emu::cpu {
         return resolveAddress(instructionPointer, CODE_SEGMENT);
     }
 
-    InstructionPtr Intel8086::fetchDecodeInstruction(AbsAddr address, const Mem& memory) const {
+    std::unique_ptr<instr::Instruction> Intel8086::fetchDecodeInstruction(AbsAddr address, const Mem& memory) const {
         MemValue opcodeValue = memory.read(address);
         instr::Opcode opcode(opcodeValue);
 
         logging::info("From address " + convert::toHexString(address) +
                       " fetched instruction opcode: " + opcode.toString());
 
-        switch(opcode.getUniqueValue()) { // 6 most significant bits (ignore w and d bits for now).
+        switch(opcode.getUniqueValue()) { // The 6 most significant bits of the opcode (ignore w and d bits for now).
         /*
          * ADD instruction (with MOD-REG-R/M byte)
          * 000000xx
@@ -31,12 +31,12 @@ namespace emu::cpu {
             MemValue modRegRmValue = memory.read(address + 1);
             instr::ModRegRm modRegRm(modRegRmValue);
 
-            return std::make_unique<instr::Add>(opcode/*, modRegRm*/);
+            //return std::make_unique<instr::Add>(opcode/*, modRegRm*/);
         }
 
-        return InstructionPtr(); // Empty unique pointer returned otherwise.
+        return std::unique_ptr<instr::Instruction>(); // Empty unique pointer returned otherwise.
     }
-    /*
-    void Intel8086::executeInstruction(InstructionUniquePtr& instruction,
+/*
+    void Intel8086::executeInstruction(std::unique_ptr<instr::Instruction>& instruction,
                                        const Memory<MemValue, AbsAddr>& memory) {}*/
 }

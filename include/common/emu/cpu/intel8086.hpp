@@ -1,6 +1,7 @@
 #pragma once
 
-#include "types.hpp"
+#include "emu/types.hpp"
+#include "emu/cpu/instr/instruction.hpp"
 
 namespace emu::cpu {
     /**
@@ -34,14 +35,14 @@ namespace emu::cpu {
          * @param memory Reference to the memory to fetch the instruction data from.
          * @return Decoded instruction object.
          */
-        InstructionPtr fetchDecodeInstruction(AbsAddr address, const Mem& memory) const;
+        std::unique_ptr<instr::Instruction> fetchDecodeInstruction(AbsAddr address, const Mem& memory) const;
 
         /**
          * Executes a decoded instruction on this CPU.
          *
          * @param instruction Reference to the std::unique_ptr holding the instruction.
          */
-        void executeInstruction(InstructionPtr& instruction, const Mem& memory);
+        void executeInstruction(std::unique_ptr<instr::Instruction>& instruction, const Mem& memory);
 
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
