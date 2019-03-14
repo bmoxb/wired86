@@ -46,7 +46,7 @@ namespace emu::cpu::instr {
         /**
          * Returns the number of bytes that make up this instruction.
          */
-        OffsetAddr size() const;
+        OffsetAddr getRawSize() const;
 
         const std::string name;
         const Opcode opcode;

@@ -12,7 +12,7 @@ namespace emu::cpu::instr {
                                     Mem&, GeneralRegs&, IndexRegs&, SegmentRegs&, Flags&) {
         logging::warning("Executing instruction that has not overriden the default execution method!");
 
-        return instructionPointer + size();
+        return instructionPointer + getRawSize();
     }
 
     std::string Instruction::toAssembly() const {
@@ -42,7 +42,7 @@ namespace emu::cpu::instr {
         return str;
     }
 
-    OffsetAddr Instruction::size() const {
+    OffsetAddr Instruction::getRawSize() const {
         std::size_t size = getRawData().size();
         return static_cast<OffsetAddr>(size);
     }

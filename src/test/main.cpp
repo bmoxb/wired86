@@ -194,6 +194,7 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
                                        std::make_unique<instr::ModRegRm>(raw[1]));
         
         REQUIRE(instruction.getRawData() == raw);
+        REQUIRE(instruction.getRawSize() == raw.size());
         REQUIRE(instruction.getRawDataString(" ") == "0xAA 0xBB");
     }
 }
