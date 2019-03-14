@@ -24,9 +24,22 @@ namespace emu::cpu::instr {
 
         data.push_back(opcode.value);
         if(modRegRmByte) data.push_back(modRegRmByte->value);
-        // TODO: Add immediate and displacement bytes.
+        if(immediateValue) convert::extendVector(data, immediateValue->rawData);
+        // TODO: Add displacement bytes.
 
         return data;
+    }
+
+    std::string Instruction::getRawDataString(std::string separator) const {
+        auto raw = getRawData();
+        std::string str;
+
+        for(unsigned int i = 0; i < raw.size() - 1; i++)
+            str += convert::toHexString(raw[i]) + separator; // Add all elements (except the final one) with separator.
+        
+        str += convert::toHexString(raw[raw.size() - 1]); // Add final element (not separator).
+
+        return str;
     }
 
     OffsetAddr Instruction::size() const {

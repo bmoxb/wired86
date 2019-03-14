@@ -39,6 +39,11 @@ namespace emu::cpu::instr {
         std::vector<u8> getRawData() const;
 
         /**
+         * Fetch the raw 8-bit values that make up this instruction expressed as a string.
+         */
+        std::string getRawDataString(std::string separator = ", ") const;
+
+        /**
          * Returns the number of bytes that make up this instruction.
          */
         OffsetAddr size() const;

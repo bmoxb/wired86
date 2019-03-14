@@ -46,6 +46,15 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         REQUIRE(toBinaryString<u8, 8>(0b10101010) == "0b10101010");
         REQUIRE(toBinaryString<u16, 4>(0xFF, "", "b") == "1111b");
     }
+
+    SECTION("Test the extension of vectors.") {
+        std::vector<u16> vec = { 0xA, 0xB },
+                         extendBy = { 0xC, 0xD, 0xE },
+                         expected = { 0xA, 0xB, 0xC, 0xD, 0xE };
+        
+        extendVector<u16>(vec, extendBy);
+        REQUIRE(vec == expected);
+    }
 }
 
 TEST_CASE("Test emulator memory.", "[emu][memory]") {

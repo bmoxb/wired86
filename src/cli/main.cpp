@@ -14,7 +14,10 @@ int main(int argc, char* argv[]) {
         logging::info("Next instruction address: " + convert::toHexString(addr));
 
         auto instruction = cpu.fetchDecodeInstruction(addr, mem);
-        logging::success("Instruction fetched and decoded: " + instruction->toAssembly());
+        
+        logging::success("Instruction fetched and decoded successfully!");
+        logging::info("Instruction raw data: " + instruction->getRawDataString());
+        logging::info("Instruction assembly: " + instruction->toAssembly());
 
         cpu.executeInstruction(instruction, mem);
     }

@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <bitset>
+#include <vector>
 #include "primitives.hpp"
 
 namespace convert {
@@ -31,7 +32,25 @@ namespace convert {
      */
     u16 createWordFromBytes(u8 low, u8 high);
 
+    /**
+     * Convert a bit (expressed as a boolean) into either the string "0" (false) or "1" (true).
+     *
+     * @param bit Boolean bit value.
+     * @return Either the string "1" or "0".
+     */
     std::string bitAsStr(bool bit);
+
+    /**
+     * Take an existing vector and extend it by the values in a second vector.
+     *
+     * @tparam T Type handled by the vectors used.
+     * @param base Reference to the vector which will be extended.
+     * @param extra Constant reference to the vector of values to be added to the base vector.
+     */
+    template <typename T>
+    void extendVector(std::vector<T>& base, const std::vector<T>& extra) {
+        base.insert(base.end(), extra.begin(), extra.end());
+    }
 
     /**
      * Convert a numerical value to a string representation in binary format. This is done using a `std::bitset`.
