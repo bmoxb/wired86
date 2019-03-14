@@ -2,12 +2,12 @@
 #include "catch.hpp"
 
 #include <vector>
+#include <memory>
 #include "primitives.hpp"
 #include "convert.hpp"
 #include "emu/memory.hpp"
 #include "emu/cpu/registers.hpp"
-#include "emu/cpu/instr/opcode.hpp"
-#include "emu/cpu/instr/modregrm.hpp"
+#include "emu/cpu/instr/instruction.hpp"
 
 TEST_CASE("Tests conversions.", "[conversions]") {
     using namespace convert;
@@ -178,5 +178,22 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
         
         REQUIRE(byte.getModBits() == 0b10);
         REQUIRE(byte.getAddressingMode() == instr::WORD_DISPLACEMENT);
+    }
+
+    SECTION("Test immediate instruction value representation.") {
+        std::vector<u8> firstData = { 0xAA };
+        instr::Immediate first(firstData);
+        
+        REQUIRE(first.rawData == firstData);
+    }
+
+    SECTION("Test instruction objects.") {
+        std::vector<u8> raw = { 0xAA, 0xBB };
+        instr::Instruction instruction("example",
+                                       instr::Opcode(raw[0]),
+                                       std::make_unique<instr::ModRegRm>(raw[1]));
+        
+        REQUIRE(instruction.getRawData() == raw);
+        REQUIRE(instruction.getRawDataString(" ") == "0xAA 0xBB");
     }
 }

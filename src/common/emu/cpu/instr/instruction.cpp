@@ -37,7 +37,7 @@ namespace emu::cpu::instr {
         for(unsigned int i = 0; i < raw.size() - 1; i++)
             str += convert::toHexString(raw[i]) + separator; // Add all elements (except the final one) with separator.
         
-        str += convert::toHexString(raw[raw.size() - 1]); // Add final element (not separator).
+        str += convert::toHexString(raw[raw.size() - 1]); // Add final element (no separator).
 
         return str;
     }
