@@ -3,10 +3,10 @@
 #include "logging.hpp"
 
 namespace emu::cpu::instr {
-    Instruction::Instruction(std::string instructionName, Opcode instructionOpcode, std::unique_ptr<ModRegRm> modRegRm,
-                             std::unique_ptr<Immediate> immediate)
-    : name(instructionName),
-      opcode(instructionOpcode), modRegRmByte(std::move(modRegRm)), immediateValue(std::move(immediate)) {}
+    Instruction::Instruction(std::string instrIdentifier, Opcode instrOpcode, std::unique_ptr<ModRegRm> modRegRm,
+                             std::unique_ptr<Displacement> displacement, std::unique_ptr<Immediate> immediate)
+    : identifier(instrIdentifier), opcode(instrOpcode), modRegRmByte(std::move(modRegRm)),
+      displacementValue(std::move(displacement)), immediateValue(std::move(immediate)) {}
 
     OffsetAddr Instruction::execute(OffsetAddr instructionPointer, // Other args are unused and therefore are not named.
                                     Mem&, GeneralRegs&, IndexRegs&, SegmentRegs&, Flags&) {
@@ -16,7 +16,7 @@ namespace emu::cpu::instr {
     }
 
     std::string Instruction::toAssembly() const {
-        return name + " ...";
+        return identifier; // TODO: Convert to assembly properly.
     }
 
     std::vector<u8> Instruction::getRawData() const {
@@ -24,8 +24,8 @@ namespace emu::cpu::instr {
 
         data.push_back(opcode.value);
         if(modRegRmByte) data.push_back(modRegRmByte->value);
+        if(displacementValue) convert::extendVector(data, displacementValue->rawData);
         if(immediateValue) convert::extendVector(data, immediateValue->rawData);
-        // TODO: Add displacement bytes.
 
         return data;
     }

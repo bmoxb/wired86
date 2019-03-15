@@ -15,4 +15,6 @@ namespace emu::cpu::instr {
 
         const std::vector<u8> rawData;
     };
+
+    class Displacement : public Immediate {};
 }
