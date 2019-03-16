@@ -39,22 +39,8 @@ namespace emu::cpu::instr {
             callHandlerWithCorrectOrdering(reg, rm, memory, generalRegisters);
         }
         else if(displacement) { // Using an address as an argument instead of an additional register.
-            u16 displacementValue;
-
-            switch(addressingMode) {
-            case BYTE_DISPLACEMENT:
-                displacementValue = static_cast<u16>(displacement->getByteValue());
-                break;
-            
-            case WORD_DISPLACEMENT:
-                displacementValue = displacement->getWordValue();
-                break;
-
-            default: // No displacement.
-                displacementValue = 0;
-            }
-
-            AbsAddr address = resolveDisplacementToAddress(displacementValue, generalRegisters);
+            auto displacementType = modRegRmByte.getDisplacementType();
+            AbsAddr address = displacement->resolve(addressingMode, displacementType, generalRegisters);
             u8 memoryValue = memory.read(address);
 
             callHandlerWithCorrectOrdering(reg, memoryValue, memory, generalRegisters);
@@ -67,41 +53,5 @@ namespace emu::cpu::instr {
         std::vector<u8> raw = { opcode.value, modRegRmByte.value };
         if(displacement) convert::extendVector(raw, displacement->rawData);
         return raw;
-    }
-
-    AbsAddr InstructionWithModRegRm::resolveDisplacementToAddress(u16 displacementValue, GeneralRegs& registers) const {
-        switch(modRegRmByte.getDisplacementType()) {
-        case BX_SI_DISPLACEMENT:
-            return registers.get(BX_REGISTER) +
-                   registers.get(SOURCE_INDEX) +
-                   displacementValue;
-
-        case BX_DI_DISPLACEMENT:
-            return registers.get(BX_REGISTER) +
-                   registers.get(DESTINATION_INDEX) +
-                   displacementValue;
-
-        case BP_SI_DISPLACEMENT:
-            return registers.get(BASE_POINTER) +
-                   registers.get(SOURCE_INDEX) +
-                   displacementValue;
-
-        case BP_DI_DISPLACEMENT:
-            return registers.get(BASE_POINTER) +
-                   registers.get(DESTINATION_INDEX) +
-                   displacementValue;
-
-        case SI_DISPLACEMENT:
-            return registers.get(SOURCE_INDEX) + displacementValue;
-
-        case DI_DISPLACEMENT:
-            return registers.get(DESTINATION_INDEX) + displacementValue;
-
-        case BP_DISPLACEMENT:
-            return registers.get(BASE_POINTER) + displacementValue;
-
-        default:
-            return registers.get(BX_REGISTER) + displacementValue;
-        }
     }
 }

@@ -96,8 +96,6 @@ namespace emu::cpu::instr {
         std::optional<Displacement> displacement;
 
     private:
-        AbsAddr resolveDisplacementToAddress(u16 displacementValue, GeneralRegs& registers) const;
-
         /**
          * Calls a InstructionWithModRegRm::handleExecution method with arguments given in ordering based upon the
          * direction specified by the opcode.
