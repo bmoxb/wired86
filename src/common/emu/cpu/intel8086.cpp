@@ -29,14 +29,15 @@ namespace emu::cpu {
             //return std::make_unique<instr::Add>(opcode/*, modRegRm*/);
         }
 
-        return std::make_unique<instr::Instruction>("unknown", opcode);
+        logging::warning("Failed to decode instruction with opcode: " + opcode.toString());
+        return {};
     }
 
     void Intel8086::executeInstruction(std::unique_ptr<instr::Instruction>& instruction,
                                        Memory<MemValue, AbsAddr>& memory) {
         if(instruction) {
-            OffsetAddr newIp = instruction->execute(instructionPointer, memory,
-                                                    generalRegisters, indexRegisters, segmentRegisters, flags);
+            OffsetAddr newIp = instruction->execute(instructionPointer, memory, generalRegisters, segmentRegisters,
+                                                    flags);
 
             if(memory.withinBounds(newIp)) instructionPointer = newIp;
             else logging::error("Instruction returned new instruction pointer value that is out of bounds!");

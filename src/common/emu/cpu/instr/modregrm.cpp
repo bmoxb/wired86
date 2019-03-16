@@ -14,9 +14,55 @@ namespace emu::cpu::instr {
         return convert::getBitsFrom(value, 3, 3);
     }
 
-    std::variant<GeneralRegister, IndexRegister> ModRegRm::getRegisterIndex(DataSize size) const {
-        u8 bits = getRegBits();
+    u8 ModRegRm::getModBits() const {
+        return convert::getBitsFrom(value, 6, 2);
+    }
 
+    AddressingMode ModRegRm::getAddressingMode() const {
+        u8 bits = getModBits();
+
+        switch(bits) {
+        case 0b00: return NO_DISPLACEMENT;
+        case 0b01: return BYTE_DISPLACEMENT;
+        case 0b10: return WORD_DISPLACEMENT;
+        case 0b11: return REGISTER_ADDRESSING_MODE;
+        }
+
+        logging::warning("Invalid addressing mode specified by MOD component of MOD-REG-R/M byte: " +
+                         convert::toBinaryString(bits));
+        return NO_DISPLACEMENT;
+    }
+
+    GeneralRegister ModRegRm::getRegisterIndexFromRm(DataSize size) const {
+        u8 bits = getRmBits();
+        return getRegisterIndex(bits, size);
+    }
+
+    GeneralRegister ModRegRm::getRegisterIndexFromReg(DataSize size) const {
+        u8 bits = getRegBits();
+        return getRegisterIndex(bits, size);
+    }
+
+    DisplacementType ModRegRm::getDisplacementType() const {
+        u8 bits = getRmBits();
+
+        switch(bits) {
+        case 0b000: return BX_SI_DISPLACEMENT;
+        case 0b001: return BX_DI_DISPLACEMENT;
+        case 0b010: return BP_SI_DISPLACEMENT;
+        case 0b011: return BP_DI_DISPLACEMENT;
+        case 0b100: return SI_DISPLACEMENT;
+        case 0b101: return DI_DISPLACEMENT;
+        case 0b110: return BP_DISPLACEMENT;
+        case 0b111: return BX_DISPLACEMENT;
+        }
+
+        logging::warning("Invalid displacement type specified by R/M component of MOD-REG-R/M byte: " +
+                         convert::toBinaryString(bits));
+        return BX_SI_DISPLACEMENT;
+    }
+
+    GeneralRegister ModRegRm::getRegisterIndex(u8 bits, DataSize size) const {
         if(size == BYTE_DATA_SIZE) {
             switch(bits) {
             case 0b000: // AL
@@ -50,27 +96,8 @@ namespace emu::cpu::instr {
             }
         }
 
-        logging::warning("Invalid register specified by REG component of MOD-REG-R/M byte: " +
-                         std::to_string(bits)); // TODO: Display as binary.
+        logging::warning("Invalid register specified by component of MOD-REG-R/M byte: " +
+                         convert::toBinaryString(bits));
         return AX_REGISTER;
-    }
-
-    u8 ModRegRm::getModBits() const {
-        return convert::getBitsFrom(value, 6, 2);
-    }
-
-    AddressingMode ModRegRm::getAddressingMode() const {
-        u8 bits = getModBits();
-
-        switch(bits) {
-        case 0b00: return NO_DISPLACEMENT;
-        case 0b01: return BYTE_DISPLACEMENT;
-        case 0b10: return WORD_DISPLACEMENT;
-        case 0b11: return REGISTER_ADDRESSING_MODE;
-        }
-
-        logging::warning("Invalid addressing mode specified by R/M component of MOD-REG-R/M byte: " +
-                         std::to_string(bits)); // TODO: Display bits as binary.
-        return NO_DISPLACEMENT;
     }
 }

@@ -3,32 +3,8 @@
 #include "logging.hpp"
 
 namespace emu::cpu::instr {
-    Instruction::Instruction(std::string instrIdentifier, Opcode instrOpcode, std::unique_ptr<ModRegRm> modRegRm,
-                             std::unique_ptr<Displacement> displacement, std::unique_ptr<Immediate> immediate)
-    : identifier(instrIdentifier), opcode(instrOpcode), modRegRmByte(std::move(modRegRm)),
-      displacementValue(std::move(displacement)), immediateValue(std::move(immediate)) {}
-
-    OffsetAddr Instruction::execute(OffsetAddr instructionPointer, // Other args are unused and therefore are not named.
-                                    Mem&, GeneralRegs&, IndexRegs&, SegmentRegs&, Flags&) {
-        logging::warning("Executing instruction that has not overriden the default execution method!");
-
-        return instructionPointer + getRawSize();
-    }
-
-    std::string Instruction::toAssembly() const {
-        return identifier; // TODO: Convert to assembly properly.
-    }
-
-    std::vector<u8> Instruction::getRawData() const {
-        std::vector<u8> data;
-
-        data.push_back(opcode.value);
-        if(modRegRmByte) data.push_back(modRegRmByte->value);
-        if(displacementValue) convert::extendVector(data, displacementValue->rawData);
-        if(immediateValue) convert::extendVector(data, immediateValue->rawData);
-
-        return data;
-    }
+    Instruction::Instruction(std::string instrIdentifier, Opcode instrOpcode)
+    : identifier(instrIdentifier), opcode(instrOpcode) {}
 
     std::string Instruction::getRawDataString(std::string separator) const {
         auto raw = getRawData();
@@ -45,5 +21,87 @@ namespace emu::cpu::instr {
     OffsetAddr Instruction::getRawSize() const {
         std::size_t size = getRawData().size();
         return static_cast<OffsetAddr>(size);
+    }
+
+
+
+    InstructionWithModRegRm::InstructionWithModRegRm(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm)
+    : Instruction(instrIdentifier, instrOpcode), modRegRmByte(modRegRm) {}
+
+    OffsetAddr InstructionWithModRegRm::execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters, SegmentRegs&,
+                                                Flags&) {
+        auto dataSize = opcode.getDataSize();
+        auto addressingMode = modRegRmByte.getAddressingMode();
+        auto reg = modRegRmByte.getRegisterIndexFromReg(dataSize);
+
+        if(addressingMode == REGISTER_ADDRESSING_MODE) {
+            auto rm = modRegRmByte.getRegisterIndexFromRm(dataSize);
+            callHandlerWithCorrectOrdering(reg, rm, memory, generalRegisters);
+        }
+        else if(displacement) { // Using an address as an argument instead of an additional register.
+            u16 displacementValue;
+
+            switch(addressingMode) {
+            case BYTE_DISPLACEMENT:
+                displacementValue = static_cast<u16>(displacement->getByteValue());
+                break;
+            
+            case WORD_DISPLACEMENT:
+                displacementValue = displacement->getWordValue();
+                break;
+
+            default: // No displacement.
+                displacementValue = 0;
+            }
+
+            AbsAddr address = resolveDisplacementToAddress(displacementValue, generalRegisters);
+            u8 memoryValue = memory.read(address);
+
+            callHandlerWithCorrectOrdering(reg, memoryValue, memory, generalRegisters);
+        }
+
+        return ip + getRawSize();
+    }
+
+    std::vector<u8> InstructionWithModRegRm::getRawData() const {
+        std::vector<u8> raw = { opcode.value, modRegRmByte.value };
+        if(displacement) convert::extendVector(raw, displacement->rawData);
+        return raw;
+    }
+
+    AbsAddr InstructionWithModRegRm::resolveDisplacementToAddress(u16 displacementValue, GeneralRegs& registers) const {
+        switch(modRegRmByte.getDisplacementType()) {
+        case BX_SI_DISPLACEMENT:
+            return registers.get(BX_REGISTER) +
+                   registers.get(SOURCE_INDEX) +
+                   displacementValue;
+
+        case BX_DI_DISPLACEMENT:
+            return registers.get(BX_REGISTER) +
+                   registers.get(DESTINATION_INDEX) +
+                   displacementValue;
+
+        case BP_SI_DISPLACEMENT:
+            return registers.get(BASE_POINTER) +
+                   registers.get(SOURCE_INDEX) +
+                   displacementValue;
+
+        case BP_DI_DISPLACEMENT:
+            return registers.get(BASE_POINTER) +
+                   registers.get(DESTINATION_INDEX) +
+                   displacementValue;
+
+        case SI_DISPLACEMENT:
+            return registers.get(SOURCE_INDEX) + displacementValue;
+
+        case DI_DISPLACEMENT:
+            return registers.get(DESTINATION_INDEX) + displacementValue;
+
+        case BP_DISPLACEMENT:
+            return registers.get(BASE_POINTER) + displacementValue;
+
+        default:
+            return registers.get(BX_REGISTER) + displacementValue;
+        }
     }
 }

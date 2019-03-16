@@ -13,6 +13,9 @@ namespace emu::cpu::instr {
          */
         Immediate(std::vector<u8> raw);
 
+        u8 getByteValue() const;
+        u16 getWordValue() const;
+
         const std::vector<u8> rawData;
     };
 

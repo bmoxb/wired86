@@ -166,15 +166,11 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
 
         REQUIRE(byte.getRegBits() == 0b101);
         
-        auto wordReg = byte.getRegisterIndex(instr::WORD_DATA_SIZE);
-        
-        REQUIRE(std::holds_alternative<IndexRegister>(wordReg));
-        REQUIRE(std::get<IndexRegister>(wordReg) == BASE_POINTER);
+        auto wordReg = byte.getRegisterIndexFromReg(instr::WORD_DATA_SIZE);
+        REQUIRE(wordReg == BASE_POINTER);
 
-        auto byteReg = byte.getRegisterIndex(instr::BYTE_DATA_SIZE);
-        
-        REQUIRE(std::holds_alternative<GeneralRegister>(byteReg));
-        REQUIRE(std::get<GeneralRegister>(byteReg) == CX_REGISTER);
+        auto byteReg = byte.getRegisterIndexFromReg(instr::BYTE_DATA_SIZE);
+        REQUIRE(byteReg == CX_REGISTER);
         
         REQUIRE(byte.getModBits() == 0b10);
         REQUIRE(byte.getAddressingMode() == instr::WORD_DISPLACEMENT);
@@ -185,16 +181,5 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
         instr::Immediate first(firstData);
         
         REQUIRE(first.rawData == firstData);
-    }
-
-    SECTION("Test instruction objects.") {
-        std::vector<u8> raw = { 0xAA, 0xBB };
-        instr::Instruction instruction("example",
-                                       instr::Opcode(raw[0]),
-                                       std::make_unique<instr::ModRegRm>(raw[1]));
-        
-        REQUIRE(instruction.getRawData() == raw);
-        REQUIRE(instruction.getRawSize() == raw.size());
-        REQUIRE(instruction.getRawDataString(" ") == "0xAA 0xBB");
     }
 }

@@ -25,9 +25,6 @@ namespace emu {
     /// cpu::RegistersLowHigh template using cpu::GeneralRegister as indexes.
     using GeneralRegs = cpu::RegistersLowHigh<cpu::GeneralRegister>;
 
-    /// cpu::Registers template using cpu::IndexRegister and RegSize as arguments.
-    using IndexRegs = cpu::Registers<cpu::IndexRegister, RegSize>;
-
     /// cpu::Registers template using cpu::SegmentRegister and RegSize as arguments.
     using SegmentRegs = cpu::Registers<cpu::SegmentRegister, RegSize>;
 

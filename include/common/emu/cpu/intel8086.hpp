@@ -33,7 +33,7 @@ namespace emu::cpu {
          *
          * @param addr The absolute address of the instruction to fetch and decode.
          * @param memory Reference to the memory to fetch the instruction data from.
-         * @return Decoded instruction object.
+         * @return Decoded instruction object (will be empty if instruction decoding fails).
          */
         std::unique_ptr<instr::Instruction> fetchDecodeInstruction(AbsAddr address, const Mem& memory) const;
 
@@ -49,7 +49,6 @@ namespace emu::cpu {
         OffsetAddr instructionPointer = 0;
 
         GeneralRegs generalRegisters;
-        IndexRegs indexRegisters;
         SegmentRegs segmentRegisters;
         Flags flags;
     };

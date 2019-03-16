@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <memory>
+#include <optional>
 #include "emu/types.hpp"
 #include "emu/cpu/instr/opcode.hpp"
 #include "emu/cpu/instr/modregrm.hpp"
@@ -16,15 +16,13 @@ namespace emu::cpu::instr {
          *
          * @param instrIdentifier Assembly code identifier for this instruction (e.g. "mov").
          * @param instrOpcode The Opcode object of this instruction.
-         * @param modRegRm Optional unique pointer to a MOD-REG-R/M object.
-         * @param displacement Optional unique pointer to a Displacement object.
-         * @param immediate Optional unique pointer to an Immediate object.
          */
-        Instruction(std::string instrIdentifier, Opcode instrOpcode, std::unique_ptr<ModRegRm> modRegRm = {},
-                    std::unique_ptr<Displacement> displacement = {}, std::unique_ptr<Immediate> immediate = {});
+        Instruction(std::string instrIdentifier, Opcode instrOpcode);
 
         /**
          * Execute this instruction using the given CPU internal values.
+         *
+         * Is pure virtual and must therefore be overriden by subclasses.
          *
          * It is the role of this method to return the appropriate instruction pointer value so that the correct next
          * instruction is executed. Unless a jumping/calling instruction, in most instances it is best to return the
@@ -38,21 +36,27 @@ namespace emu::cpu::instr {
          * @param flags Reference to the CPU's status flags.
          * @return The new instruction pointer value after completing execution.
          */
-        virtual OffsetAddr execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters, IndexRegs& indexRegisters,
-                                   SegmentRegs& segmentRegisters, Flags& flags);
+        virtual OffsetAddr execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters,
+                                   SegmentRegs& segmentRegisters, Flags& flags) = 0;
 
         /**
          * Disassemble this instruction into Intel-syntax assembly code. Returns this as a string.
+         *
+         * Is pure virtual and must therefore be overriden by subclasses.
          */
-        std::string toAssembly() const;
+        virtual std::string toAssembly() const = 0;
 
         /**
          * Fetch the raw 8-bit values that make this instruction include the opcode value.
+         *
+         * Is pure virtual and must therefore be overriden by subclasses.
          */
-        std::vector<u8> getRawData() const;
+        virtual std::vector<u8> getRawData() const = 0;
 
         /**
          * Fetch the raw 8-bit values that make up this instruction expressed as a string.
+         *
+         * @param separator The separating string placed between each binary value in the string representation.
          */
         std::string getRawDataString(std::string separator = ", ") const;
 
@@ -63,10 +67,50 @@ namespace emu::cpu::instr {
 
         const std::string identifier;
         const Opcode opcode;
+    };
+
+    /**
+     * Used to represent instructions that take a general-purpose register as a first argument and either a register or
+     * a memory offset as a second.
+     */
+    class InstructionWithModRegRm : public Instruction {
+    public:
+        InstructionWithModRegRm(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm);
+
+        OffsetAddr execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters, SegmentRegs&,
+                           Flags&) override final;
+
+        std::vector<u8> getRawData() const override final;
+
+        virtual void handleExecution(GeneralRegister destination, GeneralRegister source,
+                                     Mem& memory, GeneralRegs& registers) = 0;
+        
+        virtual void handleExecution(GeneralRegister destination, AbsAddr source,
+                                     Mem& memory, GeneralRegs& registers) = 0;
+       
+        virtual void handleExecution(AbsAddr destination, GeneralRegister source,
+                                     Mem& memory, GeneralRegs& registers) = 0;
 
     protected:
-        std::unique_ptr<ModRegRm> modRegRmByte;
-        std::unique_ptr<Displacement> displacementValue;
-        std::unique_ptr<Immediate> immediateValue;
+        ModRegRm modRegRmByte;
+        std::optional<Displacement> displacement;
+
+    private:
+        AbsAddr resolveDisplacementToAddress(u16 displacementValue, GeneralRegs& registers) const;
+
+        /**
+         * Calls a InstructionWithModRegRm::handleExecution method with arguments given in ordering based upon the
+         * direction specified by the opcode.
+         */
+        template <typename T>
+        void callHandlerWithCorrectOrdering(GeneralRegister reg, T other, Mem& memory, GeneralRegs& registers) {
+            switch(opcode.getDirection()) {
+            case REG_IS_SOURCE:
+                    handleExecution(other, reg, memory, registers); break;
+            
+            case REG_IS_DESTINATION:
+                handleExecution(reg, other, memory, registers); break;
+            }
+        }
     };
 }

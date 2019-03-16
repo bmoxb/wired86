@@ -11,10 +11,7 @@ namespace emu::cpu {
         AX_REGISTER,
         BX_REGISTER,
         CX_REGISTER,
-        DX_REGISTER
-    };
-
-    enum IndexRegister {
+        DX_REGISTER,
         SOURCE_INDEX,
         DESTINATION_INDEX,
         BASE_POINTER,
