@@ -25,10 +25,10 @@ namespace emu::cpu::instr {
 
 
 
-    InstructionWithModRegRm::InstructionWithModRegRm(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm)
+    InstructionGE::InstructionGE(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm)
     : Instruction(instrIdentifier, instrOpcode), modRegRmByte(modRegRm) {}
 
-    OffsetAddr InstructionWithModRegRm::execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters, SegmentRegs&,
+    OffsetAddr InstructionGE::execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters, SegmentRegs&,
                                                 Flags&) {
         auto dataSize = opcode.getDataSize();
         auto addressingMode = modRegRmByte.getAddressingMode();
@@ -49,7 +49,7 @@ namespace emu::cpu::instr {
         return ip + getRawSize();
     }
 
-    std::vector<u8> InstructionWithModRegRm::getRawData() const {
+    std::vector<u8> InstructionGE::getRawData() const {
         std::vector<u8> raw = { opcode.value, modRegRmByte.value };
         if(displacement) convert::extendVector(raw, displacement->rawData);
         return raw;

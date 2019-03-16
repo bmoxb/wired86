@@ -73,9 +73,9 @@ namespace emu::cpu::instr {
      * Used to represent instructions that take a general-purpose register as a first argument and either a register or
      * a memory offset as a second.
      */
-    class InstructionWithModRegRm : public Instruction {
+    class InstructionGE : public Instruction {
     public:
-        InstructionWithModRegRm(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm);
+        InstructionGE(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm);
 
         OffsetAddr execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters, SegmentRegs&,
                            Flags&) override final;
@@ -97,7 +97,7 @@ namespace emu::cpu::instr {
 
     private:
         /**
-         * Calls a InstructionWithModRegRm::handleExecution method with arguments given in ordering based upon the
+         * Calls a InstructionGE::handleExecution method with arguments given in ordering based upon the
          * direction specified by the opcode.
          */
         template <typename T>
