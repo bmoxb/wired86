@@ -68,47 +68,4 @@ namespace emu::cpu::instr {
         const std::string identifier;
         const Opcode opcode;
     };
-
-    /**
-     * Used to represent instructions that take a general-purpose register as a first argument and either a register or
-     * a memory offset as a second.
-     */
-    class InstructionGE : public Instruction {
-    public:
-        InstructionGE(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm);
-
-        OffsetAddr execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters, SegmentRegs&,
-                           Flags&) override final;
-
-        std::vector<u8> getRawData() const override final;
-
-        virtual void handleExecution(GeneralRegister destination, GeneralRegister source,
-                                     Mem& memory, GeneralRegs& registers) = 0;
-        
-        virtual void handleExecution(GeneralRegister destination, AbsAddr source,
-                                     Mem& memory, GeneralRegs& registers) = 0;
-       
-        virtual void handleExecution(AbsAddr destination, GeneralRegister source,
-                                     Mem& memory, GeneralRegs& registers) = 0;
-
-    protected:
-        ModRegRm modRegRmByte;
-        std::optional<Displacement> displacement;
-
-    private:
-        /**
-         * Calls a InstructionGE::handleExecution method with arguments given in ordering based upon the
-         * direction specified by the opcode.
-         */
-        template <typename T>
-        void callHandlerWithCorrectOrdering(GeneralRegister reg, T other, Mem& memory, GeneralRegs& registers) {
-            switch(opcode.getDirection()) {
-            case REG_IS_SOURCE:
-                    handleExecution(other, reg, memory, registers); break;
-            
-            case REG_IS_DESTINATION:
-                handleExecution(reg, other, memory, registers); break;
-            }
-        }
-    };
 }

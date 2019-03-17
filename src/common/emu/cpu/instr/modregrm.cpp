@@ -34,13 +34,19 @@ namespace emu::cpu::instr {
     }
 
     GeneralRegister ModRegRm::getRegisterIndexFromRm(DataSize size) const {
-        u8 bits = getRmBits();
-        return getRegisterIndex(bits, size);
+        return getRegisterIndex(getRmBits(), size);
+    }
+
+    RegisterPart ModRegRm::getRegisterPartFromRm(DataSize size) const {
+        return getRegisterPart(getRmBits(), size);
     }
 
     GeneralRegister ModRegRm::getRegisterIndexFromReg(DataSize size) const {
-        u8 bits = getRegBits();
-        return getRegisterIndex(bits, size);
+        return getRegisterIndex(getRegBits(), size);
+    }
+
+    RegisterPart ModRegRm::getRegisterPartFromReg(DataSize size) const {
+        return getRegisterPart(getRegBits(), size);
     }
 
     DisplacementType ModRegRm::getDisplacementType() const {
@@ -99,5 +105,30 @@ namespace emu::cpu::instr {
         logging::warning("Invalid register specified by component of MOD-REG-R/M byte: " +
                          convert::toBinaryString(bits));
         return AX_REGISTER;
+    }
+
+    RegisterPart ModRegRm::getRegisterPart(u8 bits, DataSize size) const {
+        if(size == BYTE_DATA_SIZE) {
+            switch(bits) {
+            case 0b000: // AL
+            case 0b001: // CL
+            case 0b010: // DL
+            case 0b011: // BL
+                return LOW_BYTE;
+
+            case 0b100: // AH
+            case 0b101: // CH
+            case 0b110: // DH
+            case 0b111: // BH
+                return HIGH_BYTE;
+            }
+        }
+
+        if(size == WORD_DATA_SIZE && bits <= 0b111) // Ensure no more than 3 bits are passed.
+            return FULL_WORD;
+
+        logging::warning("Invalid register part specified by component of MOD-REG-R/M byte: " +
+                         convert::toBinaryString(bits));
+        return FULL_WORD;
     }
 }

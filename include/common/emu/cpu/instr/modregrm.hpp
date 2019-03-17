@@ -54,9 +54,20 @@ namespace emu::cpu::instr {
         GeneralRegister getRegisterIndexFromRm(DataSize size) const;
 
         /**
+         * Returns the appropriate register part based on the value of the R/M component.
+         * Only relevant when using register addressing mode.
+         */
+        RegisterPart getRegisterPartFromRm(DataSize size) const;
+
+        /**
          * Get the appropriate register index based on the value of the REG component.
          */
         GeneralRegister getRegisterIndexFromReg(DataSize size) const;
+
+        /**
+         * Returns the appropriate register part based on the value of the REG component.
+         */
+        RegisterPart getRegisterPartFromReg(DataSize size) const;
 
         /**
          * Returns the appropriate displacement type based on the value of the R/M component.
@@ -67,12 +78,22 @@ namespace emu::cpu::instr {
 
     private:
         /**
-         * Return the appropriate register index based on 3 bits given and the data size.
+         * Returns the appropriate register index based on 3 bits given and the data size.
          *
          * @param The 3 bits of either a REG or R/M component that specify a register.
          * @param size The data size handled by this instruction (16-bit word or 8-bit byte).
          * @return A general register index.
          */
         GeneralRegister getRegisterIndex(u8 bits, DataSize size) const;
+
+        /**
+         * Returns the appropriate register part (low byte, high byte, or full word) based on the 3 bits given and the
+         * the data size. Will always return full word when given a 16-bit data size option.
+         *
+         * @param The 3 bits of either a REG or R/M component that specify a register.
+         * @param size The data size handled by this instruction (16-bit word or 8-bit byte).
+         * @return A register part.
+         */
+        RegisterPart getRegisterPart(u8 bits, DataSize size) const;
     };
 }
