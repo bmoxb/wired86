@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "emu/types.hpp"
 #include "emu/cpu/instr/instruction.hpp"
 
@@ -22,7 +23,7 @@ namespace emu::cpu {
 
         /**
          * Calculate the address of the next instruction in memory based on the value of the instruction pointer and the
-         * code segment.
+         * code segment. Does not increment instruction pointer - that is done on execution.
          *
          * @return Address of next instruction.
          */
@@ -44,12 +45,33 @@ namespace emu::cpu {
          */
         void executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory);
 
+        /**
+         * Push values onto the stack. Stack pointer decremented.
+         */
+        void pushToStack(MemValue value, Mem& memory);
+
+        /**
+         * Pop values from the stack. Stack pointer incremented.
+         */
+        MemValue popFromStack(Mem& memory);
+
+        /**
+         * Push a 16-bit word value onto the stack.
+         */
+        void pushWordToStack(u16 value, Mem& memory);
+
+        /**
+         * Pop 16-bit word value off the stack.
+         */
+        u16 popWordFromStack(Mem& memory);
+
+        GeneralRegs generalRegisters;
+        SegmentRegs segmentRegisters;
+
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
         OffsetAddr instructionPointer = 0;
 
-        GeneralRegs generalRegisters;
-        SegmentRegs segmentRegisters;
         Flags flags;
     };
 }

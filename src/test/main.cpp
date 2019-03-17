@@ -5,8 +5,10 @@
 #include <memory>
 #include "primitives.hpp"
 #include "convert.hpp"
+#include "emu/types.hpp"
 #include "emu/memory.hpp"
 #include "emu/cpu/registers.hpp"
+#include "emu/cpu/intel8086.hpp"
 #include "emu/cpu/instr/instruction.hpp"
 
 TEST_CASE("Tests conversions.", "[conversions]") {
@@ -219,5 +221,46 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
         REQUIRE(first.rawData == firstData);
         REQUIRE(first.getByteValue() == 0xAA);
         REQUIRE(first.getWordValue() == 0xBBAA);
+    }
+}
+
+TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
+    SECTION("Test CPU stack handling.") {
+        emu::Mem memory(0xFF);
+
+        emu::cpu::Intel8086 cpu;
+        cpu.generalRegisters.set(emu::cpu::STACK_POINTER, 20);
+        cpu.segmentRegisters.set(emu::cpu::STACK_SEGMENT, 0);
+
+        cpu.pushToStack(0xAB, memory);
+        cpu.pushToStack(0xCD, memory);
+        cpu.pushToStack(0xEF, memory);
+
+        REQUIRE(cpu.popFromStack(memory) == 0xEF);
+        REQUIRE(cpu.popFromStack(memory) == 0xCD);
+        REQUIRE(cpu.popFromStack(memory) == 0xAB);
+
+        cpu.pushWordToStack(0xABCD, memory);
+        REQUIRE(cpu.popWordFromStack(memory) == 0xABCD);
+    }
+
+    SECTION("Test stack instructions.") {
+        constexpr u16 VALUE = 0xABCD;
+
+        emu::Mem memory(0xFF);
+
+        emu::cpu::Intel8086 cpu;
+        cpu.generalRegisters.set(emu::cpu::STACK_POINTER, 0xAA);
+        cpu.generalRegisters.set(emu::cpu::AX_REGISTER, VALUE);
+
+        memory.write(0, 0x50); // PUSH AX
+        auto pushAx = cpu.fetchDecodeInstruction(0, memory);
+        cpu.executeInstruction(pushAx, memory);
+
+        memory.write(0, 0x5B); // POP BX
+        auto popBx = cpu.fetchDecodeInstruction(0, memory);
+        cpu.executeInstruction(popBx, memory);
+
+        REQUIRE(cpu.generalRegisters.get(emu::cpu::BX_REGISTER) == VALUE);
     }
 }

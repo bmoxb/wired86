@@ -10,7 +10,7 @@ namespace emu::cpu::instr {
     }
 
     u16 Immediate::getWordValue() const {
-        return convert::createWordFromBytes(rawData[0], rawData[1]);
+        return convert::createWordFromBytes(rawData.at(0), rawData.at(1));
     }
 
     AbsAddr Displacement::resolve(AddressingMode mode, DisplacementType type, GeneralRegs& registers) const {

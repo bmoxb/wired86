@@ -7,6 +7,9 @@
 #include "emu/cpu/instr/modregrm.hpp"
 #include "emu/cpu/instr/immediate.hpp"
 
+namespace emu::cpu { class Intel8086; } // Declared as incomplete type as including the CPU header here would cause a
+                                        // circular dependency.
+
 namespace emu::cpu::instr {
     class Instruction {
     public:
@@ -21,7 +24,7 @@ namespace emu::cpu::instr {
         /**
          * Execute this instruction using the given CPU internal values.
          *
-         * Is pure virtual and must therefore be overriden by subclasses.
+         * Is pure virtual and must therefore be overridden by subclasses.
          *
          * It is the role of this method to return the appropriate instruction pointer value so that the correct next
          * instruction is executed. Unless a jumping/calling instruction, in most instances it is best to return the
@@ -35,13 +38,13 @@ namespace emu::cpu::instr {
          * @param flags Reference to the CPU's status flags.
          * @return The new instruction pointer value after completing execution.
          */
-        virtual OffsetAddr execute(OffsetAddr ip, Mem& memory, GeneralRegs& generalRegisters,
-                                   SegmentRegs& segmentRegisters, Flags& flags) = 0;
+        virtual OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
+                                   GeneralRegs& generalRegisters, SegmentRegs& segmentRegisters, Flags& flags) = 0;
 
         /**
          * Disassemble this instruction into Intel-syntax assembly code. Returns this as a string.
          *
-         * Is pure virtual and must therefore be overriden by subclasses.
+         * Is pure virtual and must therefore be overridden by subclasses.
          */
         virtual std::string toAssembly() const = 0;
 
