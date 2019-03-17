@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <optional>
 #include "emu/types.hpp"
 #include "emu/cpu/instr/opcode.hpp"
 #include "emu/cpu/instr/modregrm.hpp"
@@ -49,9 +48,10 @@ namespace emu::cpu::instr {
         /**
          * Fetch the raw 8-bit values that make this instruction include the opcode value.
          *
-         * Is pure virtual and must therefore be overriden by subclasses.
+         * By default, only returns the opcode raw value. More complex instructions that take a MOD-REG-R/M byte,
+         * displacement value or immediate value should override this method.
          */
-        virtual std::vector<u8> getRawData() const = 0;
+        virtual std::vector<u8> getRawData() const;
 
         /**
          * Fetch the raw 8-bit values that make up this instruction expressed as a string.
@@ -67,5 +67,29 @@ namespace emu::cpu::instr {
 
         const std::string identifier;
         const Opcode opcode;
+    };
+
+    /**
+     * For representing instructions taking a single specific register that is not specified by a MOD-REG-R/M byte.
+     *
+     * Examples:
+     * - PUSH ES (0x06)
+     * - INC AX (0x40)
+     * - PUSH BP (0x55)
+     */
+    class InstructionTakingRegister : public Instruction {
+    public:
+        /**
+         * @param reg The register index that this instruction takes as an argument.
+         * @param part The register part used by this instruction (defaults to using the full 16-bit register).
+         */
+        InstructionTakingRegister(std::string instrIdentifier, Opcode instrOpcode,
+                                  GeneralRegister reg, RegisterPart part = FULL_WORD);
+
+        std::string toAssembly() const override;
+
+    protected:
+        const GeneralRegister registerIndex;
+        const RegisterPart registerPart;
     };
 }

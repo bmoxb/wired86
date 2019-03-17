@@ -6,6 +6,10 @@ namespace emu::cpu::instr {
     Instruction::Instruction(std::string instrIdentifier, Opcode instrOpcode)
     : identifier(instrIdentifier), opcode(instrOpcode) {}
 
+    std::vector<u8> Instruction::getRawData() const {
+        return { opcode.value };
+    }
+
     std::string Instruction::getRawDataString(std::string separator) const {
         auto raw = getRawData();
         std::string str;
@@ -21,5 +25,16 @@ namespace emu::cpu::instr {
     OffsetAddr Instruction::getRawSize() const {
         std::size_t size = getRawData().size();
         return static_cast<OffsetAddr>(size);
+    }
+
+
+
+    InstructionTakingRegister::InstructionTakingRegister(std::string instrIdentifier, Opcode instrOpcode,
+                                                         GeneralRegister reg, RegisterPart part)
+    : Instruction(instrIdentifier, instrOpcode),
+      registerIndex(reg), registerPart(part) {}
+
+    std::string InstructionTakingRegister::toAssembly() const {
+        return identifier + " ..."; // TODO: Get string identifier for the register.
     }
 }
