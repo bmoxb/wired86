@@ -95,4 +95,32 @@ namespace emu::cpu::instr {
         const GeneralRegister registerIndex;
         const RegisterPart registerPart;
     };
+
+    /**
+     * Instructions that take a general-purpose register as an argument and either a general-purpose register or a
+     * memory address as its other argument.
+     *
+     * Examples:
+     * - ADD Eb Gb (0x00)
+     * - MOV Eb Gb (0x88)
+     */
+    class InstructionTakingRegAndRegOrAddr : public Instruction {
+    public:
+        InstructionTakingRegAndRegOrAddr(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm,
+                                         std::optional<Displacement> displacement = {});
+
+        OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
+                           GeneralRegs& generalRegisters, SegmentRegs& segmentRegisters, Flags& flags) override;
+
+        std::string toAssembly() const override;
+
+    protected:
+        virtual void handleExecution(GeneralRegister destination, GeneralRegister source) = 0;
+        virtual void handleExecution(GeneralRegister destination, AbsAddr source) = 0;
+        virtual void handleExecution(AbsAddr destination, GeneralRegister source) = 0;
+
+    private:
+        const ModRegRm modRegRmByte;
+        const std::optional<Displacement> displacementValue;
+    };
 }

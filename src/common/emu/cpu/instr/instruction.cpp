@@ -37,4 +37,12 @@ namespace emu::cpu::instr {
     std::string InstructionTakingRegister::toAssembly() const {
         return identifier + " ..."; // TODO: Get string identifier for the register.
     }
+
+
+
+    InstructionTakingRegAndRegOrAddr::InstructionTakingRegAndRegOrAddr(std::string instrIdentifier, Opcode instrOpcode,
+                                                                       ModRegRm modRegRm,
+                                                                       std::optional<Displacement> displacement)
+    : Instruction(instrIdentifier, instrOpcode, modRegRm),
+      displacementValue(displacement) {}
 }
