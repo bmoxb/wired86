@@ -1,5 +1,6 @@
 #include "emu/cpu/instr/instruction.hpp"
 
+#include <functional>
 #include "logging.hpp"
 
 namespace emu::cpu::instr {
@@ -7,19 +8,14 @@ namespace emu::cpu::instr {
     : identifier(instrIdentifier), opcode(instrOpcode) {}
 
     std::vector<u8> Instruction::getRawData() const {
-        return { opcode.value };
+        return { opcode.value }; // By default, only the opcode value is returned as raw data.
     }
 
     std::string Instruction::getRawDataString(std::string separator) const {
-        auto raw = getRawData();
-        std::string str;
-
-        for(unsigned int i = 0; i < raw.size() - 1; i++)
-            str += convert::toHexString(raw[i]) + separator; // Add all elements (except the final one) with separator.
+        std::vector<u8> raw = getRawData();
+        std::function<std::string(u8)> convert = [](u8 value) { return convert::toBinaryString(value); };
         
-        str += convert::toHexString(raw[raw.size() - 1]); // Add final element (no separator).
-
-        return str;
+        return convert::vectorToString(raw, convert, separator);
     }
 
     OffsetAddr Instruction::getRawSize() const {
@@ -43,6 +39,6 @@ namespace emu::cpu::instr {
     InstructionTakingRegAndRegOrAddr::InstructionTakingRegAndRegOrAddr(std::string instrIdentifier, Opcode instrOpcode,
                                                                        ModRegRm modRegRm,
                                                                        std::optional<Displacement> displacement)
-    : Instruction(instrIdentifier, instrOpcode, modRegRm),
-      displacementValue(displacement) {}
+    : Instruction(instrIdentifier, instrOpcode),
+      modRegRmByte(modRegRm), displacementValue(displacement) {}
 }

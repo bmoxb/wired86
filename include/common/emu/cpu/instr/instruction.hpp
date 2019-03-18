@@ -109,10 +109,10 @@ namespace emu::cpu::instr {
         InstructionTakingRegAndRegOrAddr(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm,
                                          std::optional<Displacement> displacement = {});
 
-        OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
-                           GeneralRegs& generalRegisters, SegmentRegs& segmentRegisters, Flags& flags) override;
+        //OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
+        //                   GeneralRegs& generalRegisters, SegmentRegs& segmentRegisters, Flags& flags) override;
 
-        std::string toAssembly() const override;
+        //std::string toAssembly() const override;
 
     protected:
         virtual void handleExecution(GeneralRegister destination, GeneralRegister source) = 0;

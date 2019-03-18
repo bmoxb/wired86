@@ -4,6 +4,7 @@
 #include <sstream>
 #include <bitset>
 #include <vector>
+#include <functional>
 #include "primitives.hpp"
 
 namespace convert {
@@ -39,6 +40,29 @@ namespace convert {
      * @return Either the string "1" or "0".
      */
     std::string bitAsStr(bool bit);
+
+    /**
+     * Convert a vector of items into a single string.
+     *
+     * @tparam T Type used by the vector.
+     * @param items The vector to convert to string.
+     * @param convertFunction A function for converting each item in the vector to a string.
+     * @param separator The string placed between the string representation of each item in the vector.
+     * @return The string representation of the given vector.
+     */
+    template <typename T>
+    std::string vectorToString(const std::vector<T> &items, std::function<std::string(T)> convertFunction,
+                               std::string separator = ", ") {
+        std::string str;
+        auto size = items.size();
+
+        for(unsigned int i = 0; i < size - 1; i++)
+            str += convertFunction(items[i]) + separator; // Add all elements (except the final one) with separator.
+        
+        str += convertFunction(items[size - 1]); // Add final element (no separator).
+
+        return str;
+    }
 
     /**
      * Take an existing vector and extend it by the values in a second vector.

@@ -57,6 +57,13 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         extendVector<u16>(vec, extendBy);
         REQUIRE(vec == expected);
     }
+
+    SECTION("Test conversion between vector to string.") {
+        std::vector<u16> values = { 0xAA, 0xBB, 0xCC };
+        std::function<std::string(u16)> convert = [](auto value) { return toHexString(value); };
+        
+        REQUIRE(vectorToString(values, convert, " ") == "0xAA 0xBB 0xCC");
+    }
 }
 
 TEST_CASE("Test emulator memory.", "[emu][memory]") {
