@@ -38,15 +38,17 @@ namespace emu::cpu::instr {
          * @param flags Reference to the CPU's status flags.
          * @return The new instruction pointer value after completing execution.
          */
-        virtual OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
-                                   GeneralRegs& generalRegisters, SegmentRegs& segmentRegisters, Flags& flags) = 0;
+        virtual OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory, reg::GeneralRegisters& generalRegisters,
+                                   reg::SegmentRegisters& segmentRegisters, reg::Flags& flags) = 0;
 
         /**
          * Disassemble this instruction into Intel-syntax assembly code. Returns this as a string.
          *
          * Is pure virtual and must therefore be overridden by subclasses.
          */
-        virtual std::string toAssembly() const = 0;
+        virtual std::string toAssembly(const reg::GeneralRegisters& generalRegisters,
+                                       const reg::SegmentRegisters& segmentRegisters,
+                                       const reg::Flags& flags) const = 0;
 
         /**
          * Fetch the raw 8-bit values that make this instruction include the opcode value.
@@ -83,17 +85,18 @@ namespace emu::cpu::instr {
     class InstructionTakingRegister : public Instruction {
     public:
         /**
-         * @param reg The register index that this instruction takes as an argument.
+         * @param generalReg The register index that this instruction takes as an argument.
          * @param part The register part used by this instruction (defaults to using the full 16-bit register).
          */
-        InstructionTakingRegister(std::string instrIdentifier, Opcode instrOpcode,
-                                  GeneralRegister reg, RegisterPart part = FULL_WORD);
+        InstructionTakingRegister(std::string instrIdentifier, Opcode instrOpcode, reg::GeneralRegister generalReg,
+                                  reg::RegisterPart part = reg::FULL_WORD);
 
-        std::string toAssembly() const override;
+        std::string toAssembly(const reg::GeneralRegisters& generalRegisters, const reg::SegmentRegisters&,
+                               const reg::Flags&) const override;
 
     protected:
-        const GeneralRegister registerIndex;
-        const RegisterPart registerPart;
+        const reg::GeneralRegister registerIndex;
+        const reg::RegisterPart registerPart;
     };
 
     /**
@@ -115,9 +118,9 @@ namespace emu::cpu::instr {
         //std::string toAssembly() const override;
 
     protected:
-        virtual void handleExecution(GeneralRegister destination, GeneralRegister source) = 0;
-        virtual void handleExecution(GeneralRegister destination, AbsAddr source) = 0;
-        virtual void handleExecution(AbsAddr destination, GeneralRegister source) = 0;
+        virtual void handleExecution(reg::GeneralRegister destination, reg::GeneralRegister source) = 0;
+        virtual void handleExecution(reg::GeneralRegister destination, AbsAddr source) = 0;
+        virtual void handleExecution(AbsAddr destination, reg::GeneralRegister source) = 0;
 
     private:
         const ModRegRm modRegRmByte;

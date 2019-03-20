@@ -3,7 +3,6 @@
 #include <memory>
 #include "primitives.hpp"
 #include "emu/memory.hpp"
-#include "emu/cpu/registers.hpp"
 
 namespace emu {
     /// Absolute address on the 8086 are 20-bit however no 20-bit unsigned integer type exists in C++ so a 32-bit
@@ -21,13 +20,4 @@ namespace emu {
 
     /// Type of values stored by standard registers.
     using RegSize = u16;
-
-    /// cpu::RegistersLowHigh template using cpu::GeneralRegister as indexes.
-    using GeneralRegs = cpu::RegistersLowHigh<cpu::GeneralRegister>;
-
-    /// cpu::Registers template using cpu::SegmentRegister and RegSize as arguments.
-    using SegmentRegs = cpu::Registers<cpu::SegmentRegister, RegSize>;
-
-    /// cpu::Registers template using cpu::Flag and boolean as type arguments.
-    using Flags = cpu::Registers<cpu::Flag, bool>;
 }

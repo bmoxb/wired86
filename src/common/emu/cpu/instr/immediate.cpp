@@ -13,7 +13,7 @@ namespace emu::cpu::instr {
         return convert::createWordFromBytes(rawData.at(0), rawData.at(1));
     }
 
-    AbsAddr Displacement::resolve(AddressingMode mode, DisplacementType type, GeneralRegs& registers) const {
+    AbsAddr Displacement::resolve(AddressingMode mode, DisplacementType type, reg::GeneralRegisters& registers) const {
         u16 displacementValue;
 
         switch(mode) {
@@ -29,36 +29,36 @@ namespace emu::cpu::instr {
 
         switch(type) {
         case BX_SI_DISPLACEMENT:
-            return registers.get(BX_REGISTER) +
-                   registers.get(SOURCE_INDEX) +
+            return registers.get(reg::BX_REGISTER) +
+                   registers.get(reg::SOURCE_INDEX) +
                    displacementValue;
 
         case BX_DI_DISPLACEMENT:
-            return registers.get(BX_REGISTER) +
-                   registers.get(DESTINATION_INDEX) +
+            return registers.get(reg::BX_REGISTER) +
+                   registers.get(reg::DESTINATION_INDEX) +
                    displacementValue;
 
         case BP_SI_DISPLACEMENT:
-            return registers.get(BASE_POINTER) +
-                   registers.get(SOURCE_INDEX) +
+            return registers.get(reg::BASE_POINTER) +
+                   registers.get(reg::SOURCE_INDEX) +
                    displacementValue;
 
         case BP_DI_DISPLACEMENT:
-            return registers.get(BASE_POINTER) +
-                   registers.get(DESTINATION_INDEX) +
+            return registers.get(reg::BASE_POINTER) +
+                   registers.get(reg::DESTINATION_INDEX) +
                    displacementValue;
 
         case SI_DISPLACEMENT:
-            return registers.get(SOURCE_INDEX) + displacementValue;
+            return registers.get(reg::SOURCE_INDEX) + displacementValue;
 
         case DI_DISPLACEMENT:
-            return registers.get(DESTINATION_INDEX) + displacementValue;
+            return registers.get(reg::DESTINATION_INDEX) + displacementValue;
 
         case BP_DISPLACEMENT:
-            return registers.get(BASE_POINTER) + displacementValue;
+            return registers.get(reg::BASE_POINTER) + displacementValue;
 
         default: // BX_DISPLACEMENT
-            return registers.get(BX_REGISTER) + displacementValue;
+            return registers.get(reg::BX_REGISTER) + displacementValue;
         }
     }
 }

@@ -4,39 +4,8 @@
 #include "primitives.hpp"
 #include "convert.hpp"
 
-namespace emu::cpu {
+namespace emu::cpu::reg {
     enum RegisterPart { FULL_WORD, LOW_BYTE, HIGH_BYTE };
-    
-    enum GeneralRegister {
-        AX_REGISTER,
-        BX_REGISTER,
-        CX_REGISTER,
-        DX_REGISTER,
-        SOURCE_INDEX,
-        DESTINATION_INDEX,
-        BASE_POINTER,
-        STACK_POINTER
-    };
-
-    enum SegmentRegister {
-        CODE_SEGMENT,
-        DATA_SEGMENT,
-        EXTRA_SEGMENT,
-        STACK_SEGMENT
-    };
-
-    enum Flag {
-        CARRY_FLAG,
-        PARITY_FLAG,
-        AUX_CARRY_FLAG,
-        ZERO_FLAG,
-        SIGN_FLAG,
-        TRAP_FLAG,
-        INTERRUPT_FLAG,
-        DIRECTION_FLAG,
-        OVERFLOW_FLAG
-    };
-
 
     /**
      * Generic class template for a collection of registers.
@@ -49,6 +18,9 @@ namespace emu::cpu {
     public:
         /**
          * Register value getter.
+         *
+         * @param index The index of the register to get.
+         * @return The value stored at the specified register.
          */
         Value get(Index index) const {
             // Cannot have method declared `const` when using the operator[] as that method of indexing will create a
@@ -62,8 +34,19 @@ namespace emu::cpu {
 
         /**
          * Register value setter.
+         *
+         * @param index The index of the register to set.
+         * @param value The value to set the specified register to.
          */
         void set(Index index, Value value) { regs[index] = value; }
+
+        /**
+         * Get the assembly identifier of the specified register. Is pure virtual and must be overriden by subclasses.
+         *
+         * @param index The index of the register assembly identifier to fetch.
+         * @return String assembly identifier.
+         */
+        virtual std::string getAssemblyIdentifier(Index index) const = 0;
 
     private:
         std::map<Index, Value> regs;
@@ -134,5 +117,14 @@ namespace emu::cpu {
             default: set(index, value);
             }
         }
+
+        /**
+         * Get the assembly identifier of a specific register index and part.
+         *
+         * @param index The index of the register assembly identifier to fetch.
+         * @param part The specific register part to fetch the identifier for.
+         * @return String assembly identifier.
+         */
+        virtual std::string getAssemblyIdentifier(Index index, RegisterPart part) const = 0;
     };
 }

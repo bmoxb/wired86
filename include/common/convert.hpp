@@ -86,7 +86,7 @@ namespace convert {
      * @param suffix Suffix string value to append (defaults to an empty string).
      * @return The binary string representation of the given value.
      */
-    template <typename T, std::size_t bitCount = 16>
+    template <std::size_t bitCount, typename T>
     std::string toBinaryString(T value, std::string prefix = "0b", std::string suffix = "") {
         std::bitset<bitCount> bits(value);
         

@@ -13,7 +13,7 @@ namespace emu::cpu::instr {
 
     std::string Instruction::getRawDataString(std::string separator) const {
         std::vector<u8> raw = getRawData();
-        std::function<std::string(u8)> convert = [](u8 value) { return convert::toBinaryString(value); };
+        std::function<std::string(u8)> convert = [](u8 value) { return convert::toBinaryString<8>(value); };
         
         return convert::vectorToString(raw, convert, separator);
     }
@@ -26,12 +26,14 @@ namespace emu::cpu::instr {
 
 
     InstructionTakingRegister::InstructionTakingRegister(std::string instrIdentifier, Opcode instrOpcode,
-                                                         GeneralRegister reg, RegisterPart part)
+                                                         reg::GeneralRegister generalReg, reg::RegisterPart part)
     : Instruction(instrIdentifier, instrOpcode),
-      registerIndex(reg), registerPart(part) {}
+      registerIndex(generalReg), registerPart(part) {}
 
-    std::string InstructionTakingRegister::toAssembly() const {
-        return identifier + " ..."; // TODO: Get string identifier for the register.
+    std::string InstructionTakingRegister::toAssembly(const reg::GeneralRegisters& generalRegisters,
+                                                      const reg::SegmentRegisters&, const reg::Flags&) const {
+        return identifier + " " +
+               generalRegisters.getAssemblyIdentifier(registerIndex, registerPart);
     }
 
 

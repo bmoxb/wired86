@@ -7,7 +7,7 @@ int main(int argc, char* argv[]) {
     emu::cpu::Intel8086 cpu;
     
     emu::Memory<u8, u32> mem(0xFF);
-    mem.write(0, 0b10101010);
+    mem.write(0, 0x55);
 
     for(int i = 0; i < 5; i++) {
         auto addr = cpu.nextInstructionAddress();
@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
             logging::success("Instruction fetched and decoded successfully!");
 
             logging::info("Instruction raw data: " + instruction->getRawDataString());
-            logging::info("Instruction assembly: " + instruction->toAssembly());
+            logging::info("Instruction assembly: " + cpu.getInstructionAssembly(instruction));
 
             cpu.executeInstruction(instruction, mem);
         }

@@ -7,9 +7,9 @@
 #include "convert.hpp"
 #include "emu/types.hpp"
 #include "emu/memory.hpp"
-#include "emu/cpu/registers.hpp"
 #include "emu/cpu/intel8086.hpp"
 #include "emu/cpu/instr/instruction.hpp"
+#include "emu/cpu/reg/registers8086.hpp"
 
 TEST_CASE("Tests conversions.", "[conversions]") {
     using namespace convert;
@@ -45,8 +45,8 @@ TEST_CASE("Tests conversions.", "[conversions]") {
     }
 
     SECTION("Test conversion between a numerical value a binary string representation.") {
-        REQUIRE(toBinaryString<u8, 8>(0b10101010) == "0b10101010");
-        REQUIRE(toBinaryString<u16, 4>(0xFF, "", "b") == "1111b");
+        REQUIRE(toBinaryString<8, u8>(0b10101010) == "0b10101010");
+        REQUIRE(toBinaryString<4, u16>(0xFF, "", "b") == "1111b");
     }
 
     SECTION("Test the extension of vectors.") {
@@ -113,35 +113,7 @@ TEST_CASE("Test emulator memory.", "[emu][memory]") {
     }
 }
 
-TEST_CASE("Test CPU registers.", "[emu][cpu][registers]") {
-    enum Index { REG };
-    emu::cpu::Registers<Index, u32> regs;
-
-    SECTION("Ensure registers are initialised to 0.") {
-        REQUIRE(regs.get(REG) == 0);
-    }
-
-    SECTION("Test setting/getting register values.") {
-        regs.set(REG, 0xBED);
-        REQUIRE(regs.get(REG) == 0xBED);
-    }
-
-    emu::cpu::RegistersLowHigh<Index> regsLowHigh;
-
-    SECTION("Test individual access of high/low bytes of registers.") {
-        regsLowHigh.setLow(REG, 0xA);
-        regsLowHigh.setHigh(REG, 0xB);
-
-        REQUIRE(regsLowHigh.getLow(REG) == 0xA);
-        REQUIRE(regsLowHigh.get(REG, emu::cpu::LOW_BYTE) == 0xA);
-
-        REQUIRE(regsLowHigh.getHigh(REG) == 0xB);
-        REQUIRE(regsLowHigh.get(REG, emu::cpu::HIGH_BYTE) == 0xB);
-
-        REQUIRE(regsLowHigh.get(REG) == 0x0B0A);
-        REQUIRE(regsLowHigh.get(REG, emu::cpu::FULL_WORD) == 0x0B0A);
-    }
-}
+// TODO: Test CPU registers!
 
 TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
     using namespace emu::cpu;
@@ -190,23 +162,23 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
         SECTION("Test REG component.") {
             instr::ModRegRm axReg(0b11000101);
             REQUIRE(axReg.getRegBits() == 0b000);
-            REQUIRE(axReg.getRegisterIndexFromReg(instr::WORD_DATA_SIZE) == AX_REGISTER);
-            REQUIRE(axReg.getRegisterPartFromReg(instr::WORD_DATA_SIZE) == FULL_WORD);
+            REQUIRE(axReg.getRegisterIndexFromReg(instr::WORD_DATA_SIZE) == reg::AX_REGISTER);
+            REQUIRE(axReg.getRegisterPartFromReg(instr::WORD_DATA_SIZE) == reg::FULL_WORD);
 
             instr::ModRegRm clReg(0b11001010);
             REQUIRE(clReg.getRegBits() == 0b001);
-            REQUIRE(clReg.getRegisterIndexFromReg(instr::BYTE_DATA_SIZE) == CX_REGISTER);
-            REQUIRE(axReg.getRegisterPartFromReg(instr::BYTE_DATA_SIZE) == LOW_BYTE);
+            REQUIRE(clReg.getRegisterIndexFromReg(instr::BYTE_DATA_SIZE) == reg::CX_REGISTER);
+            REQUIRE(axReg.getRegisterPartFromReg(instr::BYTE_DATA_SIZE) == reg::LOW_BYTE);
 
             instr::ModRegRm dhReg(0b11110000);
             REQUIRE(dhReg.getRegBits() == 0b110);
-            REQUIRE(dhReg.getRegisterIndexFromReg(instr::BYTE_DATA_SIZE) == DX_REGISTER);
-            REQUIRE(dhReg.getRegisterPartFromReg(instr::BYTE_DATA_SIZE) == HIGH_BYTE);
+            REQUIRE(dhReg.getRegisterIndexFromReg(instr::BYTE_DATA_SIZE) == reg::DX_REGISTER);
+            REQUIRE(dhReg.getRegisterPartFromReg(instr::BYTE_DATA_SIZE) == reg::HIGH_BYTE);
 
             instr::ModRegRm diReg(0b11111001);
             REQUIRE(diReg.getRegBits() == 0b111);
-            REQUIRE(diReg.getRegisterIndexFromReg(instr::WORD_DATA_SIZE) == DESTINATION_INDEX);
-            REQUIRE(diReg.getRegisterPartFromReg(instr::WORD_DATA_SIZE) == FULL_WORD);
+            REQUIRE(diReg.getRegisterIndexFromReg(instr::WORD_DATA_SIZE) == reg::DESTINATION_INDEX);
+            REQUIRE(diReg.getRegisterPartFromReg(instr::WORD_DATA_SIZE) == reg::FULL_WORD);
         }
 
         SECTION("Test the fetching of displacement types via R/M component.") {
@@ -236,8 +208,8 @@ TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
         emu::Mem memory(0xFF);
 
         emu::cpu::Intel8086 cpu;
-        cpu.generalRegisters.set(emu::cpu::STACK_POINTER, 20);
-        cpu.segmentRegisters.set(emu::cpu::STACK_SEGMENT, 0);
+        cpu.generalRegisters.set(emu::cpu::reg::STACK_POINTER, 20);
+        cpu.segmentRegisters.set(emu::cpu::reg::STACK_SEGMENT, 0);
 
         cpu.pushToStack(0xAB, memory);
         cpu.pushToStack(0xCD, memory);
@@ -257,8 +229,8 @@ TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
         emu::Mem memory(0xFF);
 
         emu::cpu::Intel8086 cpu;
-        cpu.generalRegisters.set(emu::cpu::STACK_POINTER, 0xAA);
-        cpu.generalRegisters.set(emu::cpu::AX_REGISTER, VALUE);
+        cpu.generalRegisters.set(emu::cpu::reg::STACK_POINTER, 0xAA);
+        cpu.generalRegisters.set(emu::cpu::reg::AX_REGISTER, VALUE);
 
         memory.write(0, 0x50); // PUSH AX
         auto pushAx = cpu.fetchDecodeInstruction(0, memory);
@@ -268,6 +240,6 @@ TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
         auto popBx = cpu.fetchDecodeInstruction(0, memory);
         cpu.executeInstruction(popBx, memory);
 
-        REQUIRE(cpu.generalRegisters.get(emu::cpu::BX_REGISTER) == VALUE);
+        REQUIRE(cpu.generalRegisters.get(emu::cpu::reg::BX_REGISTER) == VALUE);
     }
 }

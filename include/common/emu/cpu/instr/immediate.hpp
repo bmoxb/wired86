@@ -31,6 +31,6 @@ namespace emu::cpu::instr {
          * @param registers The general-purpose and indexing CPU registers.
          * @return The resolved absolute memory address.
          */
-        AbsAddr resolve(AddressingMode mode, DisplacementType type, GeneralRegs& registers) const;
+        AbsAddr resolve(AddressingMode mode, DisplacementType type, reg::GeneralRegisters& registers) const;
     };
 }

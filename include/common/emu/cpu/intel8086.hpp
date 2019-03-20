@@ -3,6 +3,7 @@
 #include <memory>
 #include "emu/types.hpp"
 #include "emu/cpu/instr/instruction.hpp"
+#include "emu/cpu/reg/registers8086.hpp"
 
 namespace emu::cpu {
     /**
@@ -19,7 +20,7 @@ namespace emu::cpu {
          * @param segment Segment register index indicating which segment to resolve the offset within.
          * @return Absolute 20-bit address within memory.
          */
-        AbsAddr resolveAddress(OffsetAddr offset, SegmentRegister segment) const;
+        AbsAddr resolveAddress(OffsetAddr offset, reg::SegmentRegister segment) const;
 
         /**
          * Calculate the address of the next instruction in memory based on the value of the instruction pointer and the
@@ -45,6 +46,8 @@ namespace emu::cpu {
          */
         void executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory);
 
+        std::string getInstructionAssembly(const std::unique_ptr<instr::Instruction>& instruction) const;
+
         /**
          * Push values onto the stack. Stack pointer decremented.
          */
@@ -65,13 +68,13 @@ namespace emu::cpu {
          */
         u16 popWordFromStack(Mem& memory);
 
-        GeneralRegs generalRegisters;
-        SegmentRegs segmentRegisters;
+        reg::GeneralRegisters generalRegisters;
+        reg::SegmentRegisters segmentRegisters;
 
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
         OffsetAddr instructionPointer = 0;
 
-        Flags flags;
+        reg::Flags flags;
     };
 }
