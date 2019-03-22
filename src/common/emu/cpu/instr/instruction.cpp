@@ -13,9 +13,9 @@ namespace emu::cpu::instr {
 
     std::string Instruction::getRawDataString(std::string separator) const {
         std::vector<u8> raw = getRawData();
-        std::function<std::string(u8)> convert = [](u8 value) { return convert::toBinaryString<8>(value); };
+        std::function<std::string(u8)> convertFunction = [](u8 value) { return convert::toBinaryString<8>(value); };
         
-        return convert::vectorToString(raw, convert, separator);
+        return convert::vectorToString(raw, convertFunction, separator);
     }
 
     OffsetAddr Instruction::getRawSize() const {
@@ -32,15 +32,10 @@ namespace emu::cpu::instr {
 
     std::string InstructionTakingRegister::toAssembly(const reg::GeneralRegisters& generalRegisters,
                                                       const reg::SegmentRegisters&, const reg::Flags&) const {
-        return identifier + " " +
-               generalRegisters.getAssemblyIdentifier(registerIndex, registerPart);
+        return identifier + " " + getRegisterAssembly(generalRegisters);
     }
 
-
-
-    InstructionTakingRegAndRegOrAddr::InstructionTakingRegAndRegOrAddr(std::string instrIdentifier, Opcode instrOpcode,
-                                                                       ModRegRm modRegRm,
-                                                                       std::optional<Displacement> displacement)
-    : Instruction(instrIdentifier, instrOpcode),
-      modRegRmByte(modRegRm), displacementValue(displacement) {}
+    std::string InstructionTakingRegister::getRegisterAssembly(const reg::GeneralRegisters& registers) const {
+        return registers.getAssemblyIdentifier(registerIndex, registerPart);
+    }
 }

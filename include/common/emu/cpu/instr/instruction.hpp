@@ -91,39 +91,19 @@ namespace emu::cpu::instr {
         InstructionTakingRegister(std::string instrIdentifier, Opcode instrOpcode, reg::GeneralRegister generalReg,
                                   reg::RegisterPart part = reg::FULL_WORD);
 
+        /**
+         * Convert this instruction to assembly (simply the instruction identifier followed by the register identifier).
+         */
         std::string toAssembly(const reg::GeneralRegisters& generalRegisters, const reg::SegmentRegisters&,
                                const reg::Flags&) const override;
 
     protected:
+        /**
+         * Fetch the register argument's assembly identifier.
+         */
+        std::string getRegisterAssembly(const reg::GeneralRegisters& registers) const;
+
         const reg::GeneralRegister registerIndex;
         const reg::RegisterPart registerPart;
-    };
-
-    /**
-     * Instructions that take a general-purpose register as an argument and either a general-purpose register or a
-     * memory address as its other argument.
-     *
-     * Examples:
-     * - ADD Eb Gb (0x00)
-     * - MOV Eb Gb (0x88)
-     */
-    class InstructionTakingRegAndRegOrAddr : public Instruction {
-    public:
-        InstructionTakingRegAndRegOrAddr(std::string instrIdentifier, Opcode instrOpcode, ModRegRm modRegRm,
-                                         std::optional<Displacement> displacement = {});
-
-        //OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
-        //                   GeneralRegs& generalRegisters, SegmentRegs& segmentRegisters, Flags& flags) override;
-
-        //std::string toAssembly() const override;
-
-    protected:
-        virtual void handleExecution(reg::GeneralRegister destination, reg::GeneralRegister source) = 0;
-        virtual void handleExecution(reg::GeneralRegister destination, AbsAddr source) = 0;
-        virtual void handleExecution(AbsAddr destination, reg::GeneralRegister source) = 0;
-
-    private:
-        const ModRegRm modRegRmByte;
-        const std::optional<Displacement> displacementValue;
     };
 }

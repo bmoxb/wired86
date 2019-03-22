@@ -18,54 +18,58 @@ namespace emu::cpu {
         MemValue opcodeValue = memory.read(address);
         instr::Opcode opcode(opcodeValue);
 
+        /*
+         * Creates instructions based on entire 8-bit opcode value (the direction and word bits have no special
+         * significance for these particular instructions).
+         */
         switch(opcodeValue) {
-        // PUSH AX
-        case 0x50: return std::make_unique<instr::PushTakingRegister>(opcode, reg::AX_REGISTER);
+        case 0x50: // PUSH AX
+            return std::make_unique<instr::PushTakingRegister>(opcode, reg::AX_REGISTER);
 
-        // PUSH CX
-        case 0x51: return std::make_unique<instr::PushTakingRegister>(opcode, reg::CX_REGISTER);
+        case 0x51: // PUSH CX
+            return std::make_unique<instr::PushTakingRegister>(opcode, reg::CX_REGISTER);
 
-        // PUSH DX
-        case 0x52: return std::make_unique<instr::PushTakingRegister>(opcode, reg::DX_REGISTER);
+        case 0x52: // PUSH DX
+            return std::make_unique<instr::PushTakingRegister>(opcode, reg::DX_REGISTER);
 
-        // PUSH BX
-        case 0x53: return std::make_unique<instr::PushTakingRegister>(opcode, reg::BX_REGISTER);
+        case 0x53: // PUSH BX
+            return std::make_unique<instr::PushTakingRegister>(opcode, reg::BX_REGISTER);
 
-        // PUSH SP
-        case 0x54: return std::make_unique<instr::PushTakingRegister>(opcode, reg::STACK_POINTER);
+        case 0x54: // PUSH SP
+            return std::make_unique<instr::PushTakingRegister>(opcode, reg::STACK_POINTER);
 
-        // PUSH BP
-        case 0x55: return std::make_unique<instr::PushTakingRegister>(opcode, reg::BASE_POINTER);
+        case 0x55: // PUSH BP
+            return std::make_unique<instr::PushTakingRegister>(opcode, reg::BASE_POINTER);
 
-        // PUSH SI
-        case 0x56: return std::make_unique<instr::PushTakingRegister>(opcode, reg::SOURCE_INDEX);
+        case 0x56: // PUSH SI
+            return std::make_unique<instr::PushTakingRegister>(opcode, reg::SOURCE_INDEX);
 
-        // PUSH DI
-        case 0x57: return std::make_unique<instr::PushTakingRegister>(opcode, reg::DESTINATION_INDEX);
+        case 0x57: // PUSH DI
+            return std::make_unique<instr::PushTakingRegister>(opcode, reg::DESTINATION_INDEX);
 
-        // POP AX
-        case 0x58: return std::make_unique<instr::PopTakingRegister>(opcode, reg::AX_REGISTER);
+        case 0x58: // POP AX
+            return std::make_unique<instr::PopTakingRegister>(opcode, reg::AX_REGISTER);
 
-        // POP CX
-        case 0x59: return std::make_unique<instr::PopTakingRegister>(opcode, reg::CX_REGISTER);
+        case 0x59: // POP CX
+            return std::make_unique<instr::PopTakingRegister>(opcode, reg::CX_REGISTER);
 
-        // POP DX
-        case 0x5A: return std::make_unique<instr::PopTakingRegister>(opcode, reg::DX_REGISTER);
+        case 0x5A: // POP DX
+            return std::make_unique<instr::PopTakingRegister>(opcode, reg::DX_REGISTER);
 
-        // POP BX
-        case 0x5B: return std::make_unique<instr::PopTakingRegister>(opcode, reg::BX_REGISTER);
+        case 0x5B: // POP BX
+            return std::make_unique<instr::PopTakingRegister>(opcode, reg::BX_REGISTER);
 
-        // POP SP
-        case 0x5C: return std::make_unique<instr::PopTakingRegister>(opcode, reg::STACK_POINTER);
+        case 0x5C: // POP SP
+            return std::make_unique<instr::PopTakingRegister>(opcode, reg::STACK_POINTER);
 
-        // POP BP
-        case 0x5D: return std::make_unique<instr::PopTakingRegister>(opcode, reg::BASE_POINTER);
+        case 0x5D: // POP BP
+            return std::make_unique<instr::PopTakingRegister>(opcode, reg::BASE_POINTER);
 
-        // POP SI
-        case 0x5E: return std::make_unique<instr::PopTakingRegister>(opcode, reg::SOURCE_INDEX);
+        case 0x5E: // POP SI
+            return std::make_unique<instr::PopTakingRegister>(opcode, reg::SOURCE_INDEX);
 
-        // POP DI
-        case 0x5F: return std::make_unique<instr::PopTakingRegister>(opcode, reg::DESTINATION_INDEX);
+        case 0x5F: // POP DI
+            return std::make_unique<instr::PopTakingRegister>(opcode, reg::DESTINATION_INDEX);
         }
 
         logging::warning("Failed to decode instruction with opcode: " + opcode.toString());
