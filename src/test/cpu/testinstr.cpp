@@ -1,14 +1,18 @@
 #include "catch.hpp"
+#include "primitives.hpp"
 #include "emu/cpu/intel8086.hpp"
 
 TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
+    using namespace emu;
+
+    Mem memory(0xFF);
+
+    cpu::Intel8086 cpu;
+
+    cpu.generalRegisters.set(cpu::reg::STACK_POINTER, 0xAA);
+    cpu.segmentRegisters.set(cpu::reg::STACK_SEGMENT, 0);
+
     SECTION("Test CPU stack handling.") {
-        emu::Mem memory(0xFF);
-
-        emu::cpu::Intel8086 cpu;
-        cpu.generalRegisters.set(emu::cpu::reg::STACK_POINTER, 20);
-        cpu.segmentRegisters.set(emu::cpu::reg::STACK_SEGMENT, 0);
-
         cpu.pushToStack(0xAB, memory);
         cpu.pushToStack(0xCD, memory);
         cpu.pushToStack(0xEF, memory);
@@ -22,22 +26,32 @@ TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
     }
 
     SECTION("Test stack instructions.") {
-        constexpr u16 VALUE = 0xABCD;
+        auto pushPopFunc = [&memory, &cpu](u8 pushOpcode, u8 popOpcode, cpu::reg::GeneralRegister reg, u16 value) {
+            // Write value to register:
+            cpu.generalRegisters.set(reg, value);
 
-        emu::Mem memory(0xFF);
+            // Push value in value in register to stack:
+            memory.write(0, pushOpcode);
+            auto push = cpu.fetchDecodeInstruction(0, memory);
+            cpu.executeInstruction(push, memory);
 
-        emu::cpu::Intel8086 cpu;
-        cpu.generalRegisters.set(emu::cpu::reg::STACK_POINTER, 0xAA);
-        cpu.generalRegisters.set(emu::cpu::reg::AX_REGISTER, VALUE);
+            cpu.generalRegisters.set(reg, 0); // Reset register value.
 
-        memory.write(0, 0x50); // PUSH AX
-        auto pushAx = cpu.fetchDecodeInstruction(0, memory);
-        cpu.executeInstruction(pushAx, memory);
+            // Pop value off stack back into register:
+            memory.write(1, popOpcode);
+            auto pop = cpu.fetchDecodeInstruction(1, memory);
+            cpu.executeInstruction(pop, memory);
 
-        memory.write(0, 0x5B); // POP BX
-        auto popBx = cpu.fetchDecodeInstruction(0, memory);
-        cpu.executeInstruction(popBx, memory);
+            return cpu.generalRegisters.get(reg) == value; // Compare popped value to expected value.
+        };
 
-        REQUIRE(cpu.generalRegisters.get(emu::cpu::reg::BX_REGISTER) == VALUE);
+        REQUIRE(pushPopFunc(0x50, 0x58, cpu::reg::AX_REGISTER, 0xAAAA));
+        REQUIRE(pushPopFunc(0x51, 0x59, cpu::reg::CX_REGISTER, 0xCCCC));
+        REQUIRE(pushPopFunc(0x52, 0x5A, cpu::reg::DX_REGISTER, 0xDDDD));
+        REQUIRE(pushPopFunc(0x53, 0x5B, cpu::reg::BX_REGISTER, 0xBBBB));
+        //REQUIRE(pushPopFunc(0x54, 0x5C, cpu::reg::STACK_POINTER, 0xAA));
+        REQUIRE(pushPopFunc(0x55, 0x5D, cpu::reg::BASE_POINTER, 0xDEAD));
+        REQUIRE(pushPopFunc(0x56, 0x5E, cpu::reg::SOURCE_INDEX, 0xBED));
+        REQUIRE(pushPopFunc(0x57, 0x5F, cpu::reg::DESTINATION_INDEX, 0xFEED));
     }
 }
