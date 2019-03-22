@@ -2,7 +2,8 @@
 
 #include <memory>
 #include <vector>
-#include <exception>
+#include <stdexcept>
+#include "convert.hpp"
 
 namespace emu {
     template <typename Value, typename Address>
@@ -11,9 +12,11 @@ namespace emu {
         /**
          * Exception thrown when a call to read or write is supplied with an address that is out of bounds.
          */
-        class OutOfBounds : public std::exception {
+        class OutOfBounds : public std::runtime_error {
         public:
-            OutOfBounds(Address addr) : address(addr) {}
+            OutOfBounds(Address addr)
+            : std::runtime_error("Attempted to access memory address that is out of bounds: " +
+                                 convert::toHexString(addr)), address(addr) {}
 
             const Address address;
         };
