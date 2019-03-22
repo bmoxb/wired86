@@ -20,7 +20,13 @@ set(SRC_FILES # Define all common library source files.
 )
 set(CLI_SRC_FILES src/cli/main)
 set(GUI_SRC_FILES src/gui/main)
-set(TEST_SRC_FILES src/test/main)
+set(TEST_SRC_FILES
+    src/test/main
+    src/test/testcommon
+    src/test/testmemory
+    src/test/cpu/testinstrrep
+    src/test/cpu/testinstr
+)
 
 add_library(${LIB_NAME} STATIC ${SRC_FILES}) # Create common library.
 
