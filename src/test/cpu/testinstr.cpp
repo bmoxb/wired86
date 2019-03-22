@@ -30,7 +30,7 @@ TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
             // Write value to register:
             cpu.generalRegisters.set(reg, value);
 
-            // Push value in value in register to stack:
+            // Push value in register to stack:
             memory.write(0, pushOpcode);
             auto push = cpu.fetchDecodeInstruction(0, memory);
             cpu.executeInstruction(push, memory);
@@ -42,16 +42,17 @@ TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
             auto pop = cpu.fetchDecodeInstruction(1, memory);
             cpu.executeInstruction(pop, memory);
 
-            return cpu.generalRegisters.get(reg) == value; // Compare popped value to expected value.
+            return cpu.generalRegisters.get(reg); // Return popped value in register.
         };
 
-        REQUIRE(pushPopFunc(0x50, 0x58, cpu::reg::AX_REGISTER, 0xAAAA));
-        REQUIRE(pushPopFunc(0x51, 0x59, cpu::reg::CX_REGISTER, 0xCCCC));
-        REQUIRE(pushPopFunc(0x52, 0x5A, cpu::reg::DX_REGISTER, 0xDDDD));
-        REQUIRE(pushPopFunc(0x53, 0x5B, cpu::reg::BX_REGISTER, 0xBBBB));
-        //REQUIRE(pushPopFunc(0x54, 0x5C, cpu::reg::STACK_POINTER, 0xAA));
-        REQUIRE(pushPopFunc(0x55, 0x5D, cpu::reg::BASE_POINTER, 0xDEAD));
-        REQUIRE(pushPopFunc(0x56, 0x5E, cpu::reg::SOURCE_INDEX, 0xBED));
-        REQUIRE(pushPopFunc(0x57, 0x5F, cpu::reg::DESTINATION_INDEX, 0xFEED));
+        REQUIRE(pushPopFunc(0x50, 0x58, cpu::reg::AX_REGISTER, 0xA) == 0xA);
+        REQUIRE(pushPopFunc(0x51, 0x59, cpu::reg::CX_REGISTER, 0xC) == 0xC);
+        REQUIRE(pushPopFunc(0x52, 0x5A, cpu::reg::DX_REGISTER, 0xD) == 0xD);
+        REQUIRE(pushPopFunc(0x53, 0x5B, cpu::reg::BX_REGISTER, 0xB) == 0xB);
+        REQUIRE(pushPopFunc(0x55, 0x5D, cpu::reg::BASE_POINTER, 0xDEAD) == 0xDEAD);
+        REQUIRE(pushPopFunc(0x56, 0x5E, cpu::reg::SOURCE_INDEX, 0xBED) == 0xBED);
+        REQUIRE(pushPopFunc(0x57, 0x5F, cpu::reg::DESTINATION_INDEX, 0xFEED) == 0xFEED);
+
+        // TODO: Test push/pop stack pointer.
     }
 }
