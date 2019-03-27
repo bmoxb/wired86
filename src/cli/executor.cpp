@@ -26,12 +26,14 @@ namespace cli {
         return false;
     }
 
-    void Executor::runCycles(unsigned int count) {
+    bool Executor::runCycles(unsigned int count) {
         bool success = true;
 
         for(int cycle = 0; cycle < count && success; cycle++) {
             logging::info("--- CYCLE " + std::to_string(cycle) + " ---");
             success = runCycle();
         }
+
+        return success;
     }
 }
