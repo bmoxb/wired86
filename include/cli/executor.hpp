@@ -1,0 +1,30 @@
+#pragma once
+
+#include "emu/types.hpp"
+#include "emu/memory.hpp"
+#include "emu/cpu/intel8086.hpp"
+
+namespace cli {
+    class Executor {
+    public:
+        Executor(emu::AbsAddr memorySize);
+
+        /**
+         * Complete a single CPU cycle.
+         *
+         * @return Whether the cycle completed successfully or not.
+         */
+        bool runCycle();
+
+        /**
+         * Complete multiple CPU cycles.
+         *
+         * @param count The number of cycles to execute.
+         */
+        void runCycles(unsigned int count);
+
+    protected:
+        emu::Memory<emu::MemValue, emu::AbsAddr> memory;
+        emu::cpu::Intel8086 cpu;
+    };
+}

@@ -18,8 +18,14 @@ set(SRC_FILES # Define all common library source files.
     src/common/emu/cpu/instr/instruction
     src/common/emu/cpu/instr/stack
 )
-set(CLI_SRC_FILES src/cli/main)
+
+set(CLI_SRC_FILES
+    src/cli/main
+    src/cli/executor
+)
+
 set(GUI_SRC_FILES src/gui/main)
+
 set(TEST_SRC_FILES
     src/test/main
     src/test/testcommon
