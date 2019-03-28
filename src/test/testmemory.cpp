@@ -17,7 +17,7 @@ TEST_CASE("Test emulator memory.", "[emu][memory]") {
     }
 
     SECTION("Test read/writing of memory.") {
-        const Value value = 123;
+        constexpr Value value = 123;
 
         for(Address addr = 0; addr < memory.size; addr++) {
             memory.write(addr, value);
@@ -40,7 +40,7 @@ TEST_CASE("Test emulator memory.", "[emu][memory]") {
     }
 
     SECTION("Test filling of all memory.") {
-        const Value value = 456;
+        constexpr Value value = 456;
 
         memory.fill(value);
 
