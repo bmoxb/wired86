@@ -8,7 +8,7 @@ namespace emu::cpu::instr {
     std::string Opcode::toString() const {
         bool d = getDirectionBit(), w = getWordBit();
 
-        return convert::toBinaryString<8>(value) +
+        return convert::toHexString(value) +
                " (" + convert::toBinaryString<6>(getUniqueValue(), "") + "dw : d=" + convert::bitAsStr(d) +
                ", w=" + convert::bitAsStr(w) + ")";
     }

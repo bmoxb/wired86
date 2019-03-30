@@ -3,7 +3,9 @@
 #include "logging.hpp"
 
 namespace cli {
-    Executor::Executor(emu::AbsAddr memorySize) : memory(memorySize) {}
+    Executor::Executor(emu::AbsAddr memorySize, std::string path) : memory(memorySize) {
+        memory.loadFromFile(path);
+    }
 
     bool Executor::runCycle() {
         auto addr = cpu.nextInstructionAddress();

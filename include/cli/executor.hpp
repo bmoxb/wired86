@@ -7,7 +7,7 @@
 namespace cli {
     class Executor {
     public:
-        Executor(emu::AbsAddr memorySize);
+        Executor(emu::AbsAddr memorySize, std::string path);
 
         /**
          * Complete a single CPU cycle.
