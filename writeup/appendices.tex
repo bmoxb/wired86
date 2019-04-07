@@ -1,0 +1,71 @@
+\begin{landscape} \section{Example Instruction Decodings}
+	\begin{table}[h]
+		\resizebox{0.87\paperheight}{!} {\begin{tabular} { |*{11}{c|} } % 11 columns
+			\hline
+			Assembly & \multicolumn{3}{c}{Opcode Byte} & \multicolumn{3}{|c}{MOD-REG-RM Byte} & \multicolumn{2}{|c}{Displacement Byte(s)} & \multicolumn{2}{|c|}{Immediate Byte(s)} \\
+			\hline
+			Intel Syntax 							& Opcode 				& D-bit (direction)		& W-bit (word)			& MOD 					& REG 			& R/M 				& Low 			& High 		& Low 		& High \\
+			\hline
+			\texttt{add cx, bx} 					& \underline{000000}01	& 0						& 1						& 11 					& 011 			& 001				& & & & \\
+													& add 					& REG is source 		& word data size	 	& register addressing 	& BX source 	& CX destination 	& & & & \\
+			\hline
+			\texttt{add al, [bx+5]}					& \underline{000000}10	& 1						& 0						& 01					& 000			& 111				& 00000101		& & & \\
+													& add 					& REG is destination 	& byte data size		& byte displacement 	& AL dest		& BX + displacement & displace by 5 & & & \\
+			\hline
+			\texttt{mov word [bp+0x1234], 0x5678}	& \underline{110001}11	& 1						& 1						& 10					& 000			& 110				& 00110100		& 00010010	& 01111000	& 01010110 \\
+													& mov Ew, Iw			& irrelevant		 	& word data size		& word displacement 	& unused 		& BP + displacement & 0x34 			& 0x12 		& 0x78 		& 0x56 \\
+			\hline
+		\end{tabular}}
+		%\label{table:instruction-encoding-examples}
+		\caption{Table showing example instruction decodings.}
+	\end{table}
+\end{landscape}
+
+\section{Instruction Set}
+    \subsection{Instruction Arguments}
+	\begin{table}[h]
+		\begin{tabular} { | c | m{0.85\textwidth} | }
+			\hline
+			Argument & Meaning \\
+			\hline
+			G & General-purpose register specified by the REG component of the MOD-REG-R/M byte. \\
+			\hline
+			E & Either a general-purpose register (specified by the R/M component when in register addressing mode) or a memory address (with optional displacement from index). \\
+			\hline
+		\end{tabular}
+	\end{table}
+
+    \subsection{Instructions}
+	\begin{table}[h]
+		\begin{tabular} { | c | c | c | c | m{0.38\textwidth} | }
+			\hline
+			Opcode & Assembly & Arguments & MOD-REG-R/M & Description \\
+			\hline
+			\texttt{000000dw} & \texttt{add} & G, E & \checkmark & Add two values without carrying. \\
+			\hline
+			\texttt{0000010w} & \texttt{add} & AL/AX, I & & Add two values without carrying using AL (when w=0) or AX (when w=1) and an immediate value. \\
+			\hline
+			\texttt{00000110} & \texttt{push} & ES & & Push the value of ES onto the stack. \\
+			\hline
+			\texttt{00000111} & \texttt{pop} & ES & & Pop value off the stack and store it in ES. \\
+			\hline
+			\texttt{000010dw} & \texttt{or} & G, E & \checkmark & Bitwise OR operation. \\
+			\hline
+			\texttt{0000110w} & \texttt{or} & AL/AX, I & & Bitwise OR operation using AL (when w=0) or AX (when w=1) and an immediate value. \\
+			\hline
+			\texttt{00001110} & \texttt{push} & CS & & Push the value of CS onto the stack. \\
+			\hline
+			\texttt{000100dw} & \texttt{adc} & G, E & \checkmark & Add two values with carry. \\
+			\hline
+            \texttt{0001010w} & \texttt{adc} & AL/AX, I & & Add two values with carry using AL or AX and an immediate value. \\
+            \hline
+            \texttt{00010110} & \texttt{push} & SS & & Push the value of SS onto the stack. \\
+            \hline
+            \texttt{00010111} & \texttt{pop} & SS & & Pop value off the stack and store it in SS. \\
+            \hline
+            \texttt{000110dw} & \texttt{sbb} & G, E & \checkmark & Subtract two values with borrow. \\
+            \hline
+			\texttt{001000dw} & \texttt{and} & G, E & \checkmark & Bitwise AND operation. \\
+			\hline
+		\end{tabular}
+	\end{table}

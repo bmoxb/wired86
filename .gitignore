@@ -1,4 +1,21 @@
+# Ignore C++ build files/directories:
 *.out
 *.exe
+*.app
 build/
+
+# Ignore built documentation:
 docs/
+
+# Ignore latex build files/directories:
+*.pdf
+*.htm*
+*.aux
+*.lof
+*.lol
+*.log
+*.lot
+*.loc
+*.toc
+_minted-*
+*.synctex.gz
