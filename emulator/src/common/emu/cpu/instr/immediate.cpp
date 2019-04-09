@@ -1,16 +1,20 @@
 #include "emu/cpu/instr/immediate.hpp"
 
+#include <cassert>
 #include "convert.hpp"
 
 namespace emu::cpu::instr {
-    Immediate::Immediate(std::vector<u8> raw) : rawData(raw) {} // TODO: Check length of raw.
+    Immediate::Immediate(std::vector<u8> raw) : rawData(raw) {
+        assert(rawData.size() >= 1);
+    }
 
     u8 Immediate::getByteValue() const {
         return rawData[0];
     }
 
     u16 Immediate::getWordValue() const {
-        return convert::createWordFromBytes(rawData.at(0), rawData.at(1));
+        assert(rawData.size() >= 2);
+        return convert::createWordFromBytes(rawData[0], rawData[1]);
     }
 
     AbsAddr Displacement::resolve(AddressingMode mode, DisplacementType type, reg::GeneralRegisters& registers) const {
