@@ -1,6 +1,7 @@
 #include "emu/cpu/instr/instruction.hpp"
 
 #include <functional>
+#include "emu/cpu/intel8086.hpp"
 #include "logging.hpp"
 
 namespace emu::cpu::instr {
@@ -30,12 +31,25 @@ namespace emu::cpu::instr {
     : Instruction(instrIdentifier, instrOpcode),
       registerIndex(generalReg), registerPart(part) {}
 
-    std::string InstructionTakingRegister::toAssembly(const reg::GeneralRegisters& generalRegisters,
-                                                      const reg::SegmentRegisters&, const reg::Flags&) const {
-        return identifier + " " + getRegisterAssembly(generalRegisters);
+    std::string InstructionTakingRegister::toAssembly(const Intel8086& cpu) const {
+        auto registerIdentifier = cpu.generalRegisters.getAssemblyIdentifier(registerIndex, registerPart);
+        return identifier + " " + registerIdentifier;
     }
 
-    std::string InstructionTakingRegister::getRegisterAssembly(const reg::GeneralRegisters& registers) const {
-        return registers.getAssemblyIdentifier(registerIndex, registerPart);
+
+
+    InstructionTakingRegistersModRegRm::InstructionTakingRegistersModRegRm(std::string instrIdentifier,
+                                                                           Opcode instrOpcode, ModRegRm instrModRegRm)
+    : Instruction(instrIdentifier, instrOpcode),
+      modRegRm(instrModRegRm) {}
+
+    /*OffsetAddr InstructionTakingRegistersModRegRm::execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
+                                                           reg::GeneralRegisters& generalRegisters,
+                                                           reg::SegmentRegisters& segmentRegisters, reg::Flags& flags) {
+        return ip + getRawSize();
+    }*/
+
+    std::vector<u8> InstructionTakingRegistersModRegRm::getRawData() const {
+        return { opcode.value, modRegRm.value };
     }
 }

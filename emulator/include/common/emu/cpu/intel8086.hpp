@@ -8,7 +8,7 @@
 namespace emu::cpu {
     /**
      * Class representing the main Intel 8086 microprocessor. Handles decoding and execution of instructions fetched
-     * from memory.
+     * from memory. Also holds all CPU registers.
      */
     class Intel8086 {
     public:
@@ -23,17 +23,23 @@ namespace emu::cpu {
         AbsAddr resolveAddress(OffsetAddr offset, reg::SegmentRegister segment) const;
 
         /**
+         * Returns the relative address of the instruction pointer (i.e. before it is segmented within the code
+         * segment).
+         */
+        OffsetAddr getRelativeInstructionPointer() const;
+
+        /**
          * Calculate the address of the next instruction in memory based on the value of the instruction pointer and the
          * code segment. Does not increment instruction pointer - that is done on execution.
          *
          * @return Address of next instruction.
          */
-        AbsAddr nextInstructionAddress() const;
+        AbsAddr getAbsoluteInstructionPointer() const;
 
         /**
          * Fetches and decodes the next instruction.
          *
-         * @param addr The absolute address of the instruction to fetch and decode.
+         * @param address The absolute address of the instruction to fetch and decode.
          * @param memory Reference to the memory to fetch the instruction data from.
          * @return Decoded instruction object (will be empty if instruction decoding fails).
          */
@@ -45,8 +51,6 @@ namespace emu::cpu {
          * @param instruction Reference to the std::unique_ptr holding the instruction.
          */
         void executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory);
-
-        std::string getInstructionAssembly(const std::unique_ptr<instr::Instruction>& instruction) const;
 
         /**
          * Push values onto the stack. Stack pointer decremented.
@@ -68,13 +72,19 @@ namespace emu::cpu {
          */
         u16 popWordFromStack(Mem& memory);
 
-        reg::GeneralRegisters generalRegisters;
-        reg::SegmentRegisters segmentRegisters;
+        /**
+         *
+         */
+        //void performRelativeJump();
+
+        reg::GeneralRegisters generalRegisters; /// CPU general-purpose registers.
+        reg::SegmentRegisters segmentRegisters; /// CPU segment registers.
 
     private:
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
         OffsetAddr instructionPointer = 0;
 
+        /// CPU flag register. Declared private as not all flags should be directly modifiable by all.
         reg::Flags flags;
     };
 }

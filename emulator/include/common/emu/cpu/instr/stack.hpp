@@ -10,8 +10,7 @@ namespace emu::cpu::instr {
     public:
         PushTakingRegister(Opcode instrOpcode, reg::GeneralRegister generalReg);
 
-        OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
-                           reg::GeneralRegisters& generalRegisters, reg::SegmentRegisters&, reg::Flags&) override final;
+        OffsetAddr execute(Intel8086& cpu, Mem& memory) override final;
     };
 
     /**
@@ -21,7 +20,6 @@ namespace emu::cpu::instr {
     public:
         PopTakingRegister(Opcode instrOpcode, reg::GeneralRegister generalReg);
 
-        OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
-                           reg::GeneralRegisters& generalRegisters, reg::SegmentRegisters&, reg::Flags&) override final;
+        OffsetAddr execute(Intel8086& cpu, Mem& memory) override final;
     };
 }

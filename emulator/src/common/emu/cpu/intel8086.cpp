@@ -10,7 +10,11 @@ namespace emu::cpu {
         return (segmentAddress << 4) + offset;
     }
 
-    AbsAddr Intel8086::nextInstructionAddress() const {
+    OffsetAddr Intel8086::getRelativeInstructionPointer() const {
+        return instructionPointer;
+    }
+
+    AbsAddr Intel8086::getAbsoluteInstructionPointer() const {
         return resolveAddress(instructionPointer, reg::CODE_SEGMENT);
     }
 
@@ -78,21 +82,12 @@ namespace emu::cpu {
 
     void Intel8086::executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory) {
         if(instruction) {
-            OffsetAddr newIp = instruction->execute(*this, instructionPointer, memory,
-                                                    generalRegisters, segmentRegisters, flags);
+            OffsetAddr newIp = instruction->execute(*this, memory);
 
             if(memory.withinBounds(newIp)) instructionPointer = newIp;
             else logging::error("Instruction returned new instruction pointer value that is out of bounds!");
         }
         else logging::error("Empty instruction pointer passed to CPU.");
-    }
-
-    std::string Intel8086::getInstructionAssembly(const std::unique_ptr<instr::Instruction>& instruction) const {
-        if(instruction)
-            return instruction->toAssembly(generalRegisters, segmentRegisters, flags);
-        else logging::error("Cannot find assembly representation of empty instruction pointer.");
-
-        return "";
     }
 
     void Intel8086::pushToStack(MemValue value, Mem& memory) {

@@ -8,7 +8,7 @@ namespace cli {
     }
 
     bool Executor::runCycle() {
-        auto addr = cpu.nextInstructionAddress();
+        auto addr = cpu.getAbsoluteInstructionPointer();
         logging::info("Fetching instruction from address: " + convert::toHexString(addr));
         auto instruction = cpu.fetchDecodeInstruction(addr, memory);
 
@@ -16,7 +16,7 @@ namespace cli {
             logging::success("Instruction fetched and decoded successfully!");
 
             logging::info("Instruction raw data: " + instruction->getRawDataString());
-            logging::info("Instruction assembly: " + cpu.getInstructionAssembly(instruction));
+            logging::info("Instruction assembly: " + instruction->toAssembly(cpu));
 
             cpu.executeInstruction(instruction, memory);
 

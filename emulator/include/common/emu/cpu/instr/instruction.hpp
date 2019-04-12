@@ -30,25 +30,21 @@ namespace emu::cpu::instr {
          * instruction is executed. Unless a jumping/calling instruction, in most instances it is best to return the
          * current instruction pointer plus the value returned by Instruction::getRawSize.
          *
-         * @param ip The current value of the instruction pointer.
+         * @param cpu Reference to the CPU on which this instruction is being executed.
          * @param memory Reference to the memory managed by the CPU.
-         * @param generalRegisters Reference to general-purpose registers of the CPU this instruction is executed on.
-         * @param indexRegisters Reference to the CPU's indexing registers.
-         * @param segmentRegisters Reference to the CPU's segment registers.
-         * @param flags Reference to the CPU's status flags.
          * @return The new instruction pointer value after completing execution.
          */
-        virtual OffsetAddr execute(Intel8086& cpu, OffsetAddr ip, Mem& memory, reg::GeneralRegisters& generalRegisters,
-                                   reg::SegmentRegisters& segmentRegisters, reg::Flags& flags) = 0;
+        virtual OffsetAddr execute(Intel8086& cpu, Mem& memory) = 0;
 
         /**
          * Disassemble this instruction into Intel-syntax assembly code. Returns this as a string.
          *
          * Is pure virtual and must therefore be overridden by subclasses.
+         *
+         * @param cpu Takes a constant reference to the CPU that this CPU was/will be executed on.
+         * @return The assembly representation of this instruction.
          */
-        virtual std::string toAssembly(const reg::GeneralRegisters& generalRegisters,
-                                       const reg::SegmentRegisters& segmentRegisters,
-                                       const reg::Flags& flags) const = 0;
+        virtual std::string toAssembly(const Intel8086& cpu) const = 0;
 
         /**
          * Fetch the raw 8-bit values that make this instruction include the opcode value.
@@ -94,16 +90,24 @@ namespace emu::cpu::instr {
         /**
          * Convert this instruction to assembly (simply the instruction identifier followed by the register identifier).
          */
-        std::string toAssembly(const reg::GeneralRegisters& generalRegisters, const reg::SegmentRegisters&,
-                               const reg::Flags&) const override;
+        std::string toAssembly(const Intel8086& cpu) const override;
 
     protected:
-        /**
-         * Fetch the register argument's assembly identifier.
-         */
-        std::string getRegisterAssembly(const reg::GeneralRegisters& registers) const;
-
         const reg::GeneralRegister registerIndex;
         const reg::RegisterPart registerPart;
+    };
+
+
+
+    class InstructionTakingRegistersModRegRm : public Instruction {
+    public:
+        InstructionTakingRegistersModRegRm(std::string instrIdentifier, Opcode instrOpcode, ModRegRm instrModRegRm);
+
+        //OffsetAddr execute(Intel8086& cpu, Mem& memory) override;
+
+        std::vector<u8> getRawData() const override;
+
+    protected:
+        const ModRegRm modRegRm;
     };
 }

@@ -9,24 +9,20 @@ namespace emu::cpu::instr {
     PushTakingRegister::PushTakingRegister(Opcode instrOpcode, reg::GeneralRegister generalReg)
     : InstructionTakingRegister("push", instrOpcode, generalReg) {}
 
-    OffsetAddr PushTakingRegister::execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
-                                           reg::GeneralRegisters& generalRegisters, reg::SegmentRegisters&,
-                                           reg::Flags&) {
-        u16 value = generalRegisters.get(registerIndex);
+    OffsetAddr PushTakingRegister::execute(Intel8086& cpu, Mem& memory) {
+        u16 value = cpu.generalRegisters.get(registerIndex);
         cpu.pushWordToStack(value, memory);
 
-        return ip + getRawSize();
+        return cpu.getRelativeInstructionPointer() + getRawSize();
     }
 
     PopTakingRegister::PopTakingRegister(Opcode instrOpcode, reg::GeneralRegister generalReg)
     : InstructionTakingRegister("pop", instrOpcode, generalReg) {}
 
-    OffsetAddr PopTakingRegister::execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
-                                          reg::GeneralRegisters& generalRegisters, reg::SegmentRegisters&,
-                                          reg::Flags&) {
+    OffsetAddr PopTakingRegister::execute(Intel8086& cpu, Mem& memory) {
         u16 value = cpu.popWordFromStack(memory);
-        generalRegisters.set(registerIndex, value);
+        cpu.generalRegisters.set(registerIndex, value);
 
-        return ip + getRawSize();
+        return cpu.getRelativeInstructionPointer() + getRawSize();
     }
 }
