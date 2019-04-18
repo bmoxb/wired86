@@ -96,18 +96,4 @@ namespace emu::cpu::instr {
         const reg::GeneralRegister registerIndex;
         const reg::RegisterPart registerPart;
     };
-
-
-
-    class InstructionTakingRegistersModRegRm : public Instruction {
-    public:
-        InstructionTakingRegistersModRegRm(std::string instrIdentifier, Opcode instrOpcode, ModRegRm instrModRegRm);
-
-        //OffsetAddr execute(Intel8086& cpu, Mem& memory) override;
-
-        std::vector<u8> getRawData() const override;
-
-    protected:
-        const ModRegRm modRegRm;
-    };
 }

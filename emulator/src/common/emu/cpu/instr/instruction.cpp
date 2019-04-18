@@ -24,8 +24,6 @@ namespace emu::cpu::instr {
         return static_cast<OffsetAddr>(size);
     }
 
-
-
     InstructionTakingRegister::InstructionTakingRegister(std::string instrIdentifier, Opcode instrOpcode,
                                                          reg::GeneralRegister generalReg, reg::RegisterPart part)
     : Instruction(instrIdentifier, instrOpcode),
@@ -34,22 +32,5 @@ namespace emu::cpu::instr {
     std::string InstructionTakingRegister::toAssembly(const Intel8086& cpu) const {
         auto registerIdentifier = cpu.generalRegisters.getAssemblyIdentifier(registerIndex, registerPart);
         return identifier + " " + registerIdentifier;
-    }
-
-
-
-    InstructionTakingRegistersModRegRm::InstructionTakingRegistersModRegRm(std::string instrIdentifier,
-                                                                           Opcode instrOpcode, ModRegRm instrModRegRm)
-    : Instruction(instrIdentifier, instrOpcode),
-      modRegRm(instrModRegRm) {}
-
-    /*OffsetAddr InstructionTakingRegistersModRegRm::execute(Intel8086& cpu, OffsetAddr ip, Mem& memory,
-                                                           reg::GeneralRegisters& generalRegisters,
-                                                           reg::SegmentRegisters& segmentRegisters, reg::Flags& flags) {
-        return ip + getRawSize();
-    }*/
-
-    std::vector<u8> InstructionTakingRegistersModRegRm::getRawData() const {
-        return { opcode.value, modRegRm.value };
     }
 }

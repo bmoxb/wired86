@@ -16,6 +16,7 @@ set(SRC_FILES # Define all common library source files.
     src/common/emu/cpu/instr/modregrm
     src/common/emu/cpu/instr/immediate
     src/common/emu/cpu/instr/instruction
+    src/common/emu/cpu/instr/complexinstruction
     src/common/emu/cpu/instr/stack
 )
 
