@@ -37,8 +37,7 @@ set(TEST_SRC_FILES
 
 add_library(${LIB_NAME} STATIC ${SRC_FILES}) # Create common library.
 
-target_compile_features(${LIB_NAME} PUBLIC cxx_std_17) # Common library uses C++ 17.
-target_compile_features(${LIB_NAME} INTERFACE cxx_std_11) # Uses of the common library require minimum C++ 11.
+target_compile_features(${LIB_NAME} PUBLIC cxx_std_17) # Common library, and everything that depends on it, uses C++ 17.
 target_include_directories(${LIB_NAME} PUBLIC include/common) # All builds using this library share a dependency on the
                                                               # include/common directory.
 
