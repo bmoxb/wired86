@@ -2,6 +2,7 @@
 
 #include "logging.hpp"
 #include "emu/cpu/instr/stack.hpp"
+#include "emu/cpu/instr/arithmeticlogic.hpp"
 
 namespace emu::cpu {
     AbsAddr Intel8086::resolveAddress(OffsetAddr offset, reg::SegmentRegister segment) const {
@@ -21,6 +22,11 @@ namespace emu::cpu {
     std::unique_ptr<instr::Instruction> Intel8086::fetchDecodeInstruction(AbsAddr address, const Mem& memory) const {
         MemValue opcodeValue = memory.read(address);
         instr::Opcode opcode(opcodeValue);
+
+        switch(opcode.getUniqueValue()) {
+        case 0b000000: // ADD E, G
+            return std::make_unique<instr::AddEG>(opcode, instr::ModRegRm(memory.read(address + 1)));
+        }
 
         /*
          * Creates instructions based on entire 8-bit opcode value (the direction and word bits have no special
@@ -121,5 +127,10 @@ namespace emu::cpu {
         u8 low = popFromStack(memory);
         u8 high = popFromStack(memory);
         return convert::createWordFromBytes(low, high);
+    }
+
+    void Intel8086::performRelativeJump(OffsetAddr offset) {
+        instructionPointer = offset;
+        // TODO: Ensure the jump is within bounds.
     }
 }

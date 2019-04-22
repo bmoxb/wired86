@@ -73,9 +73,9 @@ namespace emu::cpu {
         u16 popWordFromStack(Mem& memory);
 
         /**
-         *
+         * Sets the instruction pointer without altering any segment addresses.
          */
-        //void performRelativeJump();
+        void performRelativeJump(OffsetAddr offset);
 
         reg::GeneralRegisters generalRegisters; /// CPU general-purpose registers.
         reg::SegmentRegisters segmentRegisters; /// CPU segment registers.

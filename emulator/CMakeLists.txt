@@ -18,6 +18,7 @@ set(SRC_FILES # Define all common library source files.
     src/common/emu/cpu/instr/instruction
     src/common/emu/cpu/instr/complexinstruction
     src/common/emu/cpu/instr/stack
+    src/common/emu/cpu/instr/arithmeticlogic
 )
 
 set(CLI_SRC_FILES

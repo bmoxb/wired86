@@ -34,4 +34,36 @@ namespace emu::cpu::instr {
 
         return data;
     }
+
+
+
+    std::string ComplexInstructionEG::toAssembly(const Intel8086&) const {
+        return identifier + " ..."; // TODO: Implement!
+    }
+
+    void ComplexInstructionEG::executeRegisterAddressingMode(Intel8086& cpu, Mem&) {
+        DataSize size = opcode.getDataSize();
+
+        auto regIndex = modRegRm.getRegisterIndexFromReg(size);
+        auto regPart = modRegRm.getRegisterPartFromReg(size);
+        u16 regRegisterValue = cpu.generalRegisters.get(regIndex, regPart);
+
+        auto rmIndex = modRegRm.getRegisterIndexFromRm(size);
+        auto rmPart = modRegRm.getRegisterPartFromRm(size);
+        u16 rmRegisterValue = cpu.generalRegisters.get(rmIndex, rmPart);
+
+        u16 result;
+
+        switch(opcode.getDirection()) {
+        case REG_IS_SOURCE:
+            result = performOperation(rmRegisterValue, regRegisterValue);
+            cpu.generalRegisters.set(rmIndex, rmPart, result);
+            break;
+
+        case REG_IS_DESTINATION:
+            result = performOperation(regRegisterValue, rmRegisterValue);
+            cpu.generalRegisters.set(regIndex, regPart, result);
+            break;
+        }
+    }
 }

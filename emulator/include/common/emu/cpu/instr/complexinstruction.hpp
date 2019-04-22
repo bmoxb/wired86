@@ -16,7 +16,7 @@ namespace emu::cpu::instr {
 
         OffsetAddr execute(Intel8086& cpu, Mem& memory) override final;
 
-        std::vector<u8> getRawData() const override;
+        std::vector<u8> getRawData() const override final;
 
     protected:
         virtual void executeNoDisplacement(Intel8086& cpu, Mem& memory) = 0;
@@ -37,8 +37,18 @@ namespace emu::cpu::instr {
      * - ADD (0x00, 0x01, 0x02, 0x03)
      * - XOR (0x30, 0x31, 0x32, 0x33)
      */
-    class InstructionEG : public ComplexInstruction {
+    class ComplexInstructionEG : public ComplexInstruction {
     public:
         using ComplexInstruction::ComplexInstruction;
+
+        std::string toAssembly(const Intel8086&) const override final;
+
+    protected:
+        void executeNoDisplacement(Intel8086&, Mem&) override final {};
+        void executeByteDisplacement(Intel8086&, Mem&) override final {};
+        void executeWordDisplacement(Intel8086&, Mem&) override final {};
+        void executeRegisterAddressingMode(Intel8086& cpu, Mem&) override final;
+
+        virtual u16 performOperation(u16 dest, u16 src) = 0;
     };
 }
