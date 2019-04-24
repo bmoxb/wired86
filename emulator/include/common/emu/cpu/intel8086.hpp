@@ -81,6 +81,20 @@ namespace emu::cpu {
         reg::SegmentRegisters segmentRegisters; /// CPU segment registers.
 
     private:
+        /**
+         * @param opcode The instruction opcode.
+         * @return The decoded instruction or an empty unique pointer if decoding failed.
+         */
+        std::unique_ptr<instr::Instruction> fetchDecodeWithoutModRegRm(const instr::Opcode& opcode) const;
+
+        /**
+         * @param opcode The instruction opcode.
+         * @param modRegRm The instruction MOD-REG-R/M byte.
+         * @return The coded instruction or an empty unique pointer if decoding failed.
+         */
+        std::unique_ptr<instr::Instruction> fetchDecodeWithModRegRm(const instr::Opcode& opcode,
+                                                                    const instr::ModRegRm& modRegRm) const;
+
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
         OffsetAddr instructionPointer = 0;
 

@@ -23,16 +23,26 @@ namespace emu::cpu {
         MemValue opcodeValue = memory.read(address);
         instr::Opcode opcode(opcodeValue);
 
-        switch(opcode.getUniqueValue()) {
-        case 0b000000: // ADD E, G
-            return std::make_unique<instr::AddEG>(opcode, instr::ModRegRm(memory.read(address + 1)));
+        std::unique_ptr<instr::Instruction> instruction;
+
+        // First attempt to decode instruction without MOD-REG-R/M byte:
+        instruction = fetchDecodeWithoutModRegRm(opcode);
+
+        if(!instruction) {
+            MemValue modRegRmValue = memory.read(address + 1); // MOD-REG-R/M byte immediately follows opcode.
+            instr::ModRegRm modRegRm(modRegRmValue);
+
+            // Attempt to decode instruction with a MOD-REG-R/M byte:
+            instruction = fetchDecodeWithModRegRm(opcode, modRegRm);
         }
 
-        /*
-         * Creates instructions based on entire 8-bit opcode value (the direction and word bits have no special
-         * significance for these particular instructions).
-         */
-        switch(opcodeValue) {
+        if(!instruction) logging::warning("Failed to decode instruction with opcode: " + opcode.toString());
+
+        return instruction;
+    }
+
+    std::unique_ptr<instr::Instruction> Intel8086::fetchDecodeWithoutModRegRm(const instr::Opcode& opcode) const {
+        switch(opcode.value) {
         case 0x50: // PUSH AX
             return std::make_unique<instr::PushTakingRegister>(opcode, reg::AX_REGISTER);
 
@@ -82,7 +92,16 @@ namespace emu::cpu {
             return std::make_unique<instr::PopTakingRegister>(opcode, reg::DESTINATION_INDEX);
         }
 
-        logging::warning("Failed to decode instruction with opcode: " + opcode.toString());
+        return {};
+    }
+
+    std::unique_ptr<instr::Instruction> Intel8086::fetchDecodeWithModRegRm(const instr::Opcode& opcode,
+                                                                           const instr::ModRegRm& modRegRm) const {
+        switch(opcode.getUniqueValue()) {
+        case 0b000000: // ADD E, G
+            return std::make_unique<instr::AddEG>(opcode, modRegRm);
+        }
+
         return {};
     }
 
