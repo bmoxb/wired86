@@ -60,7 +60,7 @@ namespace emu::cpu {
         /**
          * Pop values from the stack. Stack pointer incremented.
          */
-        MemValue popFromStack(Mem& memory);
+        MemValue popFromStack(const Mem& memory);
 
         /**
          * Push a 16-bit word value onto the stack.
@@ -70,7 +70,7 @@ namespace emu::cpu {
         /**
          * Pop 16-bit word value off the stack.
          */
-        u16 popWordFromStack(Mem& memory);
+        u16 popWordFromStack(const Mem& memory);
 
         /**
          * Sets the instruction pointer without altering any segment addresses.

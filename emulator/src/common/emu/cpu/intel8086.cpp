@@ -129,7 +129,7 @@ namespace emu::cpu {
         else logging::warning("Attempted to push to stack when stack pointer is zero!");
     }
 
-    MemValue Intel8086::popFromStack(Mem& memory) {
+    MemValue Intel8086::popFromStack(const Mem& memory) {
         OffsetAddr initialStackPointer = generalRegisters.get(reg::STACK_POINTER);
         generalRegisters.set(reg::STACK_POINTER, initialStackPointer + 1);
 
@@ -142,7 +142,7 @@ namespace emu::cpu {
         pushToStack(convert::getLeastSigByte(value), memory);
     }
 
-    u16 Intel8086::popWordFromStack(Mem& memory) {
+    u16 Intel8086::popWordFromStack(const Mem& memory) {
         u8 low = popFromStack(memory);
         u8 high = popFromStack(memory);
         return convert::createWordFromBytes(low, high);
