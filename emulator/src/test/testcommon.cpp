@@ -29,13 +29,13 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         REQUIRE(getBitsFrom<u8>(0b10111000, 3, 3) == 0b111);
     }
 
-    SECTION("Test conversion between a numerical value and a hexadecimal string representation.") {
-        REQUIRE(toHexString<u8>(0xFF) == "0xFF");
+    SECTION("Test conversion from a numerical value to a hexadecimal string representation.") {
+        REQUIRE(toHexString<u8>(0xFF) == "FF");
         REQUIRE(toHexString<u16>(0x55A, "", "h") == "55Ah");
     }
 
-    SECTION("Test conversion between a numerical value a binary string representation.") {
-        REQUIRE(toBinaryString<8, u8>(0b10101010) == "0b10101010");
+    SECTION("Test conversion from a numerical value to a binary string representation.") {
+        REQUIRE(toBinaryString<8, u8>(0b10101010) == "10101010");
         REQUIRE(toBinaryString<4, u16>(0xFF, "", "b") == "1111b");
     }
 
@@ -48,10 +48,21 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         REQUIRE(vec == expected);
     }
 
-    SECTION("Test conversion between vector to string.") {
+    SECTION("Test conversion from vector to string.") {
         std::vector<u16> values = { 0xAA, 0xBB, 0xCC };
         std::function<std::string(u16)> convert = [](auto value) { return toHexString(value); };
         
-        REQUIRE(vectorToString(values, convert, " ") == "0xAA 0xBB 0xCC");
+        REQUIRE(vectorToString(values, convert, ", ") == "AA, BB, CC");
+    }
+
+    SECTION("Test conversion from hexadecimal string representation to numeric type.") {
+        REQUIRE(fromHexString<unsigned int>("0xFF") == 0xFF);
+        REQUIRE(fromHexString<unsigned int>("    ab0  ignored") == 0xAB0);
+        REQUIRE(fromHexString<unsigned long long>("\n\tabcdef123") == 0xABCDEF123);
+    }
+
+    SECTION("Test conversion from decimal string representation to a numeric type.") {
+        REQUIRE(fromBinaryString<unsigned int>("1010") == 0b1010);
+        REQUIRE(fromBinaryString<unsigned char>("   1111  abc") == 0b1111);
     }
 }

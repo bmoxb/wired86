@@ -5,6 +5,7 @@
 #include <bitset>
 #include <vector>
 #include <functional>
+#include <optional>
 #include "primitives.hpp"
 
 namespace convert {
@@ -54,7 +55,7 @@ namespace convert {
     std::string vectorToString(const std::vector<T> &items, std::function<std::string(T)> convertFunction,
                                std::string separator = ", ") {
         std::string str;
-        auto size = items.size();
+        const auto size = items.size();
 
         for(unsigned int i = 0; i < size - 1; i++)
             str += convertFunction(items[i]) + separator; // Add all elements (except the final one) with separator.
@@ -82,13 +83,13 @@ namespace convert {
      * @tparam T Type of numerical value to convert to binary string.
      * @tparam bitCount The number of bits of the given value to display.
      * @param value Value to convert to binary string.
-     * @param prefix Prefix string value to prefix (defaults to '0b').
+     * @param prefix Prefix string value to prefix (defaults to an empty string).
      * @param suffix Suffix string value to append (defaults to an empty string).
      * @return The binary string representation of the given value.
      */
-    template <std::size_t bitCount, typename T>
-    std::string toBinaryString(T value, std::string prefix = "0b", std::string suffix = "") {
-        std::bitset<bitCount> bits(value);
+    template <std::size_t BitCount, typename T>
+    std::string toBinaryString(T value, std::string prefix = "", std::string suffix = "") {
+        std::bitset<BitCount> bits(value);
         
         std::stringstream stream;
         stream << prefix << bits << suffix;
@@ -102,12 +103,12 @@ namespace convert {
      *
      * @tparam T Type of numerical value to convert to hexadecimal string.
      * @param value Value convert to hexadecimal string.
-     * @param prefix Prefix string value to prefix (defaults to '0x').
+     * @param prefix Prefix string value to prefix (defaults to an empty string).
      * @param suffix Suffix string value to append (defaults to an empty string).
      * @return The hexadecimal string representation of the given value.
      */
     template <typename T>
-    std::string toHexString(T value, std::string prefix = "0x", std::string suffix = "") {
+    std::string toHexString(T value, std::string prefix = "", std::string suffix = "") {
         std::stringstream stream;
         
         stream << std::hex << std::uppercase << std::noshowbase
@@ -116,6 +117,38 @@ namespace convert {
                << suffix;
 
         return stream.str();
+    }
+
+    /**
+     * TODO!
+     */
+    template <typename T>
+    std::optional<T> fromString(const std::string& str, int base) {
+        try {
+            T value = static_cast<T>(std::stoull(str, nullptr, base));
+
+            return std::make_optional<T>(value);
+        }
+        catch(std::invalid_argument&) {}
+        catch(std::out_of_range&) {}
+
+        return {};
+    }
+
+    /**
+     * TODO!
+     */
+    template <typename T>
+    std::optional<T> fromBinaryString(const std::string& str) {
+        return fromString<T>(str, 2);
+    }
+
+    /**
+     * TODO!
+     */
+    template <typename T>
+    std::optional<T> fromHexString(const std::string& str) {
+        return fromString<T>(str, 16);
     }
 
     /**
