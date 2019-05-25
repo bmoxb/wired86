@@ -120,10 +120,18 @@ namespace convert {
     }
 
     /**
-     * TODO!
+     * Convert a string representation of a number in any base to an actual numerical type. Utilises the std::stoull
+     * function added in C++11 in order to facilitate this. Will return an empty optional should the aforementioned
+     * function throw an exception.
+     *
+     * @tparam T Type of numerical type to be converted to.
+     * @param str Constant reference to the string.
+     * @param base Numerical base (defaults to 10).
+     * @return An optional that will contain the value expressed in the given string should the conversion complete
+     *         successfully.
      */
     template <typename T>
-    std::optional<T> fromString(const std::string& str, int base) {
+    std::optional<T> fromString(const std::string& str, int base = 10) {
         try {
             T value = static_cast<T>(std::stoull(str, nullptr, base));
 
@@ -136,7 +144,7 @@ namespace convert {
     }
 
     /**
-     * TODO!
+     * Calls convert::fromString with a base 2 argument (i.e. binary).
      */
     template <typename T>
     std::optional<T> fromBinaryString(const std::string& str) {
@@ -144,7 +152,7 @@ namespace convert {
     }
 
     /**
-     * TODO!
+     * Calls convert::fromString with a base 16 argument (i.e. hexadecimal).
      */
     template <typename T>
     std::optional<T> fromHexString(const std::string& str) {

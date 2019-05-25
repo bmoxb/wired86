@@ -31,11 +31,13 @@ TEST_CASE("Tests conversions.", "[conversions]") {
 
     SECTION("Test conversion from a numerical value to a hexadecimal string representation.") {
         REQUIRE(toHexString<u8>(0xFF) == "FF");
+        REQUIRE(toHexString<u16>(0xABCD, "0x") == "0xABCD");
         REQUIRE(toHexString<u16>(0x55A, "", "h") == "55Ah");
     }
 
     SECTION("Test conversion from a numerical value to a binary string representation.") {
         REQUIRE(toBinaryString<8, u8>(0b10101010) == "10101010");
+        REQUIRE(toBinaryString<6, u8>(0b111111, "0b") == "0b111111");
         REQUIRE(toBinaryString<4, u16>(0xFF, "", "b") == "1111b");
     }
 
@@ -56,13 +58,13 @@ TEST_CASE("Tests conversions.", "[conversions]") {
     }
 
     SECTION("Test conversion from hexadecimal string representation to numeric type.") {
-        REQUIRE(fromHexString<unsigned int>("0xFF") == 0xFF);
-        REQUIRE(fromHexString<unsigned int>("    ab0  ignored") == 0xAB0);
-        REQUIRE(fromHexString<unsigned long long>("\n\tabcdef123") == 0xABCDEF123);
+        REQUIRE(fromHexString<u16>("0xFF") == 0xFF);
+        REQUIRE(fromHexString<u16>("    ab0  ignored") == 0xAB0);
+        REQUIRE(fromHexString<u32>("\n\tabcdef") == 0xABCDEF);
     }
 
     SECTION("Test conversion from decimal string representation to a numeric type.") {
-        REQUIRE(fromBinaryString<unsigned int>("1010") == 0b1010);
-        REQUIRE(fromBinaryString<unsigned char>("   1111  abc") == 0b1111);
+        REQUIRE(fromBinaryString<u16>("1010") == 0b1010);
+        REQUIRE(fromBinaryString<u8>("   1111  abc") == 0b1111);
     }
 }
