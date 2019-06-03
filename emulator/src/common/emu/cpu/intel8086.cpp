@@ -36,7 +36,9 @@ namespace emu::cpu {
             instruction = fetchDecodeWithModRegRm(opcode, modRegRm);
         }
 
-        if(!instruction) logging::warning("Failed to decode instruction with opcode: " + opcode.toString());
+        if(!instruction)
+            logging::warning("Encountered instruction with nonexistent or currently unimplemented opcode: " +
+                             opcode.toString());
 
         return instruction;
     }
