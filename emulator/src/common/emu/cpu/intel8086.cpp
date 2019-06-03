@@ -128,7 +128,8 @@ namespace emu::cpu {
 
             generalRegisters.set(reg::STACK_POINTER, stackPointer);
         }
-        else logging::warning("Attempted to push to stack when stack pointer is zero!");
+        else logging::warning("Stack pointer is zero so cannot successfully push value: " +
+                              convert::toHexString(value));
     }
 
     MemValue Intel8086::popFromStack(const Mem& memory) {
