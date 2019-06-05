@@ -92,6 +92,9 @@ namespace emu::cpu {
 
         case 0x5F: // POP DI
             return std::make_unique<instr::PopTakingRegister>(opcode, reg::DESTINATION_INDEX);
+        
+        case 0xF4: // HLT
+            return std::make_unique<instr::HaltInstruction>(opcode);
         }
 
         return {};
@@ -107,14 +110,25 @@ namespace emu::cpu {
         return {};
     }
 
-    void Intel8086::executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory) {
+    bool Intel8086::executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory) {
+        if(halted) {
+            logging::warning("Instruction could not be executed due to halted CPU state.");
+            return false;
+        }
+
         if(instruction) {
             OffsetAddr newIp = instruction->execute(*this, memory);
 
-            if(memory.withinBounds(newIp)) instructionPointer = newIp;
+            if(memory.withinBounds(newIp)) {
+                instructionPointer = newIp;
+
+                return true; // Success!
+            }
             else logging::error("Instruction returned new instruction pointer value that is out of bounds!");
         }
         else logging::error("Empty instruction pointer passed to CPU.");
+
+        return false;
     }
 
     void Intel8086::pushToStack(MemValue value, Mem& memory) {

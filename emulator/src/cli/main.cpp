@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 
         if(memorySize) {
             cli::Executor exec(*memorySize, path);
-            exec.runCycles(5);
+            exec.runCycles(25);
         }
         else logging::error("Invalid memory size given! Please express the memory size in hexadecimal format.");
     }

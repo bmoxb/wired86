@@ -20,9 +20,9 @@ namespace cli {
          * Complete multiple CPU cycles.
          *
          * @param count The number of cycles to execute.
-         * @return False if any of the cycles fail. Returns true otherwise.
+         * @return Returns the number of CPU cycles executed successfully.
          */
-        bool runCycles(unsigned int count);
+        unsigned int runCycles(unsigned int count);
 
     protected:
         emu::Memory<emu::MemValue, emu::AbsAddr> memory;

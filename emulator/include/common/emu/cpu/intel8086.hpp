@@ -50,7 +50,7 @@ namespace emu::cpu {
          *
          * @param instruction Reference to the std::unique_ptr holding the instruction.
          */
-        void executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory);
+        bool executeInstruction(std::unique_ptr<instr::Instruction>& instruction, Mem& memory);
 
         /**
          * Push values onto the stack. Stack pointer decremented.
@@ -79,6 +79,8 @@ namespace emu::cpu {
 
         reg::GeneralRegisters generalRegisters; /// CPU general-purpose registers.
         reg::SegmentRegisters segmentRegisters; /// CPU segment registers.
+
+        bool halted = false; // Whether the CPU is in a halted state or not.
 
     private:
         /**

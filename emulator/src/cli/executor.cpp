@@ -16,24 +16,38 @@ namespace cli {
             logging::success("Instruction fetched and decoded successfully: " + instruction->toAssembly(cpu));
             logging::info("Instruction raw data: " + instruction->getRawDataString());
 
-            cpu.executeInstruction(instruction, memory);
+            bool success = cpu.executeInstruction(instruction, memory);
 
-            logging::success("Instruction executed successfully!");
-            return true;
+            if(success) logging::success("Instruction executed successfully!");
+            else logging::error("Instruction failed to execute successfully.");
+
+            return success;
         }
-        
+
         logging::error("Failed to decode instruction - halting...");
+        cpu.halted = true;
+
         return false;
     }
 
-    bool Executor::runCycles(unsigned int count) {
+    unsigned int Executor::runCycles(unsigned int count) {
+        unsigned int cycle;
         bool success = true;
 
-        for(int cycle = 0; cycle < count && success; cycle++) {
+        for(cycle = 1; cycle <= count && success; cycle++) {
             logging::info("--- CYCLE " + std::to_string(cycle) + " ---");
             success = runCycle();
+
+            if(cpu.halted) {
+                logging::warning("Detected that CPU is now in halted state. Remaining cycles will not be executed.");
+                logging::info("--- TOTAL " + std::to_string(cycle) + " OF " + std::to_string(count) +
+                              " CYCLES COMPLETED ---");
+                
+                return cycle;
+            }
         }
 
-        return success;
+        logging::info("--- ALL " + std::to_string(count) + " CYCLES COMPLETED ---");
+        return count;
     }
 }

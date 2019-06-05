@@ -39,12 +39,12 @@ namespace emu::cpu::instr {
         /**
          * Disassemble this instruction into Intel-syntax assembly code. Returns this as a string.
          *
-         * Is pure virtual and must therefore be overridden by subclasses.
+         * Is virtual and can therefore be overrriden. By default, simply returns instruction identifier.
          *
          * @param cpu Takes a constant reference to the CPU that this CPU was/will be executed on.
          * @return The assembly representation of this instruction.
          */
-        virtual std::string toAssembly(const Intel8086& cpu) const = 0;
+        virtual std::string toAssembly(const Intel8086& cpu) const;
 
         /**
          * Fetch the raw 8-bit values that make this instruction include the opcode value.
@@ -95,5 +95,15 @@ namespace emu::cpu::instr {
     protected:
         const reg::GeneralRegister registerIndex;
         const reg::RegisterPart registerPart;
+    };
+
+    /**
+     * This instruction halts the execution of the CPU (assembly 'hlt' identifier).
+     */
+    class HaltInstruction : public Instruction {
+    public:
+        HaltInstruction(Opcode instrOpcode);
+
+        OffsetAddr execute(Intel8086& cpu, Mem& memory) override;
     };
 }

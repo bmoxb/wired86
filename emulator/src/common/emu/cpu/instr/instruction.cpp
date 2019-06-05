@@ -8,6 +8,10 @@ namespace emu::cpu::instr {
     Instruction::Instruction(std::string instrIdentifier, Opcode instrOpcode)
     : identifier(instrIdentifier), opcode(instrOpcode) {}
 
+    std::string Instruction::toAssembly(const Intel8086&) const {
+        return identifier;
+    }
+
     std::vector<u8> Instruction::getRawData() const {
         return { opcode.value }; // By default, only the opcode value is returned as raw data.
     }
@@ -24,6 +28,8 @@ namespace emu::cpu::instr {
         return static_cast<OffsetAddr>(size);
     }
 
+
+
     InstructionTakingRegister::InstructionTakingRegister(std::string instrIdentifier, Opcode instrOpcode,
                                                          reg::GeneralRegister generalReg, reg::RegisterPart part)
     : Instruction(instrIdentifier, instrOpcode),
@@ -32,5 +38,14 @@ namespace emu::cpu::instr {
     std::string InstructionTakingRegister::toAssembly(const Intel8086& cpu) const {
         auto registerIdentifier = cpu.generalRegisters.getAssemblyIdentifier(registerIndex, registerPart);
         return identifier + " " + registerIdentifier;
+    }
+
+
+
+    HaltInstruction::HaltInstruction(Opcode instrOpcode) : Instruction("hlt", instrOpcode) {}
+
+    OffsetAddr HaltInstruction::execute(Intel8086& cpu, Mem&) {
+        cpu.halted = true;
+        return cpu.getRelativeInstructionPointer() + getRawSize();
     }
 }
