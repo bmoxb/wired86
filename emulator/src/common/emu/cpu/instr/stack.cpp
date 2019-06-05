@@ -13,7 +13,7 @@ namespace emu::cpu::instr {
         u16 value = cpu.generalRegisters.get(registerIndex);
         cpu.pushWordToStack(value, memory);
 
-        return cpu.getRelativeInstructionPointer() + getRawSize();
+        return nextAddress(cpu);
     }
 
     PopTakingRegister::PopTakingRegister(Opcode instrOpcode, reg::GeneralRegister generalReg)
@@ -23,6 +23,6 @@ namespace emu::cpu::instr {
         u16 value = cpu.popWordFromStack(memory);
         cpu.generalRegisters.set(registerIndex, value);
 
-        return cpu.getRelativeInstructionPointer() + getRawSize();
+        return nextAddress(cpu);
     }
 }

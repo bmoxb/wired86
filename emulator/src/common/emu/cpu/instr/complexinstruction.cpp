@@ -23,7 +23,7 @@ namespace emu::cpu::instr {
             executeRegisterAddressingMode(cpu, memory); break;
         }
 
-        return cpu.getRelativeInstructionPointer() + getRawSize();
+        return nextAddress(cpu);
     }
 
     std::vector<u8> ComplexInstruction::getRawData() const {

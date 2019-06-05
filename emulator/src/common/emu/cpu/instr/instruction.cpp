@@ -24,8 +24,13 @@ namespace emu::cpu::instr {
     }
 
     OffsetAddr Instruction::getRawSize() const {
-        std::size_t size = getRawData().size();
-        return static_cast<OffsetAddr>(size);
+        std::size_t size = getRawData().size(); // Fetch the raw data vector in order to then obtain its size expressed
+                                                // as std::size_t type.
+        return static_cast<OffsetAddr>(size); // Cast from std::size_t at compile time (static cast).
+    }
+
+    OffsetAddr Instruction::nextAddress(const Intel8086& cpu) const {
+        return cpu.getRelativeInstructionPointer() + getRawSize();
     }
 
 
@@ -46,6 +51,7 @@ namespace emu::cpu::instr {
 
     OffsetAddr HaltInstruction::execute(Intel8086& cpu, Mem&) {
         cpu.halted = true;
-        return cpu.getRelativeInstructionPointer() + getRawSize();
+
+        return nextAddress(cpu);
     }
 }

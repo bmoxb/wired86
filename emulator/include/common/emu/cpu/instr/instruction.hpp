@@ -66,6 +66,13 @@ namespace emu::cpu::instr {
          */
         OffsetAddr getRawSize() const;
 
+        /**
+         * Returns the address of the instruction that should be run after this one (assuming that this instruction is
+         * not a jump instruction or otherwise modifies the instruction pointer) based on the value of the instruction
+         * pointer and the return of Instruction::getRawData method.
+         */
+        OffsetAddr nextAddress(const Intel8086& cpu) const;
+
         const std::string identifier;
         const Opcode opcode;
     };
