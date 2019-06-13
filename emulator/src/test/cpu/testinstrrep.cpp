@@ -54,7 +54,7 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
             instr::ModRegRm clReg(0b11001010);
             REQUIRE(clReg.getRegBits() == 0b001);
             REQUIRE(clReg.getRegisterIndexFromReg(instr::BYTE_DATA_SIZE) == reg::CX_REGISTER);
-            REQUIRE(axReg.getRegisterPartFromReg(instr::BYTE_DATA_SIZE) == reg::LOW_BYTE);
+            REQUIRE(clReg.getRegisterPartFromReg(instr::BYTE_DATA_SIZE) == reg::LOW_BYTE);
 
             instr::ModRegRm dhReg(0b11110000);
             REQUIRE(dhReg.getRegBits() == 0b110);

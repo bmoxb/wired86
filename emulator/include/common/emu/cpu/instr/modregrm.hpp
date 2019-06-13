@@ -60,6 +60,11 @@ namespace emu::cpu::instr {
         reg::RegisterPart getRegisterPartFromRm(DataSize size) const;
 
         /**
+         *
+         */
+        std::string getRegisterIdentifierFromRm(const reg::GeneralRegisters& registers, DataSize size) const;
+
+        /**
          * Get the appropriate register index based on the value of the REG component.
          */
         reg::GeneralRegister getRegisterIndexFromReg(DataSize size) const;
@@ -68,6 +73,11 @@ namespace emu::cpu::instr {
          * Returns the appropriate register part based on the value of the REG component.
          */
         reg::RegisterPart getRegisterPartFromReg(DataSize size) const;
+
+        /**
+         *
+         */
+        std::string getRegisterIdentifierFromReg(const reg::GeneralRegisters& registers, DataSize size) const;
 
         /**
          * Returns the appropriate displacement type based on the value of the R/M component.

@@ -16,9 +16,17 @@ namespace emu::cpu::instr {
 
         OffsetAddr execute(Intel8086& cpu, Mem& memory) override final;
 
+        std::string toAssembly(const Intel8086& cpu) const override final;
+
         std::vector<u8> getRawData() const override final;
 
     protected:
+        virtual std::string argumentsToAssemblyNoDisplacement(const Intel8086& cpu) const = 0;
+        virtual std::string argumentsToAssemblyByteDisplacement(const Intel8086& cpu) const = 0;
+        virtual std::string argumentsToAssemblyWordDisplacement(const Intel8086& cpu) const = 0;
+        virtual std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
+                                                                      std::string separator = ", ") const = 0;
+
         virtual void executeNoDisplacement(Intel8086& cpu, Mem& memory) = 0;
         virtual void executeByteDisplacement(Intel8086& cpu, Mem& memory) = 0;
         virtual void executeWordDisplacement(Intel8086& cpu, Mem& memory) = 0;
@@ -41,9 +49,13 @@ namespace emu::cpu::instr {
     public:
         using ComplexInstruction::ComplexInstruction;
 
-        std::string toAssembly(const Intel8086&) const override final;
-
     protected:
+        std::string argumentsToAssemblyNoDisplacement(const Intel8086&) const override final { return ""; }
+        std::string argumentsToAssemblyByteDisplacement(const Intel8086&) const override final { return ""; }
+        std::string argumentsToAssemblyWordDisplacement(const Intel8086&) const override final { return ""; }
+        std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086&,
+                                                              std::string) const override final;
+
         void executeNoDisplacement(Intel8086&, Mem&) override final {};
         void executeByteDisplacement(Intel8086&, Mem&) override final {};
         void executeWordDisplacement(Intel8086&, Mem&) override final {};

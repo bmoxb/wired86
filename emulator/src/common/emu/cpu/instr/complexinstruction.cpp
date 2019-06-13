@@ -26,6 +26,26 @@ namespace emu::cpu::instr {
         return nextAddress(cpu);
     }
 
+    std::string ComplexInstruction::toAssembly(const Intel8086& cpu) const {
+        std::string argumentsStr;
+
+        switch(modRegRm.getAddressingMode()) {
+        case NO_DISPLACEMENT:
+            argumentsStr = argumentsToAssemblyNoDisplacement(cpu); break;
+
+        case BYTE_DISPLACEMENT:
+            argumentsStr = argumentsToAssemblyByteDisplacement(cpu); break;
+
+        case WORD_DISPLACEMENT:
+            argumentsStr = argumentsToAssemblyWordDisplacement(cpu); break;
+
+        case REGISTER_ADDRESSING_MODE:
+            argumentsStr = argumentsToAssemblyRegisterAddressingMode(cpu); break;
+        }
+
+        return identifier + " " + argumentsStr;
+    }
+
     std::vector<u8> ComplexInstruction::getRawData() const {
         std::vector<u8> data = { opcode.value, modRegRm.value };
 
@@ -37,8 +57,26 @@ namespace emu::cpu::instr {
 
 
 
-    std::string ComplexInstructionEG::toAssembly(const Intel8086&) const {
-        return identifier + " ..."; // TODO: Implement!
+    std::string ComplexInstructionEG::argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
+                                                                                std::string separator) const {
+        DataSize size = opcode.getDataSize();
+
+        std::string regRegisterIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, size);
+        std::string rmRegisterIdentifier = modRegRm.getRegisterIdentifierFromRm(cpu.generalRegisters, size);
+
+        std::string arguments;
+
+        switch(opcode.getDirection()) {
+        case REG_IS_SOURCE:
+            arguments = rmRegisterIdentifier + separator + regRegisterIdentifier;
+            break;
+
+        case REG_IS_DESTINATION:
+            arguments = regRegisterIdentifier + separator + rmRegisterIdentifier;
+            break;
+        }
+
+        return arguments;
     }
 
     void ComplexInstructionEG::executeRegisterAddressingMode(Intel8086& cpu, Mem&) {

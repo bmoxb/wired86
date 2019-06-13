@@ -41,12 +41,22 @@ namespace emu::cpu::instr {
         return getRegisterPart(getRmBits(), size);
     }
 
+    std::string ModRegRm::getRegisterIdentifierFromRm(const reg::GeneralRegisters& registers, DataSize size) const {
+        return registers.getAssemblyIdentifier(getRegisterIndexFromRm(size),
+                                               getRegisterPartFromRm(size));
+    }
+
     reg::GeneralRegister ModRegRm::getRegisterIndexFromReg(DataSize size) const {
         return getRegisterIndex(getRegBits(), size);
     }
 
     reg::RegisterPart ModRegRm::getRegisterPartFromReg(DataSize size) const {
         return getRegisterPart(getRegBits(), size);
+    }
+
+    std::string ModRegRm::getRegisterIdentifierFromReg(const reg::GeneralRegisters& registers, DataSize size) const {
+        return registers.getAssemblyIdentifier(getRegisterIndexFromReg(size),
+                                               getRegisterPartFromReg(size));
     }
 
     DisplacementType ModRegRm::getDisplacementType() const {

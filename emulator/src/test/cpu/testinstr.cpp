@@ -66,6 +66,7 @@ TEST_CASE("Test CPU instruction execution.", "[emu][cpu][instructions]") {
         auto add = cpu.fetchDecodeInstruction(0, memory);
         cpu.executeInstruction(add, memory);
 
+        REQUIRE(add->toAssembly(cpu) == "add cx, bx");
         REQUIRE(cpu.generalRegisters.get(cpu::reg::CX_REGISTER) == 15);
 
     }
