@@ -16,11 +16,8 @@ if [ "$1" ] # Check if command-line argument supplied.
 
     if [ -r $DEMO_SRC ]
       then
-        # Build demo if it has not already been built previously:
-        if [ ! -x $DEMO_BUILD ]
-          then
-            nasm $DEMO_SRC -f bin -o $DEMO_BUILD
-        fi
+        # Build demo:
+        nasm $DEMO_SRC -f bin -o $DEMO_BUILD -Ov0
 
         # Run the demo program on the emulator:
         ./emulator/build/cli $MEMORY_SIZE $DEMO_BUILD
