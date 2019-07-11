@@ -33,14 +33,11 @@ namespace emu::cpu::instr {
         case NO_DISPLACEMENT:
             argumentsStr = argumentsToAssemblyNoDisplacement(cpu); break;
 
-        case BYTE_DISPLACEMENT:
-            argumentsStr = argumentsToAssemblyByteDisplacement(cpu); break;
-
-        case WORD_DISPLACEMENT:
-            argumentsStr = argumentsToAssemblyWordDisplacement(cpu); break;
-
         case REGISTER_ADDRESSING_MODE:
             argumentsStr = argumentsToAssemblyRegisterAddressingMode(cpu); break;
+
+        default: // Byte or word displacement:
+            argumentsStr = argumentsToAssemblyDisplacement(cpu); break;
         }
 
         return identifier + " " + argumentsStr;
@@ -57,23 +54,35 @@ namespace emu::cpu::instr {
 
 
 
+    std::string ComplexInstructionEG::argumentsToAssemblyDisplacement(const Intel8086& cpu, std::string separator,
+                                                                      std::string beginDisplacement,
+                                                                      std::string endDisplacement,
+                                                                      std::string displacementSeparator) const {
+        DataSize size = opcode.getDataSize();
+
+        std::string registerIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, size);
+        
+        std::string displacementArgument = displacementValue->toAssembly(size, modRegRm, cpu.generalRegisters,
+                                                                         beginDisplacement, endDisplacement,
+                                                                         displacementSeparator);
+
+        return registerIdentifier + separator + displacementArgument;
+    }
+
     std::string ComplexInstructionEG::argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
                                                                                 std::string separator) const {
+        std::string arguments;
         DataSize size = opcode.getDataSize();
 
         std::string regRegisterIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, size);
         std::string rmRegisterIdentifier = modRegRm.getRegisterIdentifierFromRm(cpu.generalRegisters, size);
 
-        std::string arguments;
-
         switch(opcode.getDirection()) {
         case REG_IS_SOURCE:
-            arguments = rmRegisterIdentifier + separator + regRegisterIdentifier;
-            break;
+            arguments = rmRegisterIdentifier + separator + regRegisterIdentifier; break;
 
         case REG_IS_DESTINATION:
-            arguments = regRegisterIdentifier + separator + rmRegisterIdentifier;
-            break;
+            arguments = regRegisterIdentifier + separator + rmRegisterIdentifier; break;
         }
 
         return arguments;

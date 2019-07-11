@@ -15,6 +15,12 @@ namespace emu::cpu::instr {
         Immediate(std::vector<u8> raw);
 
         const std::vector<u8>& getRawData() const;
+
+        /**
+         * Will return the value of this immediate instruction component as either 8-bits or 16-bits (note the return
+         * value will be cast to u16 regardless) based on the data size specified.
+         */
+        u16 getValue(DataSize size) const;
         u8 getByteValue() const;
         u16 getWordValue() const;
 
@@ -25,6 +31,9 @@ namespace emu::cpu::instr {
     class Displacement : public Immediate {
     public:
         using Immediate::Immediate;
+
+        std::string toAssembly(DataSize size, const ModRegRm& modRegRm, const reg::GeneralRegisters& registers,
+                               std::string begin = "[", std::string end = "]", std::string separator = " + ") const;
 
         /**
          * Returns an absolute memory address based on the displacement value and displacement type.

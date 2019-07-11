@@ -99,7 +99,7 @@ namespace emu::cpu {
         MemValue modRegRmValue = memory.read(address + 1); // MOD-REG-R/M byte immediately follows opcode.
         instr::ModRegRm modRegRm(modRegRmValue);
 
-        std::optional<instr::Displacement> displacement = {};
+        std::optional<instr::Displacement> displacement;
 
         if(modRegRm.isDisplacementUsed()) {
             auto displacementValues = memory.read(address + 2, opcode.getImmediateReadLength());

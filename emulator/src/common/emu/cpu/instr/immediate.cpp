@@ -1,15 +1,19 @@
 #include "emu/cpu/instr/immediate.hpp"
 
-#include <cassert>
 #include "convert.hpp"
 
 namespace emu::cpu::instr {
     Immediate::Immediate(std::vector<u8> raw) : rawData(raw) {
-        assert(rawData.size() >= 1);
+        //assert(rawData.size() >= 1);
     }
 
     const std::vector<u8>& Immediate::getRawData() const {
         return rawData;
+    }
+
+    u16 Immediate::getValue(DataSize size) const {
+        return size == WORD_DATA_SIZE ? getWordValue()
+                                      : getByteValue();
     }
 
     u8 Immediate::getByteValue() const {
@@ -17,8 +21,56 @@ namespace emu::cpu::instr {
     }
 
     u16 Immediate::getWordValue() const {
-        assert(rawData.size() >= 2);
         return convert::createWordFromBytes(rawData[0], rawData[1]);
+    }
+
+
+
+    std::string Displacement::toAssembly(DataSize size, const ModRegRm& modRegRm, const reg::GeneralRegisters& registers,
+                                         std::string begin, std::string end, std::string separator) const {
+        std::string offsetString;
+
+        switch(modRegRm.getDisplacementType()) {
+        case BX_SI_DISPLACEMENT:
+            offsetString += registers.getAssemblyIdentifier(reg::BX_REGISTER) + separator +
+                            registers.getAssemblyIdentifier(reg::SOURCE_INDEX);
+            break;
+
+        case BX_DI_DISPLACEMENT:
+            offsetString += registers.getAssemblyIdentifier(reg::BX_REGISTER) + separator +
+                            registers.getAssemblyIdentifier(reg::DESTINATION_INDEX);
+            break;
+
+        case BP_SI_DISPLACEMENT:
+            offsetString += registers.getAssemblyIdentifier(reg::BASE_POINTER) + separator +
+                            registers.getAssemblyIdentifier(reg::SOURCE_INDEX);
+            break;
+
+        case BP_DI_DISPLACEMENT:
+            offsetString += registers.getAssemblyIdentifier(reg::BASE_POINTER) + separator +
+                            registers.getAssemblyIdentifier(reg::DESTINATION_INDEX);
+            break;
+
+        case SI_DISPLACEMENT:
+            offsetString += registers.getAssemblyIdentifier(reg::SOURCE_INDEX);
+            break;
+
+        case DI_DISPLACEMENT:
+            offsetString += registers.getAssemblyIdentifier(reg::DESTINATION_INDEX);
+            break;
+
+        case BP_DISPLACEMENT:
+            offsetString += registers.getAssemblyIdentifier(reg::BASE_POINTER);
+            break;
+
+        case BX_DISPLACEMENT:
+            offsetString += registers.getAssemblyIdentifier(reg::BX_REGISTER);
+            break;
+        }
+
+        offsetString += separator + convert::toHexString(getValue(size));
+        
+        return begin + offsetString + end;
     }
 
     AbsAddr Displacement::resolve(AddressingMode mode, DisplacementType type, reg::GeneralRegisters& registers) const {

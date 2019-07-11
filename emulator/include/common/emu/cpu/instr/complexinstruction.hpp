@@ -22,8 +22,12 @@ namespace emu::cpu::instr {
 
     protected:
         virtual std::string argumentsToAssemblyNoDisplacement(const Intel8086& cpu) const = 0;
-        virtual std::string argumentsToAssemblyByteDisplacement(const Intel8086& cpu) const = 0;
-        virtual std::string argumentsToAssemblyWordDisplacement(const Intel8086& cpu) const = 0;
+
+        virtual std::string argumentsToAssemblyDisplacement(const Intel8086& cpu, std::string separator = ", ",
+                                                            std::string beginDisplacement = "[",
+                                                            std::string endDisplacement = "]",
+                                                            std::string displacementSeparator = " + ") const = 0;
+
         virtual std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
                                                                       std::string separator = ", ") const = 0;
 
@@ -50,11 +54,15 @@ namespace emu::cpu::instr {
         using ComplexInstruction::ComplexInstruction;
 
     protected:
-        std::string argumentsToAssemblyNoDisplacement(const Intel8086&) const override final { return ""; }
-        std::string argumentsToAssemblyByteDisplacement(const Intel8086&) const override final { return ""; }
-        std::string argumentsToAssemblyWordDisplacement(const Intel8086&) const override final { return ""; }
-        std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086&,
-                                                              std::string) const override final;
+        std::string argumentsToAssemblyNoDisplacement(const Intel8086&) const override final { return "..."; }
+        
+        std::string argumentsToAssemblyDisplacement(const Intel8086& cpu, std::string separator,
+                                                    std::string beginDisplacement,
+                                                    std::string endDisplacement,
+                                                    std::string displacementSeparator) const override final;
+        
+        std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
+                                                              std::string separator) const override final;
 
         void executeNoDisplacement(Intel8086&, Mem&) override final {};
         void executeByteDisplacement(Intel8086&, Mem&) override final {};
