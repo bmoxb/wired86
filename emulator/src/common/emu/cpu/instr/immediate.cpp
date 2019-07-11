@@ -8,6 +8,10 @@ namespace emu::cpu::instr {
         assert(rawData.size() >= 1);
     }
 
+    const std::vector<u8>& Immediate::getRawData() const {
+        return rawData;
+    }
+
     u8 Immediate::getByteValue() const {
         return rawData[0];
     }

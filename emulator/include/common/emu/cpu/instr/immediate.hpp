@@ -14,14 +14,18 @@ namespace emu::cpu::instr {
          */
         Immediate(std::vector<u8> raw);
 
+        const std::vector<u8>& getRawData() const;
         u8 getByteValue() const;
         u16 getWordValue() const;
 
-        const std::vector<u8> rawData;
+    private:
+        std::vector<u8> rawData; // This was original public but const however that would make this class non-copyable.
     };
 
     class Displacement : public Immediate {
     public:
+        using Immediate::Immediate;
+
         /**
          * Returns an absolute memory address based on the displacement value and displacement type.
          *
