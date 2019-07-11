@@ -19,6 +19,9 @@ if [ "$1" ] # Check if command-line argument supplied.
         # Build demo:
         nasm $DEMO_SRC -f bin -o $DEMO_BUILD -Ov0
 
+        # Disassemble:
+        objdump -Mintel -D -b binary -m i8086 $DEMO_BUILD
+
         # Run the demo program on the emulator:
         ./emulator/build/cli $MEMORY_SIZE $DEMO_BUILD
     else
