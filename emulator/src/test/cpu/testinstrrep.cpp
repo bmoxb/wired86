@@ -80,11 +80,18 @@ TEST_CASE("Test CPU instruction representation.", "[emu][cpu][instructions]") {
     }
 
     SECTION("Test immediate instruction value representation.") {
-        std::vector<u8> firstData = { 0xAA, 0xBB };
-        instr::Immediate first(firstData);
+        std::vector<u8> immediateData = { 0xAA, 0xBB };
+        instr::Immediate immediate(immediateData);
         
-        REQUIRE(first.rawData == firstData);
-        REQUIRE(first.getByteValue() == 0xAA);
-        REQUIRE(first.getWordValue() == 0xBBAA);
+        REQUIRE(immediate.getRawData() == immediateData);
+        REQUIRE(immediate.getByteValue() == 0xAA);
+        REQUIRE(immediate.getWordValue() == 0xBBAA);
+    }
+
+    SECTION("Test displacement instruction value representation.") {
+        std::vector<u8> displacementData = { 0xAA };
+        instr::Displacement displacement(displacementData);
+
+        REQUIRE(displacement.getRawData() == displacementData);
     }
 }
