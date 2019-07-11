@@ -49,8 +49,8 @@ namespace emu::cpu::instr {
     std::vector<u8> ComplexInstruction::getRawData() const {
         std::vector<u8> data = { opcode.value, modRegRm.value };
 
-        if(displacementValue) convert::extendVector(data, displacementValue->rawData);
-        if(immediateValue) convert::extendVector(data, immediateValue->rawData);
+        if(displacementValue) convert::extendVector(data, displacementValue->getRawData());
+        if(immediateValue) convert::extendVector(data, immediateValue->getRawData());
 
         return data;
     }

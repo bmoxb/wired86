@@ -78,6 +78,11 @@ namespace emu::cpu::instr {
         return BX_SI_DISPLACEMENT;
     }
 
+    bool ModRegRm::isDisplacementUsed() const {
+        return getAddressingMode() == BYTE_DISPLACEMENT ||
+               getAddressingMode() == WORD_DISPLACEMENT;
+    }
+
     reg::GeneralRegister ModRegRm::getRegisterIndex(u8 bits, DataSize size) const {
         if(size == BYTE_DATA_SIZE) {
             switch(bits) {

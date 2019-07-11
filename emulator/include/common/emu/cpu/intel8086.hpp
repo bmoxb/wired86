@@ -91,11 +91,11 @@ namespace emu::cpu {
 
         /**
          * @param opcode The instruction opcode.
-         * @param modRegRm The instruction MOD-REG-R/M byte.
+         * @param TODO
          * @return The coded instruction or an empty unique pointer if decoding failed.
          */
-        std::unique_ptr<instr::Instruction> fetchDecodeWithModRegRm(const instr::Opcode& opcode,
-                                                                    const instr::ModRegRm& modRegRm) const;
+        std::unique_ptr<instr::Instruction> fetchDecodeWithModRegRm(const instr::Opcode& opcode, AbsAddr address,
+                                                                    const Mem& memory) const;
 
         /// The instruction pointer is an offset within the code segment that points to the next instruction in memory.
         OffsetAddr instructionPointer = 0;

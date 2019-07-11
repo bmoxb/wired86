@@ -84,6 +84,12 @@ namespace emu::cpu::instr {
          */
         DisplacementType getDisplacementType() const;
 
+        /**
+         * Returns true when R/M indicates that either byte displacement or word displacement is to be used. Otherwise,
+         * returns false.
+         */
+        bool isDisplacementUsed() const;
+
         const u8 value;
 
     private:

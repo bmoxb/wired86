@@ -27,14 +27,8 @@ namespace emu::cpu {
 
         // First attempt to decode instruction without MOD-REG-R/M byte:
         instruction = fetchDecodeWithoutModRegRm(opcode);
-
-        if(!instruction) {
-            MemValue modRegRmValue = memory.read(address + 1); // MOD-REG-R/M byte immediately follows opcode.
-            instr::ModRegRm modRegRm(modRegRmValue);
-
-            // Attempt to decode instruction with a MOD-REG-R/M byte:
-            instruction = fetchDecodeWithModRegRm(opcode, modRegRm);
-        }
+        // Failing that, attempt to decode instruction with the assumption that it has a MOD-REG-R/M component:
+        if(!instruction) instruction = fetchDecodeWithModRegRm(opcode, address, memory);
 
         if(!instruction)
             logging::warning("Encountered instruction with nonexistent or currently unimplemented opcode: " +
@@ -100,11 +94,21 @@ namespace emu::cpu {
         return {};
     }
 
-    std::unique_ptr<instr::Instruction> Intel8086::fetchDecodeWithModRegRm(const instr::Opcode& opcode,
-                                                                           const instr::ModRegRm& modRegRm) const {
+    std::unique_ptr<instr::Instruction> Intel8086::fetchDecodeWithModRegRm(const instr::Opcode& opcode, AbsAddr address,
+                                                                           const Mem& memory) const {
+        MemValue modRegRmValue = memory.read(address + 1); // MOD-REG-R/M byte immediately follows opcode.
+        instr::ModRegRm modRegRm(modRegRmValue);
+
+        std::optional<instr::Displacement> displacement = {};
+
+        if(modRegRm.isDisplacementUsed()) {
+            auto displacementValues = memory.read(address + 2, opcode.getImmediateReadLength());
+            displacement = instr::Displacement(displacementValues);
+        }
+
         switch(opcode.getUniqueValue()) {
         case 0b000000: // ADD E, G
-            return std::make_unique<instr::AddEG>(opcode, modRegRm);
+            return std::make_unique<instr::AddEG>(opcode, modRegRm, displacement);
         }
 
         return {};
