@@ -22,8 +22,13 @@ namespace emu::cpu::instr {
     }
 
     DataSize Opcode::getDataSize() const {
-        return getWordBit() ? WORD_DATA_SIZE // w=1
+        return getWordBit() ? WORD_DATA_SIZE  // w=1
                             : BYTE_DATA_SIZE; // w=0
+    }
+
+    u16 Opcode::getImmediateReadLength() const {
+        return getWordBit() ? 2  // Word data size.
+                            : 1; // Byte data size.
     }
 
     bool Opcode::getDirectionBit() const {
@@ -32,6 +37,6 @@ namespace emu::cpu::instr {
 
     RegDirection Opcode::getDirection() const {
         return getDirectionBit() ? REG_IS_DESTINATION // d=1
-                                 : REG_IS_SOURCE; // d=0
+                                 : REG_IS_SOURCE;     // d=0
     }
 }
