@@ -4,6 +4,7 @@ MEMORY_SIZE=FFFF # Ammount of memory for the emulator to create.
 DEMO_DIR=demos # Directory where demos are found.
 
 # Ensure CLI emulator is built:
+mkdir -p emulator/build
 cd emulator/build/
 cmake ..
 make cli
