@@ -5,6 +5,7 @@
 namespace emu::cpu::instr {
     Immediate::Immediate(std::vector<u8> raw) : rawData(raw) {
         if(rawData.empty()) rawData.push_back(0u); // Require the vector to have at least 1 element.
+        if(rawData.size() > 2) rawData.resize(2); // Ensure vector has no more than 2 elements.
     }
 
     const std::vector<u8>& Immediate::getRawData() const {
