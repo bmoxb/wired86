@@ -6,6 +6,7 @@
 #include <vector>
 #include <functional>
 #include <optional>
+#include "assembly.hpp"
 #include "primitives.hpp"
 
 namespace convert {
@@ -117,6 +118,43 @@ namespace convert {
                << suffix;
 
         return stream.str();
+    }
+
+    /**
+     * Convert a numerical to string using a style/format specified by a given assembly::Style struct instance. Relies
+     * on convert::toHexString for conversions to hexadecimal, on convert::toBinaryString for conversions to binary, and
+     * std::to_string otherwise.
+     */
+    template <typename T, std::size_t BitCount = 16>
+    std::string numberToAssembly(T value, const assembly::Style& style) {
+        switch(style.numericalRepresentation) {
+        case assembly::HEX_REPRESENTATION:
+            switch(style.numericalStyle) {
+            case assembly::WITH_SUFFIX:
+                return toHexString<T>(value, "", style.hexSuffix);
+
+            case assembly::WITH_PREFIX:
+                return toHexString<T>(value, style.hexPrefix, "");
+
+            default: // assembly::WITHOUT_SUFFIX_OR_PREFIX
+                return toHexString<T>(value, "", "");
+            }
+
+        case assembly::BINARY_REPRESENTATION:
+            switch(style.numericalStyle) {
+            case assembly::WITH_SUFFIX:
+                return toBinaryString<BitCount, T>(value, "", style.binarySuffix);
+
+            case assembly::WITH_PREFIX:
+                return toBinaryString<BitCount, T>(value, style.binaryPrefix, "");
+
+            default: // assembly::WITHOUT_SUFFIX_OR_PREFIX
+                return toBinaryString<BitCount, T>(value, "", "");
+            }
+
+        default: // assembly::DENARY_REPRESENTATION
+            return std::to_string(value);
+        }
     }
 
     /**

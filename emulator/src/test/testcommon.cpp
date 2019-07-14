@@ -67,4 +67,23 @@ TEST_CASE("Tests conversions.", "[conversions]") {
         REQUIRE(fromBinaryString<u16>("1010") == 0b1010);
         REQUIRE(fromBinaryString<u8>("   1111  abc") == 0b1111);
     }
+
+    SECTION("Test conversion from numerical value to string based on assembly style specified.") {
+        assembly::Style s;
+
+        s.numericalRepresentation = assembly::HEX_REPRESENTATION;
+        s.numericalStyle = assembly::WITH_PREFIX;
+        s.hexPrefix = "0x";
+
+        REQUIRE(numberToAssembly<u16>(0xFF, s) == "0xFF");
+
+        s.numericalRepresentation = assembly::BINARY_REPRESENTATION;
+        s.numericalStyle = assembly::WITHOUT_SUFFIX_OR_PREFIX;
+
+        REQUIRE(numberToAssembly<u8, 8>(0b1010, s) == "00001010");
+
+        s.numericalRepresentation = assembly::DENARY_REPRESENTATION;
+
+        REQUIRE(numberToAssembly<u8>(25, s) == "25");
+    }
 }
