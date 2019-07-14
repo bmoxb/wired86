@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <string>
 
 namespace assembly {
@@ -17,7 +16,6 @@ namespace assembly {
     struct Style {
         NumericalRepresentation numericalRepresentation;
         NumericalStyle numericalStyle;
-        std::size_t binaryBitCount = 16;
 
         std::string argumentSeparator = ", ";
 
