@@ -8,8 +8,8 @@ namespace emu::cpu::instr {
     Instruction::Instruction(std::string instrIdentifier, Opcode instrOpcode)
     : identifier(instrIdentifier), opcode(instrOpcode) {}
 
-    std::string Instruction::toAssembly(const Intel8086&) const {
-        return identifier;
+    std::string Instruction::toAssembly(const Intel8086&, const assembly::Style&) const {
+        return identifier; // By default, simply return the instruction identifier instead of proper assembly.
     }
 
     std::vector<u8> Instruction::getRawData() const {
@@ -40,8 +40,9 @@ namespace emu::cpu::instr {
     : Instruction(instrIdentifier, instrOpcode),
       registerIndex(generalReg), registerPart(part) {}
 
-    std::string InstructionTakingRegister::toAssembly(const Intel8086& cpu) const {
+    std::string InstructionTakingRegister::toAssembly(const Intel8086& cpu, const assembly::Style&) const {
         auto registerIdentifier = cpu.generalRegisters.getAssemblyIdentifier(registerIndex, registerPart);
+        
         return identifier + " " + registerIdentifier;
     }
 

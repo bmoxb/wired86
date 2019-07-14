@@ -13,7 +13,7 @@ namespace cli {
         auto instruction = cpu.fetchDecodeInstruction(addr, memory);
 
         if(instruction) {
-            logging::success("Instruction fetched and decoded successfully: " + instruction->toAssembly(cpu));
+            logging::success("Instruction fetched and decoded successfully: " + instruction->toAssembly(cpu, asmStyle));
             logging::info("Instruction raw data: " + instruction->getRawDataString());
 
             bool success = cpu.executeInstruction(instruction, memory);

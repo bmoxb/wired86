@@ -28,27 +28,27 @@ namespace emu::cpu::instr {
 
 
     std::string Displacement::toAssembly(DataSize size, const ModRegRm& modRegRm, const reg::GeneralRegisters& registers,
-                                         std::string begin, std::string end, std::string separator) const {
+                                         const assembly::Style& style) const {
         std::string offsetString;
 
         switch(modRegRm.getDisplacementType()) {
         case BX_SI_DISPLACEMENT:
-            offsetString += registers.getAssemblyIdentifier(reg::BX_REGISTER) + separator +
+            offsetString += registers.getAssemblyIdentifier(reg::BX_REGISTER) + style.displacementAdd +
                             registers.getAssemblyIdentifier(reg::SOURCE_INDEX);
             break;
 
         case BX_DI_DISPLACEMENT:
-            offsetString += registers.getAssemblyIdentifier(reg::BX_REGISTER) + separator +
+            offsetString += registers.getAssemblyIdentifier(reg::BX_REGISTER) + style.displacementAdd +
                             registers.getAssemblyIdentifier(reg::DESTINATION_INDEX);
             break;
 
         case BP_SI_DISPLACEMENT:
-            offsetString += registers.getAssemblyIdentifier(reg::BASE_POINTER) + separator +
+            offsetString += registers.getAssemblyIdentifier(reg::BASE_POINTER) + style.displacementAdd +
                             registers.getAssemblyIdentifier(reg::SOURCE_INDEX);
             break;
 
         case BP_DI_DISPLACEMENT:
-            offsetString += registers.getAssemblyIdentifier(reg::BASE_POINTER) + separator +
+            offsetString += registers.getAssemblyIdentifier(reg::BASE_POINTER) + style.displacementAdd +
                             registers.getAssemblyIdentifier(reg::DESTINATION_INDEX);
             break;
 
@@ -69,9 +69,9 @@ namespace emu::cpu::instr {
             break;
         }
 
-        offsetString += separator + convert::toHexString(getValue(size));
+        offsetString += style.displacementAdd + convert::toHexString(getValue(size));
         
-        return begin + offsetString + end;
+        return style.displacementBegin + offsetString + style.displacementEnd;
     }
 
     AbsAddr Displacement::resolve(AddressingMode mode, DisplacementType type, reg::GeneralRegisters& registers) const {

@@ -3,6 +3,7 @@
 #include <vector>
 #include "emu/types.hpp"
 #include "emu/cpu/instr/modregrm.hpp"
+#include "assembly.hpp"
 
 namespace emu::cpu::instr {
     class Immediate {
@@ -33,7 +34,7 @@ namespace emu::cpu::instr {
         using Immediate::Immediate;
 
         std::string toAssembly(DataSize size, const ModRegRm& modRegRm, const reg::GeneralRegisters& registers,
-                               std::string begin = "[", std::string end = "]", std::string separator = " + ") const;
+                               const assembly::Style& style) const;
 
         /**
          * Returns an absolute memory address based on the displacement value and displacement type.

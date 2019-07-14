@@ -6,6 +6,7 @@
 #include "emu/cpu/instr/opcode.hpp"
 #include "emu/cpu/instr/modregrm.hpp"
 #include "emu/cpu/instr/immediate.hpp"
+#include "assembly.hpp"
 
 namespace emu::cpu { class Intel8086; } // Declared as incomplete type as including the CPU header here would cause a
                                         // circular dependency.
@@ -37,14 +38,16 @@ namespace emu::cpu::instr {
         virtual OffsetAddr execute(Intel8086& cpu, Mem& memory) = 0;
 
         /**
-         * Disassemble this instruction into Intel-syntax assembly code. Returns this as a string.
+         * Disassemble this instruction into assembly code (expressed as std::string).
          *
          * Is virtual and can therefore be overrriden. By default, simply returns instruction identifier.
          *
          * @param cpu Takes a constant reference to the CPU that this CPU was/will be executed on.
+         * @param style The assembly style use for the disassembly of this instruction (constant reference to
+         *        assembly::Style struct instance).
          * @return The assembly representation of this instruction.
          */
-        virtual std::string toAssembly(const Intel8086& cpu) const;
+        virtual std::string toAssembly(const Intel8086& cpu, const assembly::Style& style) const;
 
         /**
          * Fetch the raw 8-bit values that make this instruction include the opcode value.
@@ -97,7 +100,7 @@ namespace emu::cpu::instr {
         /**
          * Convert this instruction to assembly (simply the instruction identifier followed by the register identifier).
          */
-        std::string toAssembly(const Intel8086& cpu) const override;
+        std::string toAssembly(const Intel8086& cpu, const assembly::Style& style) const override;
 
     protected:
         const reg::GeneralRegister registerIndex;

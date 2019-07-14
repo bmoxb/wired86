@@ -16,20 +16,31 @@ namespace emu::cpu::instr {
 
         OffsetAddr execute(Intel8086& cpu, Mem& memory) override final;
 
-        std::string toAssembly(const Intel8086& cpu) const override final;
+        std::string toAssembly(const Intel8086& cpu, const assembly::Style& style) const override final;
 
         std::vector<u8> getRawData() const override final;
 
     protected:
-        virtual std::string argumentsToAssemblyNoDisplacement(const Intel8086& cpu) const = 0;
+        /**
+         * Pure virtual method that converts instruction arguments into assembly when the MOD-REG-R/M component
+         * indicates no displacement addressing mode.
+         */
+        virtual std::string argumentsToAssemblyNoDisplacement(const Intel8086& cpu,
+                                                              const assembly::Style& style) const = 0;
 
-        virtual std::string argumentsToAssemblyDisplacement(const Intel8086& cpu, std::string separator = ", ",
-                                                            std::string beginDisplacement = "[",
-                                                            std::string endDisplacement = "]",
-                                                            std::string displacementSeparator = " + ") const = 0;
+        /**
+         * Pure virtual method that converts instruction arguments into assembly when the MOD-REG-R/M component
+         * indicates either byte or word displacement addressing mode.
+         */
+        virtual std::string argumentsToAssemblyDisplacement(const Intel8086& cpu,
+                                                            const assembly::Style& style) const = 0;
 
+        /**
+         * Pure virtual method that converts instruction arguments into assembly when the MOD-REG-R/M component
+         * indicates register addressing mode.
+         */
         virtual std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
-                                                                      std::string separator = ", ") const = 0;
+                                                                      const assembly::Style& style) const = 0;
 
         virtual void executeNoDisplacement(Intel8086& cpu, Mem& memory) = 0;
         virtual void executeByteDisplacement(Intel8086& cpu, Mem& memory) = 0;
@@ -54,15 +65,14 @@ namespace emu::cpu::instr {
         using ComplexInstruction::ComplexInstruction;
 
     protected:
-        std::string argumentsToAssemblyNoDisplacement(const Intel8086&) const override final { return "..."; }
+        std::string argumentsToAssemblyNoDisplacement(const Intel8086&,
+                                                      const assembly::Style&) const override final { return "..."; }
         
-        std::string argumentsToAssemblyDisplacement(const Intel8086& cpu, std::string separator,
-                                                    std::string beginDisplacement,
-                                                    std::string endDisplacement,
-                                                    std::string displacementSeparator) const override final;
+        std::string argumentsToAssemblyDisplacement(const Intel8086& cpu,
+                                                    const assembly::Style& style) const override final;
         
         std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
-                                                              std::string separator) const override final;
+                                                              const assembly::Style& style) const override final;
 
         void executeNoDisplacement(Intel8086&, Mem&) override final {};
         void executeByteDisplacement(Intel8086&, Mem&) override final {};

@@ -3,6 +3,7 @@
 #include "emu/types.hpp"
 #include "emu/memory.hpp"
 #include "emu/cpu/intel8086.hpp"
+#include "assembly.hpp"
 
 namespace cli {
     class Executor {
@@ -27,5 +28,6 @@ namespace cli {
     protected:
         emu::Memory<emu::MemValue, emu::AbsAddr> memory;
         emu::cpu::Intel8086 cpu;
+        assembly::Style asmStyle;
     };
 }
