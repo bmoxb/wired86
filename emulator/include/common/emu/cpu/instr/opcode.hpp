@@ -37,9 +37,12 @@ namespace emu::cpu::instr {
         DataSize getDataSize() const;
 
         /**
-         * Will return the length in bytes that any immediate or displacement instruction component should be. This is
-         * based of the data size of the instruction such that this function will return 2 or a word data size and 1
-         * for a byte data size.
+         * Will return the length in bytes that any immediate instruction component should be. This is based of the data
+         * size of the instruction such that this function will return 2 or a word data size and 1 for a byte data size.
+         *
+         * Note that this method will not return the appropriate value in order to read a displacement component from
+         * memory as whether a displacement component is one or two bytes is determined by the MOD-REG-R/M addressing
+         * mode and not the opcode data size.
          */
         u16 getImmediateReadLength() const;
 

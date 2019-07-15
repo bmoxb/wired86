@@ -5,7 +5,7 @@
 #include "emu/types.hpp"
 #include "emu/cpu/instr/opcode.hpp"
 #include "emu/cpu/instr/modregrm.hpp"
-#include "emu/cpu/instr/immediate.hpp"
+#include "emu/cpu/instr/argument.hpp"
 #include "assembly.hpp"
 
 namespace emu::cpu { class Intel8086; } // Declared as incomplete type as including the CPU header here would cause a

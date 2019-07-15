@@ -102,7 +102,7 @@ namespace emu::cpu {
         std::optional<instr::Displacement> displacement;
 
         if(modRegRm.isDisplacementUsed()) {
-            auto displacementValues = memory.read(address + 2, opcode.getImmediateReadLength());
+            auto displacementValues = memory.read(address + 2, modRegRm.getDisplacementReadLength());
             displacement = instr::Displacement(displacementValues);
         }
 
