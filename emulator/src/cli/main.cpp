@@ -7,7 +7,11 @@ int main(int argc, char* argv[]) {
         std::string path = argv[2];
 
         if(memorySize) {
-            cli::Executor exec(*memorySize, path);
+            assembly::Style asmStyle;
+            asmStyle.numericalRepresentation = assembly::HEX_REPRESENTATION;
+            asmStyle.numericalStyle = assembly::WITH_PREFIX;
+
+            cli::Executor exec(*memorySize, path, asmStyle);
             exec.runCycles(25);
         }
         else logging::error("Invalid memory size given! Please express the memory size in hexadecimal format.");

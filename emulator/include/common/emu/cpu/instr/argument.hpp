@@ -20,10 +20,17 @@ namespace emu::cpu::instr {
         /**
          * Convert this instruction argument into assembly. This method is pure virtual but overriden in the Immediate
          * and Displacement classes.
+         *
+         * @param size The data size handled by the instruction this data argument is a part of (usually indicated by
+         *        data size bit of instruction opcode).
+         * @param modRegRm Constant reference to the instruction's MOD-REG-R/M component.
          */
         virtual std::string toAssembly(DataSize size, const ModRegRm& modRegRm, const reg::GeneralRegisters& registers,
                                        const assembly::Style& style) const = 0;
 
+        /**
+         * Return a constant reference to the raw data of this data argument.
+         */
         const std::vector<u8>& getRawData() const;
 
         /**
@@ -60,7 +67,8 @@ namespace emu::cpu::instr {
                                const assembly::Style& style) const override final;
 
         /**
-         *
+         * Gives the displacement value of this displacement component based on the given addressing mode (either byte
+         * or word displacement).
          */
         u16 getValueUsingAddressingMode(AddressingMode mode) const;
 

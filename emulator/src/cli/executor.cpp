@@ -3,7 +3,8 @@
 #include "logging.hpp"
 
 namespace cli {
-    Executor::Executor(emu::AbsAddr memorySize, std::string path) : memory(memorySize) {
+    Executor::Executor(emu::AbsAddr memorySize, std::string path, const assembly::Style& style)
+    : memory(memorySize), asmStyle(style) {
         memory.loadFromFile(path);
     }
 
