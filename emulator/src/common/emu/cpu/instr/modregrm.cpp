@@ -33,6 +33,16 @@ namespace emu::cpu::instr {
         return NO_DISPLACEMENT;
     }
 
+    AbsAddr ModRegRm::getDisplacementReadLength() const {
+        switch(getAddressingMode()) {
+        case BYTE_DISPLACEMENT: return 1; // Read 1 byte.
+        case WORD_DISPLACEMENT: return 2; // Read word (i.e. 2 bytes).
+
+        default: return 0; // Niether byte nor word displacement is actually being used.
+
+        }
+    }
+
     reg::GeneralRegister ModRegRm::getRegisterIndexFromRm(DataSize size) const {
         return getRegisterIndex(getRmBits(), size);
     }

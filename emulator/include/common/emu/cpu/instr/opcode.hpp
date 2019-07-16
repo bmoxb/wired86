@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "emu/types.hpp"
 #include "primitives.hpp"
 
 namespace emu::cpu::instr {
@@ -44,7 +45,7 @@ namespace emu::cpu::instr {
          * memory as whether a displacement component is one or two bytes is determined by the MOD-REG-R/M addressing
          * mode and not the opcode data size.
          */
-        u16 getImmediateReadLength() const;
+        AbsAddr getImmediateReadLength() const;
 
         /**
          * Indicates whether the REG component of a MOD-REG-R/M byte is the source or destination for data handled by

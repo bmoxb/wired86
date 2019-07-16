@@ -26,9 +26,9 @@ namespace emu::cpu::instr {
                             : BYTE_DATA_SIZE; // w=0
     }
 
-    u16 Opcode::getImmediateReadLength() const {
-        return getWordBit() ? 2  // Word data size.
-                            : 1; // Byte data size.
+    AbsAddr Opcode::getImmediateReadLength() const {
+        return getWordBit() ? 2  // Word data size (i.e. read 2 bytes).
+                            : 1; // Byte data size (i.e. read 1 byte).
     }
 
     bool Opcode::getDirectionBit() const {

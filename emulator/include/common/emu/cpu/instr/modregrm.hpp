@@ -47,6 +47,8 @@ namespace emu::cpu::instr {
          */
         AddressingMode getAddressingMode() const;
 
+        AbsAddr getDisplacementReadLength() const;
+
         /**
          * Get the appropriate register index based on the value of the R/M component.
          * Only relevant when using register addressing mode.
