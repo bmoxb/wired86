@@ -65,14 +65,17 @@ namespace emu::cpu::instr {
         using ComplexInstruction::ComplexInstruction;
 
     protected:
-        std::string argumentsToAssemblyNoDisplacement(const Intel8086&,
-                                                      const assembly::Style&) const override final { return "..."; }
+        std::string argumentsToAssemblyNoDisplacement(const Intel8086& cpu,
+                                                      const assembly::Style& style) const override final;
         
         std::string argumentsToAssemblyDisplacement(const Intel8086& cpu,
                                                     const assembly::Style& style) const override final;
         
         std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
                                                               const assembly::Style& style) const override final;
+
+        std::string argumentsToAssemblySpecifiedDisplacement(const Intel8086& cpu, const assembly::Style& style,
+                                                             const Displacement& specifiedDisplacement) const;
 
         void executeNoDisplacement(Intel8086&, Mem&) override final {};
         void executeByteDisplacement(Intel8086&, Mem&) override final {};

@@ -83,7 +83,9 @@ namespace emu::cpu::instr {
 
         u16 displacementValue = getValueUsingAddressingMode(modRegRm.getAddressingMode());
 
-        offsetString += style.displacementAdd + convert::numberToAssembly(displacementValue, style);
+        // Only add displacement value assembly if there actually is a displacement value stored:
+        if(displacementValue != 0)
+            offsetString += style.displacementAdd + convert::numberToAssembly(displacementValue, style);
 
         return style.displacementBegin + offsetString + style.displacementEnd;
     }

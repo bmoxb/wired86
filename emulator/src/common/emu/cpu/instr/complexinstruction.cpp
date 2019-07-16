@@ -1,6 +1,7 @@
 #include "emu/cpu/instr/complexinstruction.hpp"
 
 #include "emu/cpu/intel8086.hpp"
+#include "logging.hpp"
 
 namespace emu::cpu::instr {
     ComplexInstruction::ComplexInstruction(std::string instrIdentifier, Opcode instrOpcode, ModRegRm instrModRegRm,
@@ -54,15 +55,20 @@ namespace emu::cpu::instr {
 
 
 
+    std::string ComplexInstructionEG::argumentsToAssemblyNoDisplacement(const Intel8086& cpu,
+                                                                        const assembly::Style& style) const {
+        Displacement zeroDisplacement({ 0 });
+        return argumentsToAssemblySpecifiedDisplacement(cpu, style, zeroDisplacement);
+    }
+
     std::string ComplexInstructionEG::argumentsToAssemblyDisplacement(const Intel8086& cpu,
                                                                       const assembly::Style& style) const {
-        DataSize size = opcode.getDataSize();
-
-        std::string registerIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, size);
-        
-        std::string displacementArgument = displacementValue->toAssembly(size, modRegRm, cpu.generalRegisters, style);
-
-        return registerIdentifier + style.argumentSeparator + displacementArgument;
+        if(displacementValue)
+            return argumentsToAssemblySpecifiedDisplacement(cpu, style, *displacementValue);
+        else {
+            logging::warning("Instruction executed in displacement mode lacks a displacement value!");
+            return argumentsToAssemblyNoDisplacement(cpu, style);
+        }
     }
 
     std::string ComplexInstructionEG::argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
@@ -82,6 +88,20 @@ namespace emu::cpu::instr {
         }
 
         return arguments;
+    }
+
+    std::string ComplexInstructionEG::argumentsToAssemblySpecifiedDisplacement(const Intel8086& cpu,
+                                                                               const assembly::Style& style,
+                                                                               const Displacement& specifiedDisplacement) const {
+        
+        std::string registerIdentifier, displacementArgument;
+        
+        registerIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, opcode.getDataSize());
+
+        auto size = opcode.getDataSize();
+        displacementArgument = specifiedDisplacement.toAssembly(size, modRegRm, cpu.generalRegisters, style);
+
+        return registerIdentifier + style.argumentSeparator + displacementArgument;
     }
 
     void ComplexInstructionEG::executeRegisterAddressingMode(Intel8086& cpu, Mem&) {
