@@ -53,6 +53,22 @@ namespace emu::cpu::instr {
         return data;
     }
 
+    std::string ComplexInstruction::argumentsToAssemblyOpcodeDirection(std::string reg, std::string rm,
+                                                                       const assembly::Style& style,
+                                                                       RegDirection direction) const {
+        std::string arguments = "";
+
+        switch(direction) {
+        case REG_IS_SOURCE:
+            arguments = rm + style.argumentSeparator + reg; break;
+
+        case REG_IS_DESTINATION:
+            arguments = reg + style.argumentSeparator + rm; break;
+        }
+
+        return arguments;
+    }
+
 
 
     std::string ComplexInstructionEG::argumentsToAssemblyNoDisplacement(const Intel8086& cpu,
@@ -73,35 +89,28 @@ namespace emu::cpu::instr {
 
     std::string ComplexInstructionEG::argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
                                                                                 const assembly::Style& style) const {
-        std::string arguments;
         DataSize size = opcode.getDataSize();
 
         std::string regRegisterIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, size);
         std::string rmRegisterIdentifier = modRegRm.getRegisterIdentifierFromRm(cpu.generalRegisters, size);
 
-        switch(opcode.getDirection()) {
-        case REG_IS_SOURCE:
-            arguments = rmRegisterIdentifier + style.argumentSeparator + regRegisterIdentifier; break;
-
-        case REG_IS_DESTINATION:
-            arguments = regRegisterIdentifier + style.argumentSeparator + rmRegisterIdentifier; break;
-        }
-
-        return arguments;
+        return argumentsToAssemblyOpcodeDirection(rmRegisterIdentifier, regRegisterIdentifier, style,
+                                                  opcode.getDirection());
     }
 
     std::string ComplexInstructionEG::argumentsToAssemblySpecifiedDisplacement(const Intel8086& cpu,
                                                                                const assembly::Style& style,
                                                                                const Displacement& specifiedDisplacement) const {
         
+        DataSize size = opcode.getDataSize();
         std::string registerIdentifier, displacementArgument;
         
-        registerIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, opcode.getDataSize());
+        registerIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, size);
 
-        auto size = opcode.getDataSize();
         displacementArgument = specifiedDisplacement.toAssembly(size, modRegRm, cpu.generalRegisters, style);
 
-        return registerIdentifier + style.argumentSeparator + displacementArgument;
+        return argumentsToAssemblyOpcodeDirection(registerIdentifier, displacementArgument, style,
+                                                  opcode.getDirection());
     }
 
     void ComplexInstructionEG::executeRegisterAddressingMode(Intel8086& cpu, Mem&) {

@@ -3,7 +3,7 @@
 ;
 
  add ax, bx
- add bx, cx
+ add cx, dx
 
 ;
 ; Adding value at displaced address to register:
@@ -18,13 +18,31 @@ add bx, [di + 0x0F] ; Byte offset on word instruction.
 ; Adding value at address (not displaced) to register:
 ;
 
+add ax, [bp]
 add ax, [bx]
+add ax, [si]
+add ax, [di]
 
- ;
- ; Add immediate values to registers:
- ;
+;
+; Adding register value to (not displacement) address:
+;
 
- add ax, 0xAB
- add dx, 0xCD
+add [bp], ax
+add [bx], ax
+add [si], ax
+add [di], ax
+
+;
+; Add immediate values to registers:
+;
+
+add ax, 0xAB
+add dx, 0xCD
+
+;
+;
+;
+
+add word [bx], 0xAA
 
 hlt

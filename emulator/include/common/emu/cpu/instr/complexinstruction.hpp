@@ -42,6 +42,16 @@ namespace emu::cpu::instr {
         virtual std::string argumentsToAssemblyRegisterAddressingMode(const Intel8086& cpu,
                                                                       const assembly::Style& style) const = 0;
 
+        /**
+         * Arrange two assembly instruction arguments based on the register direction value given.
+         *
+         * @param reg The assembly argument derrived from the REG component of the MOD-REG-R/M byte.
+         * @param rm The assembly instruction argument derrived from the R/M component.
+         * @param direction The direction of the instruction (usually indicated by the opcode).
+         */
+        std::string argumentsToAssemblyOpcodeDirection(std::string reg, std::string rm, const assembly::Style& style,
+                                                       RegDirection direction) const;
+
         virtual void executeNoDisplacement(Intel8086& cpu, Mem& memory) = 0;
         virtual void executeByteDisplacement(Intel8086& cpu, Mem& memory) = 0;
         virtual void executeWordDisplacement(Intel8086& cpu, Mem& memory) = 0;
@@ -83,5 +93,15 @@ namespace emu::cpu::instr {
         void executeRegisterAddressingMode(Intel8086& cpu, Mem&) override final;
 
         virtual u16 performOperation(u16 dest, u16 src) = 0;
+    };
+
+    /**
+     * An instruction with a MOD-REG-R/M byte that takes a register argument and an immediate value.
+     */
+    class ComplexInstructionRegI : public ComplexInstruction {
+    public:
+        using ComplexInstruction::ComplexInstruction;
+
+    protected:
     };
 }
