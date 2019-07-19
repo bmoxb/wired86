@@ -39,7 +39,6 @@ namespace emu::cpu::instr {
          */
         u16 getValueUsingDataSize(DataSize size) const;
 
-    protected:
         u8 getByteValue() const;
         u16 getWordValue() const;
 

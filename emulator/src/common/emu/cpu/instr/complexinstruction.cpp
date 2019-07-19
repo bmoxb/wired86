@@ -94,7 +94,7 @@ namespace emu::cpu::instr {
         std::string regRegisterIdentifier = modRegRm.getRegisterIdentifierFromReg(cpu.generalRegisters, size);
         std::string rmRegisterIdentifier = modRegRm.getRegisterIdentifierFromRm(cpu.generalRegisters, size);
 
-        return argumentsToAssemblyOpcodeDirection(rmRegisterIdentifier, regRegisterIdentifier, style,
+        return argumentsToAssemblyOpcodeDirection(regRegisterIdentifier, rmRegisterIdentifier, style,
                                                   opcode.getDirection());
     }
 
