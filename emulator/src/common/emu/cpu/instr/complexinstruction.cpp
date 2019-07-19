@@ -4,6 +4,10 @@
 #include "logging.hpp"
 
 namespace emu::cpu::instr {
+    /*
+     * ComplexInstruction implementation:
+     */
+
     ComplexInstruction::ComplexInstruction(std::string instrIdentifier, Opcode instrOpcode, ModRegRm instrModRegRm,
                                            std::optional<Displacement> displacement, std::optional<Immediate> immediate)
     : Instruction(instrIdentifier, instrOpcode), modRegRm(instrModRegRm),
@@ -69,7 +73,9 @@ namespace emu::cpu::instr {
         return arguments;
     }
 
-
+    /*
+     * ComplexInstructionEG implementation:
+     */
 
     std::string ComplexInstructionEG::argumentsToAssemblyNoDisplacement(const Intel8086& cpu,
                                                                         const assembly::Style& style) const {

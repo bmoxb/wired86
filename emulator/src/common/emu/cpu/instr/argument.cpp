@@ -3,6 +3,10 @@
 #include "convert.hpp"
 
 namespace emu::cpu::instr {
+    /*
+     * DataArgument implementation:
+     */
+
     DataArgument::DataArgument(std::vector<u8> raw) : rawData(raw) {
         if(rawData.empty()) rawData.push_back(0u); // Require the vector to have at least 1 element.
         if(rawData.size() > 2) rawData.resize(2); // Ensure vector has no more than 2 elements.
@@ -28,7 +32,9 @@ namespace emu::cpu::instr {
         return convert::createWordFromBytes(low, high);
     }
 
-
+    /*
+     * Immediate implementation:
+     */
 
     std::string Immediate::toAssembly(DataSize size, const ModRegRm&, const reg::GeneralRegisters&,
                                          const assembly::Style& style) const {
@@ -37,7 +43,9 @@ namespace emu::cpu::instr {
         return convert::numberToAssembly(value, style);
     }
 
-
+    /*
+     * Displacement implementation:
+     */
 
     std::string Displacement::toAssembly(DataSize, const ModRegRm& modRegRm,
                                          const reg::GeneralRegisters& registers, const assembly::Style& style) const {
