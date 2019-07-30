@@ -72,16 +72,14 @@ target_link_libraries(${CLI_NAME} PRIVATE ${LIB_NAME})
 set(GUI_NAME "gui")
 message("Creating graphical user interface build: ${GUI_NAME}")
 
-find_package(FLTK REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-message("FLTK found: ${FLTK_FOUND}")
-message("FLTK include directory: ${FLTK_INCLUDE_DIR}")
+message("Qt version: ${Qt5Widgets_VERSION}")
 
 add_executable(${GUI_NAME} ${GUI_SRC_FILES})
 
 target_include_directories(${GUI_NAME} PRIVATE include/gui)
-target_include_directories(${GUI_NAME} PRIVATE ${FLTK_INCLUDE_DIR})
-target_link_libraries(${GUI_NAME} PRIVATE fltk)
+target_link_libraries(${GUI_NAME} PRIVATE Qt5::Widgets)
 target_link_libraries(${GUI_NAME} PRIVATE ${LIB_NAME})
 
 

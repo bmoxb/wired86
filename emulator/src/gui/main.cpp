@@ -1,8 +1,11 @@
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
+#include <QApplication>
+#include <QPushButton>
 
 int main(int argc, char* argv[]) {
-    Fl_Window *window = new Fl_Window(200, 200);
-    window->show(argc, argv);
-    return Fl::run();
+    QApplication app(argc, argv);
+
+    QPushButton button("Button");
+    button.show();
+
+    return app.exec();
 }
