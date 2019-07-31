@@ -26,7 +26,10 @@ set(CLI_SRC_FILES
     src/cli/executor
 )
 
-set(GUI_SRC_FILES src/gui/main)
+set(GUI_SRC_FILES
+    src/gui/main
+    src/gui/window
+)
 
 set(TEST_SRC_FILES
     src/test/main
@@ -72,14 +75,17 @@ target_link_libraries(${CLI_NAME} PRIVATE ${LIB_NAME})
 set(GUI_NAME "gui")
 message("Creating graphical user interface build: ${GUI_NAME}")
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-
-message("Qt version: ${Qt5Widgets_VERSION}")
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 
 add_executable(${GUI_NAME} ${GUI_SRC_FILES})
 
+link_directories(${GTKMM_LIBRARY_DIRS})
+add_definitions(${GTKMM_CFLAGS_OTHER})
+
 target_include_directories(${GUI_NAME} PRIVATE include/gui)
-target_link_libraries(${GUI_NAME} PRIVATE Qt5::Widgets)
+target_include_directories(${GUI_NAME} PRIVATE ${GTKMM_INCLUDE_DIRS})
+target_link_libraries(${GUI_NAME} PRIVATE ${GTKMM_LIBRARIES})
 target_link_libraries(${GUI_NAME} PRIVATE ${LIB_NAME})
 
 

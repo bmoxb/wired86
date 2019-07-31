@@ -1,11 +1,10 @@
-#include <QApplication>
-#include <QPushButton>
+#include <gtkmm.h>
+#include "window.hpp"
 
 int main(int argc, char* argv[]) {
-    QApplication app(argc, argv);
+    auto app = Gtk::Application::create(argc, argv, "wiredsound.wired86");
 
-    QPushButton button("Button");
-    button.show();
+    Window window;
 
-    return app.exec();
+    return app->run(window);
 }
