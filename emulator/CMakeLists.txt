@@ -28,7 +28,7 @@ set(CLI_SRC_FILES
 
 set(GUI_SRC_FILES
     src/gui/main
-    src/gui/window
+    src/gui/app
 )
 
 set(TEST_SRC_FILES
@@ -75,17 +75,15 @@ target_link_libraries(${CLI_NAME} PRIVATE ${LIB_NAME})
 set(GUI_NAME "gui")
 message("Creating graphical user interface build: ${GUI_NAME}")
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
+find_package(SFML 2 COMPONENTS system window graphics REQUIRED)
+find_package(ImGui-SFML REQUIRED)
 
 add_executable(${GUI_NAME} ${GUI_SRC_FILES})
 
-link_directories(${GTKMM_LIBRARY_DIRS})
-add_definitions(${GTKMM_CFLAGS_OTHER})
-
 target_include_directories(${GUI_NAME} PRIVATE include/gui)
-target_include_directories(${GUI_NAME} PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(${GUI_NAME} PRIVATE ${GTKMM_LIBRARIES})
+target_include_directories(${GUI_NAME} PRIVATE ${SFML_INCLUDE_DIR})
+target_link_libraries(${GUI_NAME} PRIVATE sfml-window sfml-graphics sfml-system)
+target_link_libraries(${GUI_NAME} PRIVATE ImGui-SFML::ImGui-SFML)
 target_link_libraries(${GUI_NAME} PRIVATE ${LIB_NAME})
 
 
