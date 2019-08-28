@@ -18,13 +18,7 @@ namespace gui {
         bool cont;
         sf::Event event;
 
-        while(window.isOpen()) {        
-            while(window.pollEvent(event)) {
-                ImGui::SFML::ProcessEvent(event);
-
-                if(event.type == sf::Event::Closed) stop();
-            }
-            
+        while(window.isOpen()) {            
             ImGui::SFML::Update(window, clock.restart());
 
             cont = loop();
@@ -33,7 +27,11 @@ namespace gui {
             ImGui::SFML::Render(window);
             window.display();
 
-            if(!cont) stop();
+            while(window.pollEvent(event)) {
+                ImGui::SFML::ProcessEvent(event);
+
+                if(!cont || event.type == sf::Event::Closed) stop();
+            }
         }
     }
 
