@@ -1,20 +1,27 @@
 #pragma once
 
+#include "primitives.hpp"
+#include "registerinput.hpp"
+#include "emu/cpu/intel8086.hpp"
 #include <string>
 #include <SFML/Graphics/RenderWindow.hpp>
 
 namespace gui {
     class App {
     public:
-        App(std::string title, unsigned int width, unsigned int height);
+        App(std::string title, unsigned int width, unsigned int height, sf::Color colour = sf::Color::Black);
         void run();
 
     protected:
         virtual bool loop() = 0;
-        virtual void render();
         virtual void stop();
 
         sf::RenderWindow window;
+
+        const sf::Color clearColour;
+
+    private:
+        sf::Clock clock;
     };
 
     class EmuApp : public App {
@@ -23,10 +30,10 @@ namespace gui {
 
     protected:
         bool loop() override final;
-        void render() override final;
-        void stop() override final;
 
     private:
-        sf::Clock clock;
+        emu::cpu::Intel8086 cpu;
+
+        RegisterInput regInput;
     };
 }

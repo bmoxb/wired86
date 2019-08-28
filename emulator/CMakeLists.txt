@@ -29,6 +29,7 @@ set(CLI_SRC_FILES
 set(GUI_SRC_FILES
     src/gui/main
     src/gui/app
+    src/gui/registerinput
 )
 
 set(TEST_SRC_FILES
