@@ -1,7 +1,2 @@
 # Wired86
-Fully-documented emulator for the Intel 8086 CPU, the 8253 PIT and the 8259 PIC.
-
-## Aims
-* Implement all Intel 8086 instructions.
-* Have BIOS POST successfully.
-* Run MS-DOS.
+Wired86 is a fully-documented emulator of the Intel 8086 microprocessor. Note that this project is primarily for learning and as such lacks many features/aspects of the real 8086. In addition, the Programmable Interrupt Controller, Programmable Interval Timer, etc. required for the this emulator to boot something like a BIOS and MS-DOS are not currently, and likely will never be, implemented.
