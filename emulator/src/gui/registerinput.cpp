@@ -5,7 +5,7 @@
 
 namespace gui {
     RegisterInput::RegisterInput(emu::cpu::reg::GeneralRegisters& regs, emu::cpu::reg::GeneralRegister regIndex)
-    : registers(regs), index(regIndex) {}
+    : registers(regs), index(regIndex), buffer{ 0, 0 } {}
 
     void RegisterInput::update() {
         auto label = " : " + registers.getAssemblyIdentifier(index);
