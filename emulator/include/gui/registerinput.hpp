@@ -12,12 +12,10 @@ namespace gui {
         void update();
 
     private:
-        u16 getBufferValue();
-
         emu::cpu::reg::GeneralRegisters& registers;
         emu::cpu::reg::GeneralRegister index;
 
-        u8 buffer[2];
+        u16 buffer;
 
         constexpr static auto flags = ImGuiInputTextFlags_CharsHexadecimal
                                     | ImGuiInputTextFlags_CharsUppercase

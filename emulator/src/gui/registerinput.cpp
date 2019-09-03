@@ -5,24 +5,17 @@
 
 namespace gui {
     RegisterInput::RegisterInput(emu::cpu::reg::GeneralRegisters& regs, emu::cpu::reg::GeneralRegister regIndex)
-    : registers(regs), index(regIndex), buffer{ 0, 0 } {}
+    : registers(regs), index(regIndex) {}
 
     void RegisterInput::update() {
-        auto label = " : " + registers.getAssemblyIdentifier(index);
+        buffer = registers.get(index); // Update buffer with the register value.
 
-        ImGui::InputScalarN(label.c_str(), ImGuiDataType_U8, buffer,
-                            2, // Two components (separate input boxes for low and high of register).
-                            nullptr, nullptr, format, flags);
+        std::string label = registers.getAssemblyIdentifier(index) + ": " + convert::toHexString(registers.get(index)) + "\n"
+                          + registers.getAssemblyIdentifier(index, emu::cpu::reg::LOW_BYTE) + ": " + convert::toHexString(registers.getLow(index)) + "\n"
+                          + registers.getAssemblyIdentifier(index, emu::cpu::reg::HIGH_BYTE) + ": " + convert::toHexString(registers.getHigh(index));
 
-        logging::info("Values: " + convert::toHexString(getBufferValue()));
+        ImGui::InputScalar(label.c_str(), ImGuiDataType_U16, &buffer, nullptr, nullptr, format, flags);
 
-        // TODO: Appropriately sync buffer with actual register value.
-    }
-
-    u16 RegisterInput::getBufferValue() {
-        u8 low = buffer[1],
-           high = buffer[0];
-
-        return convert::createWordFromBytes(low, high);
+        registers.set(index, buffer); // Update register value with entered value.
     }
 }
