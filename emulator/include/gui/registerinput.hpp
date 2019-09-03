@@ -15,7 +15,7 @@ namespace gui {
         emu::cpu::reg::GeneralRegisters& registers;
         emu::cpu::reg::GeneralRegister index;
 
-        u16 buffer;
+        u8 buffer[2]; // low, high
 
         constexpr static auto flags = ImGuiInputTextFlags_CharsHexadecimal
                                     | ImGuiInputTextFlags_CharsUppercase
