@@ -44,7 +44,7 @@ This section of the document outlines all the key design decisions made when bui
 
         Names for namespaces should be kept short whenever possible so as to discourage the use of \texttt{using namespace veryLongNamespaceName;} (names like \texttt{emu} or \texttt{gui} are acceptable for namespaces though make sure to document their purpose when using such short names).
 
-        Class and type names are not recommended to be kept as short as namespace names and therefore can and should be more descriptive (for example, use \texttt{class InterruptHandler} over \texttt{class IntHandle}). Frequently used type aliases can have shorter names for the sake of convenience.
+        Class and type names are not recommended to be kept as short as namespace names and therefore can and should be more descriptive (for example, use \texttt{class InterruptHandler} instead of \texttt{class IntHandle}). Frequently used type aliases can have shorter names for the sake of convenience.
 
     \subsubsection{Examples}
         \begin{listing}[h]
@@ -62,9 +62,9 @@ This section of the document outlines all the key design decisions made when bui
 \subsection{Project Structure}
     As the most basic level, I opted for the typical C++ project structure wherein there are two primary directories: \texttt{src} (stores all source/implementation files) and \texttt{include} (stores all header files). It is standard practice when writing in C++ to keep the definition of classes, functions and data structures entirely separate from their implementation whenever possible as this allows for significantly improved build times when only minor changes to the code are made. Definitions are found in header files (\texttt{*.hpp}) in the \texttt{include} directory while implementations are found in source files (\texttt{*.cpp}) in the \texttt{src} directory. I considered using the new module system planned for C++ 20 over the header/source method, however support for modules is still somewhat patchy as the C++ 20 standard is not yet fully finalised at the time of writing.
 
-    If in order to maintain a degree of modularity and allow for the use of the emulator core as a general-purpose library without any GUI/CLI/unit tests, I devised a system wherein the code base is split into four different groups/build targets: \texttt{common}, for all emulator and shared code; \texttt{cli}, for command-line interface code; \texttt{gui}, for graphical user interface code; and \texttt{test}, for unit testing. While \texttt{cli}, \texttt{gui} and \texttt{test} are executable build targets (i.e. they each have a \texttt{main} function and generate standalone executables), \texttt{common} acts as a library which is linked again each of these executables.
+    If in order to maintain a degree of modularity and allow for the use of the emulator core as a general-purpose library without any GUI/CLI/unit tests, I devised a system wherein the code base is split into four different groups/build targets: \texttt{common}, for all emulator and shared code; \texttt{cli}, for command-line interface code; \texttt{gui}, for graphical user interface code; and \texttt{test}, for unit testing. While \texttt{cli}, \texttt{gui} and \texttt{test} are executable build targets (i.e. they each have a \texttt{main} function and generate standalone executables), \texttt{common} is a non-executable library which is linked again each of the aforementioned executables.
 
-    The directory structure inside of both \texttt{src} and \texttt{include} mirror the structure of the project's nested namespaces for the most part. For example, the definition of the class \texttt{emu::cpu::Intel8086} (part of the \texttt{common} build target) can be found in \texttt{include/common/emu/cpu/i8086.hpp} and its implementation in \texttt{src/common/emu/cpu/i8086.cpp}.
+    The directory structure inside of both \texttt{src} and \texttt{include} mirror the structure of the project's nested namespaces for the most part. For example, the definition of the class \texttt{emu::cpu::Intel8086} (part of the \texttt{common} build target) can be found in \texttt{include/common/emu/cpu/intel8086.hpp} and its implementation in \texttt{src/common/emu/cpu/intel8086.cpp}.
 
 \subsection{Namespaces}
     \subsubsection{Build Type \texttt{common}}
@@ -73,19 +73,20 @@ This section of the document outlines all the key design decisions made when bui
             \begin{itemize}
                 \item \texttt{emu::cpu} - Contains emulator code specific to the Intel 8086 Central Processing Unit.
                 \begin{itemize}
+                    \item \texttt{emu::cpu::reg} - Code related to CPU registers.
                     \item \texttt{emu::cpu::instr} - Code specific to the representation of CPU instructions.
                 \end{itemize}
-                \item \texttt{emu::pic} - Contains code for the Intel 8259 Programmable Interrupt Controller.
-                \item \texttt{emu::pit} - Contains code for the Intel 8253 Programmable Interval Timer.
+                %\item \texttt{emu::pic} - Contains code for the Intel 8259 Programmable Interrupt Controller.
+                %\item \texttt{emu::pit} - Contains code for the Intel 8253 Programmable Interval Timer.
             \end{itemize}
             \item \texttt{convert} - Contains functions and function templates for the conversion between different types and formats of data.
         \end{itemize}
 
 
 \subsection{Build System}
-    C++ is know for being notoriously complex and inconsistent to build across different platforms. Fortunately, tools like CMake make this \textit{somewhat} easier. CMake is a tool essentially for building a build system using whatever is available on the system. For example, on my Linux computer, CMake writes a Makefile which utilises the GCC compiler and, on Windows, generates a Visual C++ Project file which uses Microsoft's Visual C++ compiler.
+    C++ is known for being notoriously complex and inconsistent to build across different platforms. Fortunately, tools like CMake make this \textit{somewhat} easier. CMake is a tool essentially for configuring whatever build system may be available on the given system. For example, on my Linux computer, CMake writes a Makefile which utilises the GCC compiler but, on Windows, it generates a Visual C++ Project file which uses Microsoft's Visual C++ compiler.
 
-    CMake requires a configuration file called \texttt{CMakeLists.txt} which, despite having the \texttt{.txt} file extension, contains code in a domain-specific language unique to CMake. This allows one to specify the details of where header files are contained, which source files to compile, libraries to link against, and any other elements that may need to managed in order for a successful build.
+    CMake requires a configuration file called \texttt{CMakeLists.txt} which, despite having the \texttt{.txt} file extension, contains code in a domain-specific language unique to CMake. This allows one to specify the details of where header files are contained, which source files to compile, libraries to link against, and any other factors that may need to managed in order to build a codebase.
 
     My initial \texttt{CMakeLists.txt} was rather simple (see Listing \ref{lst:cmake-first}) - it stated that the \texttt{include} directory contained header files, to recursively look in the \texttt{src} directory for source files, and that an executable called \texttt{WiredEmu} should be created.
 
@@ -95,15 +96,9 @@ This section of the document outlines all the key design decisions made when bui
         \label{lst:cmake-first}
     \end{listing}
 
-    %Naturally, as my project grew more complex, so did my build script. CMake includes a feature whereby you can specify a build type which will in turn generate different compiler flags best suited to selected build type. This was something I chose to implemented using the two default build types: Debug and Release. One personal change I made to these build types however was that Debug build type would enforce very strict error and warning checking via the options \texttt{-Werror} and \texttt{-Wfatal-errors} while Release build type would be more lenient in that regard.
+    Naturally, as the project grew more complex, so did its build script. While initially the emulator had only a command-line interface, I soon decided it would be necessary to implement a full graphical user interface. In addition, it was believed that adding unit testing functionality would benefit the stability of the program and assist with debugging. The current build script and version of CMake used did not support such features. As such, I updated CMake and began to make use of its modern features - the primary of which being its build target system. It was this feature that allowed for the building of the various different executables described in section \ref{...}.
 
-    %Initially, the emulator had only a command-line interface but soon I decided it would be necessary to implement a full graphical user interface. To account for this in the build process, I allowed the user to specify to CMake whether to build with the GUI enabled or not. This is done via using the options \texttt{-DGUI=ON} and \texttt{-DGUI=OFF}. The compiler will only look for source files in \texttt{src/gui/} and link against the wxWidgets library when GUI mode is enabled, otherwise it will assume a CLI build is desired and therefore not do so.
-
-    %The most recent addition to the CMake build script would be the option to either enable or disable unit testing via the options \texttt{-DTESTS=ON} and \texttt{-DTESTS=OFF} respectively. The source files in \texttt{src/tests/} will only be compiled when the unit testing option is enabled.
-
-    Naturally, as my project grew more complex, so did its build script. While initially the emulator had only a command-line interface, I soon decided it would be necessary to implement a full graphical user interface. In addition, unit testing functionality would also benefit the stability of the program and assist with debugging. The current build script and version of CMake used did not support such features. As such, I updated CMake and began to make use of its modern features - the primary of which building its target system.
-
-    Modern CMake allows the creation of distinct build targets which can each have unique properties for both themselves as well as for those they are linked against/depended on by. This is done by specifying public, private and interface properties with private properties applying only to the target, interface properties only applying to other targets dependent on the target, and public properties which are equivalent to applying both of the former. As an example, this would allow for a library to be built using C++ 17 (private property) but only require targets that depend on it to be built with a minimum of C++ 11 (interface property).
+    Modern CMake allows the creation of distinct build targets which can each have unique properties for both themselves as well as for those they are linked against/depended on by. This is done by specifying public, private and interface properties with private properties applying only to the target; interface properties only applying to other targets dependent on the target; and public properties which are equivalent to applying both of the former. As an example, this would allow for a library to be built using C++ 17 (private property) but only require targets that depend on it to be built with a minimum of C++ 11 (interface property).
 
 \subsection{Unit Testing}
     When working on larger projects with expansive code bases, it can quickly become inconvenient to manually test each individual portion of said code base. Fortunately, unit testing allows for a degree of automation in the process of ensuring each component or 'unit' that makes up a piece of software functions as it should. This is typically done by writing tests that give certain inputs to pieces of code and will only pass should the expected outputs are received. Should a test fail then a report explaining which portion of code failed, what it was supposed to do, and what it actually did is generated.
@@ -117,7 +112,7 @@ This section of the document outlines all the key design decisions made when bui
     After realising that improving my own unit testing framework could be an entire project in and of its self, I decided to utilise a third-party framework so that I would be able to place all focus on coding the emulator portion of the project. The framework I chose after a few days of deliberation was \textbf{Catch2}. Features that drew me to this particular framework include the ability to search for and tag tests, the fact that far more detailed information about failed tests are provided, and the ability provided by this framework to split tests into separate subsections.
 
 \subsection{GUI Design}
-    As you can see in the first design in Figure \ref{figure:gui-first-design}, the GUI for this project was based primarily around three main components: a hex editor (shown in the top-left of the design), a status/control panel (bottom-left), and various register panels (right).
+    As you can see in the initial design in Figure \ref{figure:gui-first-design}, the GUI for this project was based primarily around three main components: a hex editor (shown in the top-left of the design), a status/control panel (bottom-left), and various register panels (right).
 
     \begin{figure}
         \centering

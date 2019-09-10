@@ -3,7 +3,7 @@
 This section consists of an implementation non-specific overview of the how the Intel 8086 is structured and functions at a high-level.
 
 \subsection{General-Purpose and Index Registers}
-    The Intel 8086 has four different 16-bit general-purpose registers (AX, BX, CX, DX), which can also be accessed as twice as many 8-bit registers (AL and AH, BL and BH, CL and CH, DL and DH). These registers can be used for any purpose but are implicitly used by many different instructions.
+    The Intel 8086 has four different 16-bit general-purpose registers (AX, BX, CX, DX), which can also be accessed as twice as many 8-bit registers (AL and AH, BL and BH, CL and CH, DL and DH). These registers can be used for any purpose but are implicitly used by some instructions.
 
     There are also four 16-bit index registers on the 8086:
     \begin{itemize}
@@ -66,10 +66,10 @@ This section consists of an implementation non-specific overview of the how the 
             \centering
             \includegraphics{mod-reg-rm}
             \caption{The structure of a MOD-REG-RM byte.}
-            \label{figure:mod-reg-rm}
+            \label{fig:mod-reg-rm}
         \end{figure}
 
-        As shown in Figure \ref{figure:mod-reg-rm} above, bits 7 and 6 of the MOD-REG-RM byte comprise the MOD component. These two bits specify the addressing mode used (see Table \ref{table:mod-addressing-mode}).
+        As shown in Figure \ref{fig:mod-reg-rm} above, bits 7 and 6 of the MOD-REG-RM byte comprise the MOD component. These two bits specify the addressing mode used (see Table \ref{table:mod-addressing-mode}).
 
         \begin{table}[h]
             \centering
@@ -140,6 +140,8 @@ This section consists of an implementation non-specific overview of the how the 
         An immediate data value can be encoded directly into an instruction. This value can be a single byte or a 16-bit two byte value encoded in little endian (depending on the data size of the instruction).
 
 \section{Intel 8259 Programmable Interrupt Controller (PIC)}
+    Note that, while it was indeed originally planned, the PIC component of the emulator was never implemented due to time constraints. As such, this section is not relevant to the emulator itself.
+
     The original Intel 8086 PCs relied upon a chip separate to the main Intel 8086 microprocessor called the Intel 8259. This chip managed several hardware interrupts (also known as Interrupt Requests or IRQs) and informed the processor when an interrupt required handling as well as which Interrupt Service Routine (ISR) should be called in order to do so. The Intel 8259 offered eight different interrupt pins numbered from 0 to 7 where IRQ 0 had highest priority while IRQ 7 the lowest.
 
     The 8259 PIC functions as something of a multiplexer as its eight possible interrupt pins fire just a single maskable interrupt pin on the processor. The processor will ignore all interrupt requests from the PIC indicated by the interrupt pin if its Interrupt Flag (IF) is set to 0. In this case, all external interrupts will effectively become disabled.
@@ -172,6 +174,8 @@ This section consists of an implementation non-specific overview of the how the 
         \end{itemize}
 
 \section{Intel 8253 Programmable Interval Timer (PIV)}
+    Again, like the PIC, it was not possible to implement the PIV as originally planned due to time constraints. As such, this section is not relevant to the emulator itself.
+
     The typical Intel 8086 system relies on a separate PIV chip in order for precise timing and counting functions. It offers three separate channels for this purpose labelled 0, 1 and 2.
 
     In IMB PC compatible devices, Timer Channel 0 fires INT 8 on IRQ 0 (highest priority interrupt offered). This channel is implemented as a descending counter where, once the initial value is set, it will repeatedly count down from that value. Computers running MS-DOS or similar operating systems typically have the first timer channel operate at a frequency of 18.2 Hz.
@@ -181,8 +185,8 @@ This section consists of an implementation non-specific overview of the how the 
 
         The two most significant bits of the control word indicate (when not 11 as that is unused by the 8253) the channel this control word will affect (expressed in binary). The following two bits indicate the ordering of read and writes of the high/low bytes of the counter register. The next three bits indicate the timing mode (see table \ref{...}) while the final bit indicates whether the counter will operate in binary or binary-coded decimal (note that the latter is almost never used).
 
-    \subsection{Modes}
-        \subsubsection{Mode 0 (000)}
-            In this mode, the counter will begin counting from the initial value in COUNT down to 0. Counting rate is equal to the input clock frequency. The OUT pin is set low after the control word is written, after which counting will begin a single cycle after COUNT is written to.
+    %\subsection{Modes}
+        %\subsubsection{Mode 0 (000)}
+            %In this mode, the counter will begin counting from the initial value in COUNT down to 0. Counting rate is equal to the input clock frequency. The OUT pin is set low after the control word is written, after which counting will begin a single cycle after COUNT is written to.
 
-        \subsubsection{Mode 1 (001)}
+        %\subsubsection{Mode 1 (001)}
