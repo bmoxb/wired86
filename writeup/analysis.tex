@@ -3,26 +3,34 @@
 \subsection{Stake Holders}
     This project is designed with computer science education in mind. As such potential stake holders could include various educational institutions as well as individual teachers and tutors. For example, the project could be used in a sixth-form or university classroom to demonstrate the workings of the x86 architecture or the more general workings of a typical Von Neumann architecture CPU.
 
+    In this particular instance, my stakeholder shall be my own A-Level computer science teacher, Mr. Sisley.
+
 \subsection{Computational Methods}
     A computational solution is appropriate here for a number of reasons. One such reason is that one of the best ways for potential stake holders (i.e. teachers) to teach about the low-level workings of an x86 system is show some such system in action. While theoretically they could indeed source an old IBM PC or similar for this purpose, doing so nowadays is rather difficult and expensive due to the rarity of such old systems. Instead, a simpler alternative is to just run emulators of these old systems using their existing modern hardware. Another bonus of doing this as an alternative is that an emulator allows for far more precise information about and control of the running of the system. Indeed, this is a key aspect that I think will allow my project specifically to be useful in the domain of education as a key focus of its design is allowing for the exposure of the inner workings of the emulated system.
 
     \subsubsection{Abstraction}
-        A far degree of computational abstraction can be seem throughout the project's codebase.
+        A far degree of computational abstraction can be seen throughout the project's codebase.
 
     \subsubsection{Decomposition}
-        The basic running of the emulator itself (excluding GUI interactions) can be broken down into the following:
-        \begin{itemize}
-            \item Load
-        \end{itemize}
+        One conclusion I reached straight away was that the GUI and the emulator itself should be entirely decoupled and separated as much as possible. Decomposing the entire project into these two primary components was advantageous for a couple of reasons. Firstly, it allowed my to initially focus exclusively on the implementation of the emulator without getting bogged down with to implementing GUI simultaneously. In addition, it also allowed the emulator to run without a GUI at all which would be convenient for testing via automatic unit testing. From a future-proofing perspective, it could also allow for implementation of a CLI or additional GUIs using preferred GUI libraries for certain platforms.
 
-        See figure \ref{fig:...} below for a detailed breakdown of the components this project is comprised of. This was achieved using the divide \& conquer method of decomposition.
+        See figure \ref{fig:decomp} below for a detailed breakdown of the components this project is comprised of. This diagram was created using the divide \& conquer method of decomposition.
 
         \begin{figure}[h]
             \centering
-            \includegraphics{decomposition}
+            \includegraphics[width=0.8\textwidth]{decomposition}
             \caption{Decomposition of the project.}
-            \label{fig:...}
+            \label{fig:decomp}
         \end{figure}
+
+    \subsubsection{Object-Orientation}
+        I feel as though an emulator is particularly appropriate to an object-orientated design for a number of reasons. A computer system tends to have a set collection of components with each having a distinct function. The functioning of the system as a whole is then but a product of the interactions between these separate components. This lends itself well to an object-orientated design as each component of the emulated system (the CPU, memory, registers, etc.) can be implemented as a class with private internals and then a public interface to facilitate the interaction with other components.
+
+        The ability to set private, protected and public properties of a class also encourages better design by limiting which pieces of code may modify certain variables or access certain methods. This is applicable to this particular project as being able to identify where program state is changed is integral to maintaining the stability of the program due to the fact that an emulator has many keepers of state that when modified dramatically influence its running (segment registers, CPU flags, among others).
+
+        Object-orientated inheritance will also prove vital to allowing code reuse. In particular, classes to represent CPU instructions will benefit from inheritance especially due to the many subtypes of instruction having similarities to and sharing components of more general instruction types (see figures \ref{fig:...} and \ref{fig:decomp}).
+
+        % TODO: Class hierarchy diagram.
 
 \subsection{Features \& Limitations}
     One feature that was required as part of the coursework specification was a Graphical User Interface (GUI). The choice of GUI library to use proved to be more challenging than anticipated - see section \ref{...} of the Design portion of this document for more information.
@@ -32,9 +40,12 @@
     Speed of execution is most certainly not to be prioritised during development meaning any optimisations that could be made to the code at the expense of readability or stability are not to be made. This lack of optimisation could potentially be presented as a limitation of the software in certain situations. However, due to emulation of such old hardware not being particularly resource-intensive as well as the project being implemented in the fast, compiled C++ language, this should not present any significant issues.
 
 \subsection{Requirements} % requirements for development to happen, requirements of stackholders.
+    ...
 
 \subsection{Existing Projects}
-    There are a few different existing emulators of the Intel 8086 microprocessor and associated hardware.
+    There are a few different existing emulators of the Intel 8086 microprocessor and associated hardware. One such existing project goes by the name of \textit{i8086emu}. As seen in figure \ref{fig:...}, this emulator has some similar features as well as some features that will not be a part of my own emulator. For example, both will feature a read-out of the emulated memory, disassembly of the current instruction, and the value of registers.
 
 \subsection{Success Criteria}
     The original success criteria of this project was far too ambitious given the limited time available to be dedicated to this project. Originally, it was planned that the emulator would be considered complete only once it was capable of running a Basic Input Output System (BIOS) and then successfully booting an early version of Microsoft Disk Operating System (MS-DOS). While this of course would have been rather impressive, it would have required an entirely bug-free implementation of the entirety of the Intel 8086, Intel 8259 Programmable Interrupt Controller, Intel 8253 Programmable Interval Timer, etc.
+
+    As for more realistic, concrete success criteria, a few points have since been decided upon.
