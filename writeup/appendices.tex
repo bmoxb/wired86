@@ -16,12 +16,12 @@
                                                     & mov Ew, Iw            & irrelevant            & word data size        & word displacement     & unused        & BP + displacement & 0x34          & 0x12      & 0x78      & 0x56 \\
             \hline
         \end{tabular}}
-        %\label{table:instruction-encoding-examples}
         \caption{Table showing example instruction decodings.}
     \end{table}
 \end{landscape}
 
 \section{Instruction Set}
+    \label{sec:instructset}
     \subsection{Instruction Arguments}
     \begin{table}[h]
         \begin{tabular} { | c | m{0.85\textwidth} | }
@@ -36,6 +36,8 @@
     \end{table}
 
     \subsection{Instructions}
+        Note that this is not a complete list of Intel 8086 instructions but rather a list of just those that are supported by this emulator.
+
     \begin{table}[h]
         \begin{tabular} { | c | c | c | c | m{0.38\textwidth} | }
             \hline
@@ -45,27 +47,36 @@
             \hline
             \texttt{0000010w} & \texttt{add} & AL/AX, I & & Add two values without carrying using AL (when w=0) or AX (when w=1) and an immediate value. \\
             \hline
-            \texttt{00000110} & \texttt{push} & ES & & Push the value of ES onto the stack. \\
+            \texttt{00000110} & \texttt{push} & ES & & Push the value of the extra segment register onto the stack. \\
             \hline
-            \texttt{00000111} & \texttt{pop} & ES & & Pop value off the stack and store it in ES. \\
+            \texttt{00000111} & \texttt{pop} & ES & & Pop value off the stack and store it in extra segment register. \\
             \hline
-            \texttt{000010dw} & \texttt{or} & G, E & \checkmark & Bitwise OR operation. \\
+            \texttt{000100dw} & \texttt{and} & G, E & \checkmark & Perform bitwise AND operation. \\
             \hline
-            \texttt{0000110w} & \texttt{or} & AL/AX, I & & Bitwise OR operation using AL (when w=0) or AX (when w=1) and an immediate value. \\
+            \texttt{0010010w} & \texttt{add} & AL/AX, I & & Perform bitwise AND operation with first argument being AL or AX an the second an immediate value. \\
             \hline
-            \texttt{00001110} & \texttt{push} & CS & & Push the value of CS onto the stack. \\
+            % ADC instructions...
             \hline
-            \texttt{000100dw} & \texttt{adc} & G, E & \checkmark & Add two values with carry. \\
+            \texttt{0010110} & \texttt{push} & SS & & Push stack segment register. \\
             \hline
-            \texttt{0001010w} & \texttt{adc} & AL/AX, I & & Add two values with carry using AL or AX and an immediate value. \\
+            \texttt{0010111} & \texttt{pop} & SS & & Pop stack segment register. \\
             \hline
-            \texttt{00010110} & \texttt{push} & SS & & Push the value of SS onto the stack. \\
+            % AND instructions...
+            % XOR instructions...
+            \texttt{0100000} & \texttt{inc} & AX & & Add 1 to AX register value. \\
             \hline
-            \texttt{00010111} & \texttt{pop} & SS & & Pop value off the stack and store it in SS. \\
+            \texttt{0100001} & \texttt{inc} & CX & & Add 1 to CX register value. \\
             \hline
-            \texttt{000110dw} & \texttt{sbb} & G, E & \checkmark & Subtract two values with borrow. \\
+            \texttt{0100010} & \texttt{inc} & DX & & Add 1 to DX register value. \\
             \hline
-            \texttt{001000dw} & \texttt{and} & G, E & \checkmark & Bitwise AND operation. \\
+            \texttt{0100011} & \texttt{inc} & BX & & Add 1 to BX register value. \\
             \hline
+            \texttt{0100100} & \texttt{inc} & SP & & Add 1 to stack pointer. \\
+            \hline
+            \texttt{0100101} & \texttt{inc} & BP & & Add 1 to base pointer. \\
+            \hline
+            \texttt{0100110} & \texttt{inc} & SI & & Add 1 to source index. \\
+            \hline
+            \texttt{0100111} & \texttt{inc} & DI & & Add 1 to destination index. \\
         \end{tabular}
     \end{table}
