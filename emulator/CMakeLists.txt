@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(Wired86
     LANGUAGES CXX
-    DESCRIPTION "Fully-documented emulator for the Intel 8086 CPU, the 8253 PIT and the 8259 PIC.")
+    DESCRIPTION "Fully-documented emulator for the Intel 8086 CPU.")
 
 # The emulator code is initially built as a library so that multiple builds (such as a CLI build, GUI build, etc) can
 # be made without having to compile the same files multiple times.
@@ -46,18 +46,20 @@ target_compile_features(${LIB_NAME} PUBLIC cxx_std_17) # Common library, and eve
 target_include_directories(${LIB_NAME} PUBLIC include/common) # All builds using this library share a dependency on the
                                                               # include/common directory.
 
-target_compile_options(${LIB_NAME} PRIVATE -Werror # Warnings are treated as errors.
-                                           -Wall # All standard warnings.
-                                           -Wextra # Additional warnings.
-                                           -Wsuggest-override # Require the explicit use of the 'override' keyword.
-                                           -Wsuggest-final-methods # Require the explicit use of the 'final' keyword.
-                                           -Wcast-align # Prevent casts of pointers to target values of greater width.
-                                           -Wcast-qual # Prevent casting to remove type qualifier (e.g. attempt to remove 'const').
-                                           -Wuseless-cast # Prevent unnecessary casts.
-                                           -Wzero-as-null-pointer-constant # Prevent use of '0' literal in place of 'nullptr'.
-                                           -Wredundant-decls # Prevent multiple identical declarations within the same scope.
-                                           -Wshadow # Prevent shadowing.
-                                           -pedantic) # Obey ISO C++.
+target_compile_options(${LIB_NAME} PRIVATE
+    -Werror # Warnings are treated as errors.
+    -Wall # All standard warnings.
+    -Wextra # Additional warnings.
+    -Wsuggest-override # Require the explicit use of the 'override' keyword.
+    -Wsuggest-final-methods # Require the explicit use of the 'final' keyword.
+    -Wcast-align # Prevent casts of pointers to target values of greater width.
+    -Wcast-qual # Prevent casting to remove type qualifier (e.g. attempt to remove 'const').
+    -Wuseless-cast # Prevent unnecessary casts.
+    -Wzero-as-null-pointer-constant # Prevent use of '0' literal in place of 'nullptr'.
+    -Wredundant-decls # Prevent multiple identical declarations within the same scope.
+    -Wshadow # Prevent shadowing.
+    -pedantic # Obey ISO C++.
+)
 
 
 
