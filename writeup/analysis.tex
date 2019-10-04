@@ -64,9 +64,11 @@
 
     Speed of execution is most certainly not to be prioritised during development meaning any optimisations that could be made to the code at the expense of readability or stability are not to be made. This lack of optimisation could potentially be presented as a limitation of the software in certain situations. However, due to emulation of such old hardware not being particularly resource-intensive as well as the project being implemented in the fast, compiled C++ language, this should not present any significant issues.
 
+    Another limitation of the solution is that fact that not all of the instructions of the Intel 8086 can be run on it (see appendix section \ref{sec:instructset}). This means that complex programs that utilise more obscure instructions will be not be able to run on the emulator system. Fortunately, this should not cause significant issues due to the fact that software aimed primarily at teaching does not require advanced/obscure features.
+
 \subsection{Software \& Hardware Requirements}
     \subsubsection{Hardware}
-        The software will have only one real hardware requirement: a computer. This computer should have a architecture which can be targeted by the chosen compiler (see section \ref{sec:software-require}).
+        The software will have only one real hardware requirement: a computer. This computer should have a architecture which can be targeted by the chosen compiler (see section \ref{sec:software-require}). At least 2 GB of DDR3 RAM is recommended (depending on the OS used).
 
     \subsubsection{Software} \label{sec:software-require}
         In terms of running the software, the only requirement is an operating system with a graphical desktop environment/window manager that supports the creation of and interaction with an SFML window.
@@ -84,7 +86,7 @@
             \label{fig:i8086emu}
         \end{figure}
 
-        There are a few different existing emulators of the Intel 8086 microprocessor and associated hardware. One such existing project goes by the name of \textit{i8086emu}. As seen in figure \ref{fig:i8086emu}, this emulator has some some interesting features that I ultimately decided to implement into my own emulator. For example, one feature of i8086emu is its disassembler. This displays the instructions that the CPU has and will execute in a human-readable assembly format. I felt such a feature would be important to add to my own emulator as it gives the user convenient insight into what each instruction in memory will do without having to manually perform opcode and MOD-REG-R/M lookups. This is makes the software especially applicable to a teaching environment as it provides a basic demonstration of CPU instruction decoding.
+        There are a few different existing emulators of the Intel 8086 microprocessor and associated hardware. One such existing project goes by the name of \textit{i8086emu}. As seen in figure \ref{fig:i8086emu}, this emulator has some some interesting features that I ultimately decided to implement into my own emulator. For example, one feature of i8086emu is its disassembler. This displays the instructions that the CPU has and will execute in a human-readable assembly format. I felt such a feature would be important to add to my own emulator as it gives the user convenient insight into what each instruction in memory will do without having to manually perform opcode and MOD-REG-R/M lookups. This makes the software especially applicable to a teaching environment as it provides a basic demonstration of CPU instruction decoding.
 
         The i8086emu emulator also shows the value of CPU registers and flags as part of its user interface. Again, such a feature would be vital to include in my emulator as it provides vital insight into the running of the emulation. However, I also decided to go a step further and allow the user to modify the values of registers via the interface during execution. This facilitates students using the emulator to experiment with and hopefully learn through observing results after changes are made to register values.
 

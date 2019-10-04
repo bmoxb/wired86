@@ -14,6 +14,8 @@ This section consists of an implementation non-specific overview of the how the 
     \end{itemize}
     Note that unlike the general-purpose registers, the index registers are 16-bit only.
 
+    \textit{My emulator solution will implement all of the registers (general purpose and index) outlined above.}
+
 \subsection{Status Register/Flags}
     There are a set of flags in the 8086 that contain information about the state of the CPU. These flags are stored within a single 16-bit value, of which nine of those bits are used (see Table \ref{table:flags}).
 
@@ -38,6 +40,8 @@ This section consists of an implementation non-specific overview of the how the 
         \label{table:flags}
     \end{table}
 
+    \textit{This project will feature the flags above however they will be represented as a collection of boolean values rather than a single 16-bit value.}
+
 \subsection{Memory Segmentation and Segment Registers}
     The 8086 has an unusual method of addressing up to one megabyte of memory. To find an absolute/physical address, the CPU shifts the 16-bit segment register four bits left and then adds the 16-bit offset address. Simply concatenating the segment and the offset to form a 32-bit absolute address, while slightly simpler, was deemed excessive for the time and would have required more expensive external bus pins.
 
@@ -49,8 +53,12 @@ This section consists of an implementation non-specific overview of the how the 
         \item Stack Segment (SS) - Where the contents of the stack is stored. All stack pointers (base pointer and stack pointer) are segmented within the stack segment.
     \end{itemize}
 
+    \textit{My emulator will implement the form of memory segmentation outlined above as well as the four segment registers (code, data, extra, stack).}
+
 \subsection{Instruction Encoding}
     The x86 instruction set is an example of a Complex Instruction Set Computing (CISC) instruction set and it most certainly lives up to such a description. Each individual instruction can span from one to six bytes in length and is made up of several components which are outlined in the subsections below.
+
+    \textit{Full i8086 instruction decoding will be a feature of my own emulator.}
 
     \subsubsection{Opcode}
         While later x86 processors allowed for two byte opcodes, the 8086 only has 8-bit single byte opcodes. All instructions will have an opcode value and this value specifies what the instruction will do when executed as well as the ordering and types of parameters this instruction requires.
@@ -140,7 +148,7 @@ This section consists of an implementation non-specific overview of the how the 
         An immediate data value can be encoded directly into an instruction. This value can be a single byte or a 16-bit two byte value encoded in little endian (depending on the data size of the instruction).
 
 \section{Intel 8259 Programmable Interrupt Controller (PIC)}
-    Note that, while it was indeed originally planned, the PIC component of the emulator was never implemented due to time constraints. As such, this section is not relevant to the emulator itself.
+    \textit{Note that, while it was indeed originally planned, the PIC component of the emulator was never implemented due to time constraints. As such, this section is not relevant to/be a feature of the emulator itself.}
 
     The original Intel 8086 PCs relied upon a chip separate to the main Intel 8086 microprocessor called the Intel 8259. This chip managed several hardware interrupts (also known as Interrupt Requests or IRQs) and informed the processor when an interrupt required handling as well as which Interrupt Service Routine (ISR) should be called in order to do so. The Intel 8259 offered eight different interrupt pins numbered from 0 to 7 where IRQ 0 had highest priority while IRQ 7 the lowest.
 
@@ -174,7 +182,7 @@ This section consists of an implementation non-specific overview of the how the 
         \end{itemize}
 
 \section{Intel 8253 Programmable Interval Timer (PIV)}
-    Again, like the PIC, it was not possible to implement the PIV as originally planned due to time constraints. As such, this section is not relevant to the emulator itself.
+    \textit{Again, like the PIC, it was not possible to implement the PIV as originally planned due to time constraints. As such, this section is not relevant to the emulator itself.}
 
     The typical Intel 8086 system relies on a separate PIV chip in order for precise timing and counting functions. It offers three separate channels for this purpose labelled 0, 1 and 2.
 

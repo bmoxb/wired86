@@ -67,20 +67,20 @@ This section of the document outlines all the key design decisions made when bui
     The directory structure inside of both \texttt{src} and \texttt{include} mirror the structure of the project's nested namespaces for the most part. For example, the definition of the class \texttt{emu::cpu::Intel8086} (part of the \texttt{common} build target) can be found in \texttt{include/common/emu/cpu/intel8086.hpp} and its implementation in \texttt{src/common/emu/cpu/intel8086.cpp}.
 
 \subsection{Namespaces}
-    \subsubsection{Build Type \texttt{common}}
+    \begin{itemize}
+        \item \texttt{emu} - Contains all emulator code. Part of \texttt{common} build target.
         \begin{itemize}
-            \item \texttt{emu} - Contains all emulator code.
+            \item \texttt{emu::cpu} - Contains emulator code specific to the Intel 8086 Central Processing Unit.
             \begin{itemize}
-                \item \texttt{emu::cpu} - Contains emulator code specific to the Intel 8086 Central Processing Unit.
-                \begin{itemize}
-                    \item \texttt{emu::cpu::reg} - Code related to CPU registers.
-                    \item \texttt{emu::cpu::instr} - Code specific to the representation of CPU instructions.
-                \end{itemize}
-                %\item \texttt{emu::pic} - Contains code for the Intel 8259 Programmable Interrupt Controller.
-                %\item \texttt{emu::pit} - Contains code for the Intel 8253 Programmable Interval Timer.
+                \item \texttt{emu::cpu::reg} - Code related to CPU registers.
+                \item \texttt{emu::cpu::instr} - Code specific to the representation of CPU instructions.
             \end{itemize}
-            \item \texttt{convert} - Contains functions and function templates for the conversion between different types and formats of data.
+            %\item \texttt{emu::pic} - Contains code for the Intel 8259 Programmable Interrupt Controller.
+            %\item \texttt{emu::pit} - Contains code for the Intel 8253 Programmable Interval Timer.
         \end{itemize}
+        \item \texttt{convert} - Contains functions and function templates for the conversion between different types and formats of data. Part of \texttt{common} build target.
+        \item \texttt{gui} - Contains all GUI code. Part of \texttt{gui} build target.
+    \end{itemize}
 
 
 \subsection{Build System}
