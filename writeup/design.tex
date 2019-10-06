@@ -122,3 +122,23 @@ This section of the document outlines all the key design decisions made when bui
     \end{figure}
 
     The hex editor would display and allow the user to alter system memory, the status/control panel would show the disassembled instruction currently being run and will the user to play/pause execution as well as change execution speed, while finally the register panels will each display and will allow for the editing of the values of all the different register groups (general-purpose, segments, index registers, stack registers and FLAGS register).
+
+    A new design was created in order to be more applicable to use with the chosen GUI library (ImGui). See figure \ref{figure:...}.
+
+\subsection{Instruction Representation}
+    Decoded instructions are represented using complex data structures making heavy use of object-orientation and inheritance. This allows for logical encapsulation and for more efficient efficient code reuse.
+
+    The most basic instruction class is simply titled \texttt{cpu::instr::Instruction} and holds basic attributes that are components of every x86 instruction. These include an opcode (represented using a \texttt{cpu::instr::Opcode} object) and an assembly identifier (e.g. \texttt{add}, \texttt{jnz}). Note that this class is purely virtual/abstract and cannot be initiated without the overriding of its three virtual methods.
+
+    One method of \texttt{cpu::instr::Instruction} that can be optionally overridden is \texttt{OffsetAddr execute(cpu::Intel8086\& cpu, Mem\& memory)}. As the name would suggest, it is the role of this method to executed the instruction using the given \texttt{cpu} and \texttt{memory} references. Note that these are mutable (i.e. non-constant) references meaning modification is allowed (an instruction unable to modify CPU or memory state would naturally have very limited use). This is in contrast to the \texttt{toAssembly} method discussed shortly which takes constant references so as to prevent accidental modification of the passed CPU and memory.
+
+    The \texttt{execute} method is required to return an \texttt{OffsetAddr} (an alias for a unsigned 16-bit integer type). The CPU's instruction pointer will be set to this returned value on execution completion. For most instructions other than jump and interrupt instructions, the address of the next instruction (and thus the appropriate return value) will simply by the current instruction pointer plus the length of the encoded instruction in bytes. As such, a helper method \texttt{OffsetAddr nextAddress(const cpu::Intel8086\& cpu)} is provided so that most instructions can end their \texttt{execute} method simply with the statement: \texttt{return nextAddress(cpu);}
+
+    the instruction class also has a pure-virtual \texttt{std::string toAssembly(const cpu::Intel8086\& cpu, const assembly::Style\& style)} method.
+
+\subsection{Testing}
+    Naturally, it is difficult to decide on the specifics of testing before any code has actually been written. The current plan is to write a collection of unit tests during the iterative development process. Regardless, some more general testing points are outlined below:
+
+    \begin{itemize}
+        \item Ensure the emulator is correctly able to execute all the instructions listed in appendix section \ref{sec:instructset}.
+    \end{itemize}
