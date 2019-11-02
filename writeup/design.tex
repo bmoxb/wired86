@@ -123,7 +123,21 @@ This section of the document outlines all the key design decisions made when bui
 
     The hex editor would display and allow the user to alter system memory, the status/control panel would show the disassembled instruction currently being run and will the user to play/pause execution as well as change execution speed, while finally the register panels will each display and will allow for the editing of the values of all the different register groups (general-purpose, segments, index registers, stack registers and FLAGS register).
 
-    A new design was created in order to be more applicable to use with the chosen GUI library (ImGui). See figure \ref{figure:...}.
+    A new design was created in order to be more applicable to use with the chosen GUI library (ImGui). See figure \ref{figure:gui-second-design}. This design differs from the previous one by having separate 'sub-windows' for the hex editor, control panel, and registers panels. In addition, this revised GUI design shows more of the specifics of the layout within even panel (the original design instead only showed the general arrangement of the panels themselves).
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.35]{gui-second-design}
+        \caption{Revised GUI design drawn using pencil and paper.}
+        \label{figure:gui-second-design}
+    \end{figure}
+
+    Down the left-hand side of this are collection of 4 register-related GUI panels. The first (top-left) shows the CPU's general-purpose 16-bit registers registers split into their two 8-bit components each (high and low bytes) in a 2 by 4 grid. This grid layout is ideal as it reduces the visual clutter of having three labelled fields each (AX, AH, AL, etc.) for what is effectively just a set of four single registers. Indeed, reducing the complexity of the GUI while still providing a high level of functionality is key, especially for the stakeholder's needs (use in a learning environment).
+
+    Below the general-purpose registers panel are the index and segment register panels. Note how unlike many other emulators, my emulator will give the full name of each segment and index register rather than just the acronyms (for example, 'SOURCE INDEX' instead of just 'SI'). This felt necessary so that students did not have to constantly look up what each individual acronym means. In addition, since index and segment registers can only be accessed as full 16-bit values (not as individual high/low bytes like with the general-purpose registers), these panels do away with the 2 columns used in the general-registers panel.
+
+    The bottom-left panel of the revised GUI design shows the CPU flags. While the nine status flags on the real Intel 8086 processor are stored as bits of a single 16-bit FLAGS register, my solution instead stores them as just a collection of nine boolean values. This GUI design follows suit by simply having each flag next to a checkbox toggle to clearly show whether it is or is not enabled. Full names of flags are also displayed instead of the shorthands/acronyms seen in many pieces of documentation (for example, 'PARITY' instead of 'PF').
+
 
 \subsection{Instruction Representation}
     Decoded instructions are represented using complex data structures making heavy use of object-orientation and inheritance. This allows for logical encapsulation and for more efficient efficient code reuse.
@@ -134,11 +148,12 @@ This section of the document outlines all the key design decisions made when bui
 
     The \texttt{execute} method is required to return an \texttt{OffsetAddr} (an alias for a unsigned 16-bit integer type). The CPU's instruction pointer will be set to this returned value on execution completion. For most instructions other than jump and interrupt instructions, the address of the next instruction (and thus the appropriate return value) will simply by the current instruction pointer plus the length of the encoded instruction in bytes. As such, a helper method \texttt{OffsetAddr nextAddress(const cpu::Intel8086\& cpu)} is provided so that most instructions can end their \texttt{execute} method simply with the statement: \texttt{return nextAddress(cpu);}
 
-    the instruction class also has a pure-virtual \texttt{std::string toAssembly(const cpu::Intel8086\& cpu, const assembly::Style\& style)} method.
+    The instruction class also has a pure-virtual \texttt{std::string toAssembly(const cpu::Intel8086\& cpu, const assembly::Style\& style)} method.
+
+\subsection{Usability Features}
+    For a piece of software that is supposed to be used by students not yet acutely familiar with processor architecture, the usability of said software is a key concern.
+
+    The first major consideration when it comes to usability, is the general layout of the software's GUI. One issue with many similar solutions is an intimidating and complex-to-navigate user interface. This is something I hope to address properly with my own solution. Please see section \ref{sec:...} for a breakdown for the GUI design process.
 
 \subsection{Testing}
     Naturally, it is difficult to decide on the specifics of testing before any code has actually been written. The current plan is to write a collection of unit tests during the iterative development process. Regardless, some more general testing points are outlined below:
-
-    \begin{itemize}
-        \item Ensure the emulator is correctly able to execute all the instructions listed in appendix section \ref{sec:instructset}.
-    \end{itemize}
