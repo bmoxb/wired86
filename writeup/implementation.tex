@@ -1,0 +1,52 @@
+\section{Implementation}
+
+\subsection{Defined Primitives and \texttt{main()}}
+    The first step taken in beginning the actual implementation was to define a collection of primitive types. This was done for a number of reasons. Firstly, the typical built-in types provided in C++ (e.g. \texttt{unsigned int}) have a size that is dependent on the target system and compiler used. The standard library header \texttt{cstdint} provides types such as \texttt{uint16\_t} which are of a definite size (unsigned 16-bit integer in the case of the aforementioned).
+
+    \inputminted{c++}{code/primitives.hpp}
+
+\subsection{Headers for \texttt{Memory} and \texttt{Intel8086} Classes}
+    An element of the C++ compilation system is that it is advantageous in terms of compile time to keep the declaration of class separate from the implementation of any of its member functions. Class declarations are defined in header files (\texttt{.cpp}) while class implementations are defined in source files (\texttt{.hpp}). At this early stage is development, I find it beneficial to create headers to give an overall structure of classes before beginning their actual implementation.
+
+    As such, headers for the \texttt{Memory} and \texttt{Intel8086} classes were created at this stage in development.
+
+    \inputminted{c++}{code/memory.hpp}
+
+    \inputminted{c++}{code/intel8086.hpp}
+
+\subsection{Created \texttt{main()} Function and Build Script}
+    This is now enough for a build script to be written and for the program to compile. As mentioned earlier in this document, I plan to use the CMake build system which (on my Linux system) relies on GCC Make and G++ compiler. See below for the original \texttt{CMakeLists.txt} file.
+
+    \inputminted{cmake}{code/first_CMakeLists.txt}
+
+\subsection{CPU Registers}
+    Registers are represented using a separate class to that of the CPU itself. Internally, I decided to use a class template system so that an enumeration type can be used as a register index. This has several benefits over other potential methods of implementing registers. For example, other projects that I have researched simply accepted integers as indexes to an array representing CPU registers. This is problematic as any integer constant can be used, even a totally unrelated constant or out-of-bound value. By using a type-specific enumeration, only appropriate register indexes can be passed without causing a type-error.
+
+    \inputminted{c++}{code/registerindexes.hpp}
+
+    You'll notice that the register indexes are not actually C++ enumerations defined with the \texttt{enum} keyword. Rather, they are classes emulating enumerations in style similar to that of Java's enumerations. This is beneficial as it allows register indexes to have additional properties (for example, a string description of its purpose).
+
+    \inputminted{c++}{code/registers.hpp}
+
+    Naturally, a lot of the code is not implemented at this stage.
+
+\subsection{\texttt{conversion} Namespace}
+    Something I felt would be useful to do after working on register indexes, was to provide a collection of helper/conversion functions under a \texttt{conversion} namespace. 
+
+    \inputminted{c++}{code/conversion.hpp}
+
+    \inputminted{c++}{code/conversion.cpp}
+
+    This allows me to improve code readability by replacing code such as: \mint[linenos=false]{c++}{return get(index) & 0xFF;} seen in the \texttt{RegistersLowHigh} class with: \mint[linenos=false]{c++}{return conversion::getHighByte(get(index));}
+
+\subsection{Logging}
+    Before a functional GUI is implemented, I will have to rely on a command-line interface for input and output. As such, building a proper system for clear, organised output seemed vital. Before writing the code for this logging system, I decided on several key features that said system would need to have:
+    \begin{itemize}
+        \item Provide different output types (information, success, warning, error).
+        \item Colour-code output types.
+        \item Include timestamps for each logged message.
+    \end{itemize}
+
+    \inputminted{c++}{code/logging.hpp}
+
+    \inputminted{C++}{code/logging.cpp}

@@ -48,18 +48,19 @@ This section of the document outlines all the key design decisions made when bui
 
     \subsubsection{Examples}
         \begin{listing}[h]
-            \lstinputlisting{code/enum.cpp}
+            \inputminted{c++}{code/enum.cpp}
             \caption{Example of coding style to use when defining enumerations.}
             \label{lst:enum-example}
         \end{listing}
 
         \begin{listing}[h]
-            \lstinputlisting{code/class.hpp}
+            \inputminted{c++}{code/class.hpp}
             \caption{Example of coding style to use when declaring a class or structure.}
             \label{lst:class-example}
         \end{listing}
 
 \subsection{Project Structure}
+    \label{sec:project-structure}
     As the most basic level, I opted for the typical C++ project structure wherein there are two primary directories: \texttt{src} (stores all source/implementation files) and \texttt{include} (stores all header files). It is standard practice when writing in C++ to keep the definition of classes, functions and data structures entirely separate from their implementation whenever possible as this allows for significantly improved build times when only minor changes to the code are made. Definitions are found in header files (\texttt{*.hpp}) in the \texttt{include} directory while implementations are found in source files (\texttt{*.cpp}) in the \texttt{src} directory. I considered using the new module system planned for C++ 20 over the header/source method, however support for modules is still somewhat patchy as the C++ 20 standard is not yet fully finalised at the time of writing.
 
     If in order to maintain a degree of modularity and allow for the use of the emulator core as a general-purpose library without any GUI/CLI/unit tests, I devised a system wherein the code base is split into four different groups/build targets: \texttt{common}, for all emulator and shared code; \texttt{cli}, for command-line interface code; \texttt{gui}, for graphical user interface code; and \texttt{test}, for unit testing. While \texttt{cli}, \texttt{gui} and \texttt{test} are executable build targets (i.e. they each have a \texttt{main} function and generate standalone executables), \texttt{common} is a non-executable library which is linked again each of the aforementioned executables.
@@ -88,15 +89,9 @@ This section of the document outlines all the key design decisions made when bui
 
     CMake requires a configuration file called \texttt{CMakeLists.txt} which, despite having the \texttt{.txt} file extension, contains code in a domain-specific language unique to CMake. This allows one to specify the details of where header files are contained, which source files to compile, libraries to link against, and any other factors that may need to managed in order to build a codebase.
 
-    My initial \texttt{CMakeLists.txt} was rather simple (see Listing \ref{lst:cmake-first}) - it stated that the \texttt{include} directory contained header files, to recursively look in the \texttt{src} directory for source files, and that an executable called \texttt{WiredEmu} should be created.
+    My initial \texttt{CMakeLists.txt} was rather simple - it stated that the \texttt{include} directory contained header files, to recursively look in the \texttt{src} directory for source files, and that an executable called \texttt{WiredEmu} should be created.
 
-    \begin{listing}[h]
-        \inputminted{cmake}{cmake/first.CMakeLists.txt}
-        \caption{The first iteration of the project's \texttt{CMakeLists.txt} script.}
-        \label{lst:cmake-first}
-    \end{listing}
-
-    Naturally, as the project grew more complex, so did its build script. While initially the emulator had only a command-line interface, I soon decided it would be necessary to implement a full graphical user interface. In addition, it was believed that adding unit testing functionality would benefit the stability of the program and assist with debugging. The current build script and version of CMake used did not support such features. As such, I updated CMake and began to make use of its modern features - the primary of which being its build target system. It was this feature that allowed for the building of the various different executables described in section \ref{...}.
+    Naturally, as the project grew more complex, so did its build script. While initially the emulator had only a command-line interface, I soon decided it would be necessary to implement a full graphical user interface. In addition, it was believed that adding unit testing functionality would benefit the stability of the program and assist with debugging. The current build script and version of CMake used did not support such features. As such, I updated CMake and began to make use of its modern features - the primary of which being its build target system. It was this feature that allowed for the building of the various different executables described in section \ref{sec:project-structure}.
 
     Modern CMake allows the creation of distinct build targets which can each have unique properties for both themselves as well as for those they are linked against/depended on by. This is done by specifying public, private and interface properties with private properties applying only to the target; interface properties only applying to other targets dependent on the target; and public properties which are equivalent to applying both of the former. As an example, this would allow for a library to be built using C++ 17 (private property) but only require targets that depend on it to be built with a minimum of C++ 11 (interface property).
 
@@ -140,15 +135,19 @@ This section of the document outlines all the key design decisions made when bui
 
 
 \subsection{Instruction Representation}
-    Decoded instructions are represented using complex data structures making heavy use of object-orientation and inheritance. This allows for logical encapsulation and for more efficient efficient code reuse.
+    Decoded instructions are represented using complex data structures making heavy use of object-orientation and inheritance. This allows for logical encapsulation and for more efficient efficient code reuse. Note that the eplanations below do not provide full namespaces of the referenced objects/functions/etc so as to aid readability.
 
-    The most basic instruction class is simply titled \texttt{cpu::instr::Instruction} and holds basic attributes that are components of every x86 instruction. These include an opcode (represented using a \texttt{cpu::instr::Opcode} object) and an assembly identifier (e.g. \texttt{add}, \texttt{jnz}). Note that this class is purely virtual/abstract and cannot be initiated without the overriding of its three virtual methods.
+    The most basic instruction class is simply titled \texttt{Instruction} and holds basic attributes that are components of every x86 instruction. These include an opcode (represented using a \texttt{Opcode} object) and an assembly identifier (e.g. \texttt{add}, \texttt{jnz}). Note that this class is purely virtual/abstract and cannot be initiated without the overriding of its three virtual methods.
 
-    One method of \texttt{cpu::instr::Instruction} that can be optionally overridden is \texttt{OffsetAddr execute(cpu::Intel8086\& cpu, Mem\& memory)}. As the name would suggest, it is the role of this method to executed the instruction using the given \texttt{cpu} and \texttt{memory} references. Note that these are mutable (i.e. non-constant) references meaning modification is allowed (an instruction unable to modify CPU or memory state would naturally have very limited use). This is in contrast to the \texttt{toAssembly} method discussed shortly which takes constant references so as to prevent accidental modification of the passed CPU and memory.
+    One method of \texttt{Instruction} that should be  overridden is: \mint[linenos=false]{c++}{virtual OffsetAddr execute(Intel8086& cpu, Mem& memory) = 0;}
 
-    The \texttt{execute} method is required to return an \texttt{OffsetAddr} (an alias for a unsigned 16-bit integer type). The CPU's instruction pointer will be set to this returned value on execution completion. For most instructions other than jump and interrupt instructions, the address of the next instruction (and thus the appropriate return value) will simply by the current instruction pointer plus the length of the encoded instruction in bytes. As such, a helper method \texttt{OffsetAddr nextAddress(const cpu::Intel8086\& cpu)} is provided so that most instructions can end their \texttt{execute} method simply with the statement: \texttt{return nextAddress(cpu);}
+    As the name would suggest, it is the role of this method to executed the instruction using the given \texttt{cpu} and \texttt{memory} references. Note that these are mutable (i.e. non-constant) references meaning modification is allowed (an instruction unable to modify CPU or memory state would naturally have very limited use). This is in contrast to the \texttt{toAssembly} method discussed shortly which takes constant references so as to prevent accidental modification of the passed CPU and memory.
 
-    The instruction class also has a pure-virtual \texttt{std::string toAssembly(const cpu::Intel8086\& cpu, const assembly::Style\& style)} method.
+    The \texttt{execute} method is required to return an \texttt{OffsetAddr} (an alias for a unsigned 16-bit integer type). The CPU's instruction pointer will be set to this returned value on execution completion. For most instructions other than jump and interrupt instructions, the address of the next instruction (and thus the appropriate return value) will simply by the current instruction pointer plus the length of the encoded instruction in bytes. As such, a helper method is provided: \mint[linenos=false]{c++}{OffsetAddr nextAddress(const Intel8086& cpu) const;}
+    
+    The above helper method allows most instructions to end their \texttt{execute} method simply with the statement: \mint[linenos=false]{c++}{return nextAddress(cpu);}
+
+    The \texttt{Instruction} class also has the following virtual method: \mint[linenos=false]{c++}{virtual std::string toAssembly(const Intel8086& cpu, const assembly::Style& style) const;}
 
 \subsection{Usability Features}
     For a piece of software that is supposed to be used by students not yet acutely familiar with processor architecture, the usability of said software is a key concern.
