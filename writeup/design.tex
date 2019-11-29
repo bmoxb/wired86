@@ -107,6 +107,7 @@ This section of the document outlines all the key design decisions made when bui
     After realising that improving my own unit testing framework could be an entire project in and of its self, I decided to utilise a third-party framework so that I would be able to place all focus on coding the emulator portion of the project. The framework I chose after a few days of deliberation was \textbf{Catch2}. Features that drew me to this particular framework include the ability to search for and tag tests, the fact that far more detailed information about failed tests are provided, and the ability provided by this framework to split tests into separate subsections.
 
 \subsection{GUI Design}
+    \label{sec:gui-design}
     As you can see in the initial design in Figure \ref{figure:gui-first-design}, the GUI for this project was based primarily around three main components: a hex editor (shown in the top-left of the design), a status/control panel (bottom-left), and various register panels (right).
 
     \begin{figure}
@@ -152,7 +153,73 @@ This section of the document outlines all the key design decisions made when bui
 \subsection{Usability Features}
     For a piece of software that is supposed to be used by students not yet acutely familiar with processor architecture, the usability of said software is a key concern.
 
-    The first major consideration when it comes to usability, is the general layout of the software's GUI. One issue with many similar solutions is an intimidating and complex-to-navigate user interface. This is something I hope to address properly with my own solution. Please see section \ref{sec:...} for a breakdown for the GUI design process.
+    The first major consideration when it comes to usability, is the general layout of the software's GUI. One issue with many similar solutions is an intimidating and complex-to-navigate user interface. This is something I hope to address properly with my own solution. Please see section \ref{sec:gui-design} for a breakdown for the GUI design process and an outline of some more general usability features of the software.
+
+    After discussions with the shareholder, we agreed on a particular feature designed to aid usability of the software to quite an extent. This feature is the introduction of 'tool tips' - short paragraphs of description displayed when the user hovers their mouse over a particular area of the GUI. This is beneficial as it allows for details on appropriate software usage to be provided in a streamlined manner (e.g. without having to refer to separate usage instructions). In addition, having this information only appear on mouse hover prevents additional clutter in what is already a somewhat intimidating user interface.
 
 \subsection{Testing}
-    Naturally, it is difficult to decide on the specifics of testing before any code has actually been written. The current plan is to write a collection of unit tests during the iterative development process. Regardless, some more general testing points are outlined below:
+    Naturally, it is difficult to decide on the specifics of testing before any code has actually been written. The current plan is to write a collection of unit tests during the iterative development process in order to test the internals of the software.
+
+    \subsubsection{Assembly Generation}
+        Every CPU cycle, the instruction at the point in memory indicated by the instruction pointer is converted into its human-readable assembly representation. This assembly representation is displayed to the user so that it is clear to them what an instruction will do before it is actually run. I concluded the best way to test the validity of the emulator's generated assembly would be compare it to that of a pre-existing disassembler.
+
+        The GNU project provides a piece of software \texttt{objdump} which allows for the in-depth analysis of object code. Using the command-line \texttt{-D} option, \texttt{objdump} will produce assembly code from the specified object file. The \texttt{-Mintel} option is employed also so as to specify the use Intel x86 syntax rather than AT\&T as the former is the style I have programmed the emulator to output. The argument \texttt{-m i8086} is used to specify the Intel 8086 as the target architecture. For the sake of completeness, the \texttt{-b binary} option is also used to specify the input file's binary format (including this option is not really necessary as \texttt{objdump} is quite good at inferring the format used).
+
+        Disassembling the code in a file called \texttt{a.out} could therefore be done with the following command: \mint[linenos=false]{bash}{objdump -Mintel -D -b binary -m i8086 a.out}
+
+        I would perform these tests based on each general type of instruction so as to ensure each variety is functional.
+
+    \subsubsection{Instruction Execution}
+        Ensuring instructions actually perform the correct changes to CPU state (i.e. execute correctly) is to be done using a collection of unit tests. As mentioned in the Analysis section, I will use the Catch2 library for creating, managing, and running unit tests.
+
+        \inputminted{c++}{code/testexample.cpp}
+
+        Above is an example of what one such unit test may look like. This approach is ideal as it allows me to test all instructions by simply running the generated unit testing executable.
+
+    \subsubsection{Emulator Memory}
+        Having memory representation for the emulated system that functions as expected is also vital as any system, emulated or otherwise, will frequently write to and read from memory. Again, unit testing is ideal in this situation.
+
+        Testing data table \ref{table:memory-test-data} works on the assumption that memory consists of a total of 0xFF separate 8-bit values.
+
+        \begin{table}
+            \begin{tabular}{ | c | c | m{0.3\textwidth} | }
+                \hline
+                Test Data & Type & Description \\
+                \hline
+                write byte to address \texttt{0x0F} & normal & write byte value to valid memory address (within bounds) \\
+                write byte to address \texttt{0xFE} & boundary & write byte value to address just within memory bounds \\
+                write byte to address \texttt{0x5FF} & erroneous & attempt to write memory value that is out-of-bounds so exception should be thrown \\
+                write several bytes beginning from address \texttt{0x10} & normal & to valid memory addresses (within bounds) \\
+                write several bytes beginning from address \texttt{0xFD} & erroneous & not all memory addresses will be within bounds so exception should be thrown \\
+                read byte from address \texttt{0x0F} & normal & read byte from valid memory address (within bounds) \\
+                read byte from address \texttt{0xFE} & boundary & read byte from address just within memory bounds \\
+                read byte from address \texttt{0xABCD} & erroneous & attempt to read byte that is out-of-bounds so exception should be thrown \\
+                read several bytes from address \texttt{0x15} & normal & from valid memory addresses (within bounds) \\
+                read several bytes from address \texttt{0xFD} & erroneous & not all memory addresses will be within bounds so exception should be thrown \\
+                \hline
+            \end{tabular}
+            \label{table:memory-test-data}
+            \caption{Table of emulator memory test data.}
+        \end{table}
+
+    \subsubsection{Memory Segmentation}
+        As before, unit testing will also be used for the testing of memory segmentation. See table \ref{table:segmentation-test-data}.
+
+        \begin{table}
+            \begin{tabular}{ | c | c | c | c | }
+                \hline
+                Segment Register Value & Offset Value & Expected Absolute Address & Test Data Type \\
+                \hline
+                \texttt{0000} & \texttt{0000} & \texttt{00000} & normal \\
+                \texttt{00FF} & \texttt{0000} & \texttt{000FF} & normal \\
+                \texttt{00FF} & \texttt{000F} & \texttt{00FFF} & normal \\
+                \texttt{FFFF} & \texttt{000E} & \texttt{FFFFE} & boundary \\
+                \texttt{FFFF} & \texttt{FFFF} & - & erroneous \\
+                \hline
+            \end{tabular}
+            \label{table:segmentation-test-data}
+            \caption{Table of memory segmentation testing data.}
+        \end{table}
+
+    \subsubsection{Post-Development Testing}
+        ...

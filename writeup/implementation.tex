@@ -1,52 +1,94 @@
-\section{Implementation}
+\section{Implementation: First Stage} % 2383bf9c9b47d4ef43480dfd263502892753236d
 
-\subsection{Defined Primitives and \texttt{main()}}
-    The first step taken in beginning the actual implementation was to define a collection of primitive types. This was done for a number of reasons. Firstly, the typical built-in types provided in C++ (e.g. \texttt{unsigned int}) have a size that is dependent on the target system and compiler used. The standard library header \texttt{cstdint} provides types such as \texttt{uint16\_t} which are of a definite size (unsigned 16-bit integer in the case of the aforementioned).
+\subsection{Development}
+    \subsubsection{Setting Up Git}
+        By nature of using Git for version control, the first step to beginning the project is to create a \texttt{.gitignore} file:
 
-    \inputminted{c++}{code/primitives.hpp}
+        \inputminted{html}{code/initial/.gitignore}
 
-\subsection{Headers for \texttt{Memory} and \texttt{Intel8086} Classes}
-    An element of the C++ compilation system is that it is advantageous in terms of compile time to keep the declaration of class separate from the implementation of any of its member functions. Class declarations are defined in header files (\texttt{.cpp}) while class implementations are defined in source files (\texttt{.hpp}). At this early stage is development, I find it beneficial to create headers to give an overall structure of classes before beginning their actual implementation.
+        Now the project folder can be initialised as a git repository:
 
-    As such, headers for the \texttt{Memory} and \texttt{Intel8086} classes were created at this stage in development.
+        \includegraphics[scale=0.6]{git-setup}
 
-    \inputminted{c++}{code/memory.hpp}
+        As mentioned in the Design section, the project code is split into two primary directories: \texttt{include/} and \texttt{src/} with header files stored in the former and source/implementation files in the latter. Inside both of those directories are directories both called \texttt{common}. It is in those directories where the general emulator code is kept (i.e. code not specific to the GUI, testing or CLI).
 
-    \inputminted{c++}{code/intel8086.hpp}
+    \subsubsection{Primitives}
 
-\subsection{Created \texttt{main()} Function and Build Script}
-    This is now enough for a build script to be written and for the program to compile. As mentioned earlier in this document, I plan to use the CMake build system which (on my Linux system) relies on GCC Make and G++ compiler. See below for the original \texttt{CMakeLists.txt} file.
+        The first step taken in beginning the actual implementation was to define a collection of primitive types. This was done for a number of reasons. Firstly, the typical built-in types provided in C++ (e.g. \texttt{unsigned int}) have a size that is dependent on the target system and compiler used. The standard library header \texttt{cstdint} provides types such as \texttt{uint16\_t} which are of a definite size (unsigned 16-bit integer in the case of the aforementioned). The issue with these however is that, depending on the compiler, they may be found under the \texttt{std::} namespace only or also in the global namespace. In ensure compatibility across all compilers, one would have to use these types with the \texttt{std::} prefix or make use of the \texttt{using namespace} command for each type they wish to use (so that they are guaranteed to be in the global namespace).
 
-    \inputminted{cmake}{code/first_CMakeLists.txt}
+        To resolve this issue, as an alternative to making use of the aforementioned 'using' command, I decided to create type aliases for each of these primitive types with their \texttt{std::} namespace prefix specified. This also allowed me to give cleaner names without the \texttt{\_t} extension in order to aid readability.
 
-\subsection{CPU Registers}
-    Registers are represented using a separate class to that of the CPU itself. Internally, I decided to use a class template system so that an enumeration type can be used as a register index. This has several benefits over other potential methods of implementing registers. For example, other projects that I have researched simply accepted integers as indexes to an array representing CPU registers. This is problematic as any integer constant can be used, even a totally unrelated constant or out-of-bound value. By using a type-specific enumeration, only appropriate register indexes can be passed without causing a type-error.
+        The code of the \texttt{primitives.hpp} header is found in the \texttt{include/common/} directory and is shown below:
 
-    \inputminted{c++}{code/registerindexes.hpp}
+        \inputminted{c++}{code/initial/primitives.hpp}
 
-    You'll notice that the register indexes are not actually C++ enumerations defined with the \texttt{enum} keyword. Rather, they are classes emulating enumerations in style similar to that of Java's enumerations. This is beneficial as it allows register indexes to have additional properties (for example, a string description of its purpose).
+    \subsubsection{Memory}
 
-    \inputminted{c++}{code/registers.hpp}
+        An element of the C++ compilation system is that it is advantageous in terms of compile time to keep the declaration of class separate from the implementation of any of its member functions. Class declarations are defined in header files (\texttt{.cpp}) while class implementations are defined in source files (\texttt{.hpp}). In the case of class templates however, the compiler does not allow the implementation to be kept separate from the declaration. This is seen in the \texttt{Memory} class template that follows:
 
-    Naturally, a lot of the code is not implemented at this stage.
+        \inputminted{c++}{code/initial/memory.hpp}
 
-\subsection{\texttt{conversion} Namespace}
-    Something I felt would be useful to do after working on register indexes, was to provide a collection of helper/conversion functions under a \texttt{conversion} namespace. 
+        It was decided that this would indeed be a class template simply to make the code as generic as possible. Should, in some later stage of development, be decided that the values stored in memory or memory addresses would be a different numerical type, the use of this class template makes that an easy change to make.
 
-    \inputminted{c++}{code/conversion.hpp}
+        There is an exception class that derives from \texttt{std::exception} defined within the \texttt{Memory} class template. Nesting these classes was done so that the exception class could have a member that is the correct type to hold the out-of-bounds address that caused the exception to be thrown.
 
-    \inputminted{c++}{code/conversion.cpp}
+        The memory values themselves are stored as a raw array, the size of which is not known at compile-time (meaning it has to be dynamically-allocated). This is array is kept within a \texttt{std::unique\_ptr} so that memory will be deallocated automatically when no longer needed. The pointer to this array is declared as private meaning it can only be used within the class itself. This class makes use of encapsulation in the sense that only methods that indirectly modify the internal data can be used from the outside. This has the advantage of ensuring safety as it means users of the class cannot tamper with memory or cause issues by providing invalid values (e.g. attempting to write a value to memory beyond the amount allocated).
 
-    This allows me to improve code readability by replacing code such as: \mint[linenos=false]{c++}{return get(index) & 0xFF;} seen in the \texttt{RegistersLowHigh} class with: \mint[linenos=false]{c++}{return conversion::getHighByte(get(index));}
+        In terms of the public interface, methods for reading from and writing to memory are provided as well as the methods to check whether a given address is within memory bounds or to fill/clear all memory values.
 
-\subsection{Logging}
-    Before a functional GUI is implemented, I will have to rely on a command-line interface for input and output. As such, building a proper system for clear, organised output seemed vital. Before writing the code for this logging system, I decided on several key features that said system would need to have:
-    \begin{itemize}
-        \item Provide different output types (information, success, warning, error).
-        \item Colour-code output types.
-        \item Include timestamps for each logged message.
-    \end{itemize}
+    \subsubsection{CPU} \label{sec:initial-cpu}
+        Next, design of the general Intel 8086 class began:
 
-    \inputminted{c++}{code/logging.hpp}
+        \inputminted{c++}{code/initial/intel8086.hpp}
 
-    \inputminted{C++}{code/logging.cpp}
+        This began with defining some type aliases to make it more explicit what a value's purpose exactly is. For example, it isn't immediately obvious why the \texttt{resolveAddress} method returns an unsigned 32-bit integer, so having it return such a type under the alias \texttt{AbsAddr} indicates that it is returning an absolute memory address and therefore reduces ambiguity.
+
+        Completing fetch-decode-execute cycle with this class design requires a few steps:
+        \begin{enumerate}
+            \item Fetching the address of the next instruction (i.e. instruction pointer segmented within the code segment) by calling the \texttt{nextInstructionAddress} method.
+            \item Passing that address and a \texttt{Memory} object to the \texttt{fetchDecodeInstruction} method which will return the decoded instruction at that address as an object inheriting from the \texttt{Instruction} (and stored within a \texttt{std::unique\_ptr}).
+            \item The \texttt{Instruction}-derrived object can then be passed to \texttt{executeInstruction} where it is finally executed.
+        \end{enumerate}
+        This provides a fair degree of flexibility - the separation of decoding and executing gives the freedom to decode an instruction at a given address (so that its assembly representation may be seen, for example) without then being forced to execute it.
+
+        At this stage in development, the \texttt{Intel8086} class is only declared in a header and is not yet implemented.
+        
+    \subsubsection{Register Indexes}
+        You may have noticed that the CPU class outlined in section \ref{sec:initial-cpu} has register members which are to be declared now. However, before the class templates for the registers themselves are defined, I begin with creating the \texttt{RegisterIndex} class:
+
+        \inputminted{c++}{code/initial/registerindexes.hpp}
+
+        This \texttt{RegisterIndexes} class is to function somewhat like the type of \texttt{enum} one can define in Java - in other words, an enumeration but with additional properties also stored. In this instance, those 'additional properties' are the assembly identifiers and brief descriptions of each register. This class functions like a enumeration by having its constructor be protected and then each enumeration value defined as a static constant member of that class.
+
+        In the above header, indexes for each of general-purpose and segment registers of the Intel 8086 are declared.
+
+        The implementation of this class is fairly simple also:
+
+        \inputminted{c++}{code/initial/registerindexes.cpp}
+
+    \subsubsection{Registers}
+        Registers are also represented using class templates so that the aforementioned \texttt{RegisterIndex} may be specified as type arguments - the size of an individual register can also be specified by providing the appropriate type.
+
+        \inputminted{c++}{code/initial/registers.hpp}
+
+        Internally, registers are stored using \texttt{std::map} which maps a \texttt{RegisterIndex} to a register's value. The \texttt{RegistersLowHigh} class makes use of helper functions \texttt{getHighByte} and \texttt{getLowByte} which are outlined in section \ref{sec:initial-helper-functions}.
+
+    \subsubsection{Helper Functions}
+        Due to the Intel 8086 having general-purpose registers that can be accessed as individual high or low bytes, it is necessary that the program can extract the most or least significant byte from a 16-bit value. This is what prompted me to create a helper function namespace called \texttt{conversion}.
+
+        \inputminted{c++}{code/initial/conversion.hpp}
+
+        While it currently has only two functions, it is likely that this namespace will become more populated as the project progresses.
+
+        \inputminted{c++}{code/initial/conversion.cpp}
+
+    % TODO: build system bruh.
+
+\subsection{Review}
+    \subsubsection{Overview of Progress}
+        After completion of the first stage of development, I now have a working development environment and a codebase that, though it may not yet provide any use to the user, is a solid foundation on which to build. In terms of that foundation, a proper build system with distinctly separate locations for code (common, GUI, CLI, and testing) is provided. For 'common' code, several key emulator components - including the CPU, memory and registers - are now implemented (or at least declared). With this, the first round of testing can be performed.
+
+    \subsubsection{Success Criteria}
+
+\subsection{Testing}
+    ...

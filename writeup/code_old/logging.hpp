@@ -33,6 +33,13 @@ namespace logging {
      */
     class Logger {
     public:
+        /**
+         * Create a new logging objects.
+         *
+         * @param loggerLogType String that is prepended to each logger message output.
+         * @param loggerEscapeSequence The ANSI escape sequence to use for colouring the output.
+         * @param initialStream A stream for this logger to output via.
+         */
         Logger(std::string loggerLogType, std::string loggerEscapeSequence, std::ostream& initialStream = std::cout);
 
         /**

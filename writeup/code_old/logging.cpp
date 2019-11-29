@@ -18,14 +18,7 @@ namespace logging {
     Logger success("SUCCESS", Logger::CYAN_ON_BLACK_TEXT);
     Logger warning("WARNING", Logger::YELLOW_ON_BLACK_TEXT, std::cerr);
     Logger error("ERROR", Logger::RED_ON_BLACK_TEXT, std::cerr);
-
-    /**
-      * Create a new logging objects.
-      *
-      * @param loggerLogType String that is prepended to each logger message output.
-      * @param loggerEscapeSequence The ANSI escape sequence to use for colouring the output.
-      * @param initialStream A stream for this logger to output via.
-      */
+    
     Logger::Logger(std::string loggerLogType, std::string loggerEscapeSequence, std::ostream& initialStream)
     : logType(loggerLogType), escapeSequence(loggerEscapeSequence) {
         addStream(initialStream); // Add a first output stream.
@@ -61,7 +54,7 @@ namespace logging {
     void Logger::outThroughAllStreams(std::string msg) {
         if(hasStreams()) {
             for(std::ostream* stream : streams) {
-                if(stream) (*stream) << msg;
+                if(stream) (*stream) << msg; // Dereference pointer and output message to stream.
             }
         }
     }
@@ -71,7 +64,7 @@ namespace logging {
         std::tm tm = *std::localtime(&t);
 
         std::stringstream ss;
-        ss << std::put_time(&tm, "%H:%M:%S");
+        ss << std::put_time(&tm, "%H:%M:%S"); // Put into string stream so that value can be returned as std::string type.
 
         return ss.str();
     }

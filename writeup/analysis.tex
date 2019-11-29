@@ -109,55 +109,67 @@
     As for more realistic, concrete success criteria, a few points have since been decided upon. These are outlined in the subsections below.
 
     \subsubsection{GUI}
-        The GUI must fulfil the following criteria:
+        The GUI must fulfil the criteria outlined in table \ref{table:gui-success-criteria}.
         %\begin{itemize}
             %\item Must display values of CPU registers as well as allow for the altering of said values during execution by the user.
             %\item Must display the assembly representation of the instruction currently being executed.
             %\item Allow for the loading of raw data files in emulator memory via a menu option.
         %\end{itemize}
 
-        \begin{tabular} { | m{0.3\textwidth} | m{0.3\textwidth} | m{0.3\textwidth} | }
-            \hline
-            \textbf{Success Criteria} & \textbf{Evidence} & \textbf{Justification} \\
-            \hline
-            Must display values of CPU registers as well as allow for the altering of said values during execution by the user. &
-            I will check that the values displayed are appropriately updated as CPU state changes. Ensure that the stored register values are actually updated when the register GUI is interacted with. &
-            This was necessary success criteria as one of the stakeholder's key requirements was a level of interactivity in order to facilitate practical learning. \\
-            \hline
-            Must display the assembly representation of the instruction currently being executed. &
-            I will load the raw data of some known instructions into the emulator and then compare the emulator's produced assembly representation with the known assembly. &
-            This is necessary as an assembly representation of data in memory demonstrates to the stakeholder's students the basis of CPU instruction decoding. \\
-            \hline
-            Allow for the loading of raw data files in emulator memory via a menu option. &
-            I will create various raw data files and then attempt to load them into the software using the mentioned menu option and then compare values in emulator memory with that of the files. &
-            Necessary as loading external files is far more convenient for the user than manually editing memory each time by hand. \\
-            \hline
-        \end{tabular}
+        \begin{table}
+            \begin{tabular} { | m{0.3\textwidth} | m{0.3\textwidth} | m{0.3\textwidth} | }
+                \hline
+                \textbf{Success Criteria} & \textbf{Evidence} & \textbf{Justification} \\
+                \hline
+                Must display values of CPU registers as well as allow for the altering of said values during execution by the user. &
+                I will check that the values displayed are appropriately updated as CPU state changes. Ensure that the stored register values are actually updated when the register GUI is interacted with. &
+                This was necessary success criteria as one of the stakeholder's key requirements was a level of interactivity in order to facilitate practical learning. \\
+                \hline
+                Must display the assembly representation of the instruction currently being executed. &
+                I will load the raw data of some known instructions into the emulator and then compare the emulator's produced assembly representation with the known assembly. &
+                This is necessary as an assembly representation of data in memory demonstrates to the stakeholder's students the basis of CPU instruction decoding. \\
+                \hline
+                Allow for the loading of raw data files in emulator memory via a menu option. &
+                I will create various raw data files and then attempt to load them into the software using the mentioned menu option and then compare values in emulator memory with that of the files. &
+                Necessary as loading external files is far more convenient for the user than manually editing memory each time by hand. \\
+                \hline
+            \end{tabular}
+            \caption{Success criteria for the emulator's GUI (but not the emulator itself).}
+            \label{table:gui-success-criteria}
+        \end{table}
 
         %This first GUI success criteria is necessary for the purpose of fulfilling the stack holder's needs. One key feature of the project that makes it appropriate for a learning environment is the fact that the internal workings of the emulated system are exposed and mutable. This particular success criteria point is necessary as registers contain information key to the running the CPU. As such, giving the user the opportunity to easily observe and change
 
     \subsubsection{Emulator}
-        The emulator must fulfil the following criteria:
+        The emulator must fulfil the criteria outlined in table \ref{table:emulator-success-criteria}.
         %\begin{itemize}
             %\item Capable of executing all instructions listed in appendix section \ref{sec:instructset} successfully including cases where those instructions may include MOD-REG-R/M, immediate and/or displacement bytes.
             %\item Capable of producing correct assembly representations of all instructions listed in appendix section \ref{sec:instructset}.
             %\item Does not crash when provided with an unknown/unimplemented opcode or instruction with invalid encoding.
         %\end{itemize}
 
-        \begin{tabular} { | m{0.3\textwidth} | m{0.3\textwidth} | m{0.3\textwidth} | }
-            \hline
-            \textbf{Success Criteria} & \textbf{Evidence} & \textbf{Justification} \\
-            \hline
-            Capable of executing all instructions listed in appendix section \ref{sec:instructset} successfully including cases where those instructions may include MOD-REG-R/M, immediate and/or displacement bytes. &
-            I will write a collection of unit tests that checks that correct execution of all  variations of the instructions listed in the aforementioned appendix section. This success criteria will be considered met when all these unit tests pass. &
-            This is necessary to ensure the emulator can correctly execute all instruction types as expected. \\
-            \hline
-            Capable of producing correct assembly representations of all instructions listed in appendix section \ref{sec:instructset}. &
-            I will a write a collection of unit tests that checks correct assembly generation for all variations of the instructions listed in the appendix. &
-            The stakeholder's students should be able to see x86 instruction decoding in action - showing disassembly is an easy way of showing how raw bytes of data correlate to actual CPU instructions. \\
-            \hline
-            Does not crash when provided with an unknown/unimplemented opcode or instruction with invalid encoding. &
-            Have the emulator attempt to run instructions that are known to not be supported/have invalid MOD-REG-R/M bytes and ensure that a clear error message is displayed rather than the program simply crashing or doing nothing. &
-            This is necessary to ensuring the stability to the program - especially as users are capable of editing the data in memory that is to be executed by the CPU. \\
-            \hline
-        \end{tabular}
+        \begin{table}
+            \begin{tabular} { | m{0.3\textwidth} | m{0.3\textwidth} | m{0.3\textwidth} | }
+                \hline
+                \textbf{Success Criteria} & \textbf{Evidence} & \textbf{Justification} \\
+                \hline
+                Has emulated memory which can be read and written to by the emulated CPU without error. &
+                Ensure that memory read/writes correctly alter the emulator memory and that erroneous data (e.g. reading address out of bounds) is also handled appropriately (throw an exception rather than reading/editing unallocated memory). &
+                Important as all computer systems require primary storage for storing programs and data. Issues with this storage will cause serious knock-on effects for the rest of the system also. \\
+                \hline
+                Capable of executing all instructions listed in appendix section \ref{sec:instructset} successfully including cases where those instructions may include MOD-REG-R/M, immediate and/or displacement bytes. &
+                I will write a collection of unit tests that checks that correct execution of all  variations of the instructions listed in the aforementioned appendix section. This success criteria will be considered met when all these unit tests pass. &
+                This is necessary to ensure the emulator can correctly execute all instruction types as expected. \\
+                \hline
+                Capable of producing correct assembly representations of all instructions listed in appendix section \ref{sec:instructset}. &
+                I will a write a collection of unit tests that checks correct assembly generation for all variations of the instructions listed in the appendix. &
+                The stakeholder's students should be able to see x86 instruction decoding in action - showing disassembly is an easy way of showing how raw bytes of data correlate to actual CPU instructions. \\
+                \hline
+                Does not crash when provided with an unknown/unimplemented opcode or instruction with invalid encoding. &
+                Have the emulator attempt to run instructions that are known to not be supported/have invalid MOD-REG-R/M bytes and ensure that a clear error message is displayed rather than the program simply crashing or doing nothing. &
+                This is necessary to ensuring the stability to the program - especially as users are capable of editing the data in memory that is to be executed by the CPU. \\
+                \hline
+            \end{tabular}
+            \caption{Success criteria for the emulator itself (not the GUI).}
+            \label{table:emulator-success-criteria}
+        \end{table}
