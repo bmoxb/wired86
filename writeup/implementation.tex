@@ -73,7 +73,7 @@
 
         Internally, registers are stored using \texttt{std::map} which maps a \texttt{RegisterIndex} to a register's value. The \texttt{RegistersLowHigh} class makes use of helper functions \texttt{getHighByte} and \texttt{getLowByte} which are outlined in section \ref{sec:initial-helper-functions}.
 
-    \subsubsection{Helper Functions}
+    \subsubsection{Helper Functions} \label{sec:initial-helper-functions}
         Due to the Intel 8086 having general-purpose registers that can be accessed as individual high or low bytes, it is necessary that the program can extract the most or least significant byte from a 16-bit value. This is what prompted me to create a helper function namespace called \texttt{conversion}.
 
         \inputminted{c++}{code/initial/conversion.hpp}
@@ -84,11 +84,100 @@
 
     % TODO: build system bruh.
 
+\subsection{Testing}
+    \subsubsection{Testing of Memory} \label{initial-testing-memory}
+        The \texttt{Memory} has been fully implemented and is as such ready for proper testing. Below is the unit testing code for this class (using the Catch2 framework):
+
+        \inputminted{c++}{code/initial/testmemory.cpp}
+
+        The results of running these tests:
+
+        \includegraphics[scale=0.6]{memory-tests}
+
+    \subsubsection{Testing of Helper Functions}
+        The two functions of the \texttt{conversion} namespace were also tested.
+
+        \inputminted{c++}{code/initial/testconversions.cpp}
+
+        These tests also all ran successfully.
+
+    \subsubsection{Testing of CPU Registers}
+        While the CPU itself is not yet ready to be tested, the CPU register system is complete and therefore ready.
+
+        \inputminted{c++}{code/initial/testregisters.cpp}
+
+        Running these tests shows that the CPU register system devised functions as expected.
+
 \subsection{Review}
     \subsubsection{Overview of Progress}
         After completion of the first stage of development, I now have a working development environment and a codebase that, though it may not yet provide any use to the user, is a solid foundation on which to build. In terms of that foundation, a proper build system with distinctly separate locations for code (common, GUI, CLI, and testing) is provided. For 'common' code, several key emulator components - including the CPU, memory and registers - are now implemented (or at least declared). With this, the first round of testing can be performed.
 
     \subsubsection{Success Criteria}
+        This first stage of development was able to fully address one emulator success criteria (see table \ref{table:emulator-success-criteria}): \textit{Has emulated memory which can be read and written to by the emulated CPU without error.}
+
+        For evidence that this success criteria was indeed met, please see section \ref{sec:initial-testing-memory}. In said section, one can see that all unit tests designed to ensure emulator memory functions correctly run successfully.
+
+    \subsubsection{Plans}
+        There are a few key areas of software that should be addressed next. To begin with, I believe that the software would benefit greatly from some form of proper logging system as currently output is just written to standard out without any form of colour coding, time-stamping, or other such information. In addition, the \texttt{Intel8086} class needs to be implemented. After which I can begin the difficult task of devising a system which can decode the complex x86 instruction set.
+
+
+
+\section{Implementation: Second Stage} % ad9b8e1c0d996710b102058cbae76fa0dc8b4745
+
+\subsection{Development}
+    \subsubsection{Logging}
+        To begin the second stage of development, it was decide that a proper, flexible logging system was integral to for clearly providing information regarding the status of emulator (at least, before the GUI is implemented). I decided that an object-orientated approach would be most appropriate as multiple instance of a \texttt{Logger} class can be created for each logger type (e.g. general information, error, warning, etc.)
+
+        Aside from the colour-coding and time-stamping one would expect from such a system, additional information can be provided to logging output via the \texttt{ADDITIONAL\_LOGGING\_INFO} macro and the \texttt{LoggingInfo} structure. Through the use of the former as the final argument to a logging call, I can have that logging message include information about from where in the code it was called from (line number, file, and from what function).
+
+        The logging system is also not hard-coded to output via standard console output. Instead, it makes use of the C++ standard library's \texttt{std::ostream} object to allow output via any stream (console output, to a file, or even over a network). This is beneficial as it allows logging output to be redirected to a file for later analysis with very little extra effort.
+
+        \inputminted{c++}{code/second/logging.hpp}
+
+        \inputminted{c++}{code/second/logging.cpp}
+
+    \subsubsection{Instruction Opcodes} \label{sec:second-opcodes}
+        Finally, it was time to begin the complex task of creating a system capable of representing the complex instruction encoding used by the Intel 8086 CPU. The first step here was to create a class to represent instruction opcodes.
+
+        \inputminted{c++}{code/second/opcode.hpp}
+
+        Aside from of course indicating which operation an instruction will carry out, the opcode of an instruction also indicates (where applicable) whether the instruction operates on byte values or 16-bit values, as well as the 'direction' of the instruction (whether the REG component of the instruction's MOD-REG-R/M byte is acting as a source or destination for the operation). In the \texttt{Opcode} class header above, it can be seen that these are represented using human-readable enumerations \texttt{DataSize} and \texttt{RegDirection} as an alternative to the bit values they are actually stored as.
+
+        \inputminted{c++}{code/second/opcode.cpp}
+
+    \subsubsection{Changes to CPU}
+        In the first stage of development, a class by the name of \texttt{Intel8086} was declared. At this second stage, that class is partially implemented:
+
+        \inputminted{c++}{code/second/intel8086.cpp}
+
+    \subsubsection{Conversion/Helper Functions}
+        Aside from the \texttt{conversion} namespace being renamed to just \texttt{convert}, a few additional helper functions and function templates were introduced into said namespace. For example, in section \ref{sec:second-opcodes} you will see the use of templates by the name of \texttt{getBitFrom} and \texttt{getBitsFrom} respectively. As their names would imply, these template functions allow for fetching specific bits contained in a value from a given 'index'.
+
+        \inputminted{c++}{code/second/convert.hpp}
+
+        In addition, the function \texttt{createWordFromBytes} was also introduced. This function simply combines a low and high byte in order to produce a resulting 16-bit value.
+
+        \inputminted{c++}{code/second/convert.cpp}
 
 \subsection{Testing}
-    ...
+
+    \subsubsection{Testing of New Helper/Conversion Code}
+        In this second stage of development, additional code was introduced into the \texttt{convert} namespace. Naturally, to ensure the stability of the program, said code should be tested.
+
+        \inputminted{c++}{code/second/furthertestconversions.cpp}
+
+        The above code shows the new unit tests added to the pre-existing section wherein the code of the \texttt{covert} namespace is checked. It was by running these new unit tests that I realised the original implementation of the \texttt{getBitsFrom} function template did not work as I had intended:
+
+        \includegraphics[scale=0.6]{failed-test}
+
+        The above image shows the output when the tests were run and one failed. From this I was able to identify the \texttt{getBitsFrom} function template as containing the faulty code. Upon investigation, I realised the following line had an off-by-one-error: \mint{c++}{T mask = 1 << count;}
+
+        This was causing issues as creating an appropriate bit-mask requires raising 2 to the power of the number of bits and then taking away one. As such, the code was easily corrected: \mint{c++}{T mask = (1 << count) - 1; // (2 ^ count) - 1}
+
+
+    \subsubsection{Testing of Basic Instruction Representation}
+        In terms of CPU instructions, only the \texttt{Opcode} class is fully-implemented at this stage in development.
+
+        \inputminted{c++}{code/second/testinstructions.cpp}
+
+        All these tests ran successfully.

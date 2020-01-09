@@ -95,16 +95,6 @@ This section of the document outlines all the key design decisions made when bui
 
     Modern CMake allows the creation of distinct build targets which can each have unique properties for both themselves as well as for those they are linked against/depended on by. This is done by specifying public, private and interface properties with private properties applying only to the target; interface properties only applying to other targets dependent on the target; and public properties which are equivalent to applying both of the former. As an example, this would allow for a library to be built using C++ 17 (private property) but only require targets that depend on it to be built with a minimum of C++ 11 (interface property).
 
-\subsection{Unit Testing}
-    When working on larger projects with expansive code bases, it can quickly become inconvenient to manually test each individual portion of said code base. Fortunately, unit testing allows for a degree of automation in the process of ensuring each component or 'unit' that makes up a piece of software functions as it should. This is typically done by writing tests that give certain inputs to pieces of code and will only pass should the expected outputs are received. Should a test fail then a report explaining which portion of code failed, what it was supposed to do, and what it actually did is generated.
-
-    Initially I wrote my own unit testing framework. This framework was built around constructing an object holding a 'test function' (lambda/anonymous function) which performs an assertion by either returning true to indicate a pass and false to indicate failure. This unit test object then had various methods available which allowed one to pass input to the testing function and then have the result of its assertion handled appropriately.
-
-    While this method did indeed work, it presented a couple of issues. The first of which being the limited information given when a test failed. I had made a \texttt{CREATE\_TEST} macro which passed information such as in which file and function the test was created to the the unit test object, which gave some degree of insight into how to test failed. More information such as the precise value of arguments to the test function however, would be helpful to provide for debugging purposes. While I was able to just use parameter pack expansion in order the write most argument values to standard output, more complex values (such as \texttt{std::vector} values or values of custom types) cannot be handled be \texttt{std::cout} by default. While I could have written a custom output stream derived from \texttt{std::ostream} to handle these types, doing so would be rather time consuming.
-
-    Another issue with my own unit testing framework was the lack of categorisation of tests. The implementation did not allow for the tagging or running of individual tests and instead always ran every test defined. This was inefficient and did not allow for optimal organisation when a large quantity of tests are defined.
-
-    After realising that improving my own unit testing framework could be an entire project in and of its self, I decided to utilise a third-party framework so that I would be able to place all focus on coding the emulator portion of the project. The framework I chose after a few days of deliberation was \textbf{Catch2}. Features that drew me to this particular framework include the ability to search for and tag tests, the fact that far more detailed information about failed tests are provided, and the ability provided by this framework to split tests into separate subsections.
 
 \subsection{GUI Design}
     \label{sec:gui-design}
@@ -160,6 +150,16 @@ This section of the document outlines all the key design decisions made when bui
 \subsection{Testing}
     Naturally, it is difficult to decide on the specifics of testing before any code has actually been written. The current plan is to write a collection of unit tests during the iterative development process in order to test the internals of the software.
 
+    \subsubsection{Unit Testing}
+        When working on larger projects with expansive code bases, it can quickly become inconvenient to manually test each individual portion of said code base. Fortunately, unit testing allows for a degree of automation in the process of ensuring each component or 'unit' that makes up a piece of software functions as it should. This is typically done by writing tests that give certain inputs to pieces of code and will only pass should the expected outputs are received. Should a test fail then a report explaining which portion of code failed, what it was supposed to do, and what it actually did is generated.
+
+        Initially I wrote my own unit testing framework. This framework was built around constructing an object holding a 'test function' (lambda/anonymous function) which performs an assertion by either returning true to indicate a pass and false to indicate failure. This unit test object then had various methods available which allowed one to pass input to the testing function and then have the result of its assertion handled appropriately.
+
+        While this method did indeed work, it presented a couple of issues. The first of which being the limited information given when a test failed. I had made a \texttt{CREATE\_TEST} macro which passed information such as in which file and function the test was created to the the unit test object, which gave some degree of insight into how to test failed. More information such as the precise value of arguments to the test function however, would be helpful to provide for debugging purposes. While I was able to just use parameter pack expansion in order the write most argument values to standard output, more complex values (such as \texttt{std::vector} values or values of custom types) cannot be handled be \texttt{std::cout} by default. While I could have written a custom output stream derived from \texttt{std::ostream} to handle these types, doing so would be rather time consuming.
+
+        Another issue with my own unit testing framework was the lack of categorisation of tests. The implementation did not allow for the tagging or running of individual tests and instead always ran every test defined. This was inefficient and did not allow for optimal organisation when a large quantity of tests are defined.
+
+        After realising that improving my own unit testing framework could be an entire project in and of its self, I decided to utilise a third-party framework so that I would be able to place all focus on coding the emulator portion of the project. The framework I chose after a few days of deliberation was \textbf{Catch2}. Features that drew me to this particular framework include the ability to search for and tag tests, the fact that far more detailed information about failed tests are provided, and the ability provided by this framework to split tests into separate subsections.
     \subsubsection{Assembly Generation}
         Every CPU cycle, the instruction at the point in memory indicated by the instruction pointer is converted into its human-readable assembly representation. This assembly representation is displayed to the user so that it is clear to them what an instruction will do before it is actually run. I concluded the best way to test the validity of the emulator's generated assembly would be compare it to that of a pre-existing disassembler.
 
@@ -198,8 +198,8 @@ This section of the document outlines all the key design decisions made when bui
                 read several bytes from address \texttt{0xFD} & erroneous & not all memory addresses will be within bounds so exception should be thrown \\
                 \hline
             \end{tabular}
-            \label{table:memory-test-data}
             \caption{Table of emulator memory test data.}
+            \label{table:memory-test-data}
         \end{table}
 
     \subsubsection{Memory Segmentation}
@@ -217,8 +217,8 @@ This section of the document outlines all the key design decisions made when bui
                 \texttt{FFFF} & \texttt{FFFF} & - & erroneous \\
                 \hline
             \end{tabular}
-            \label{table:segmentation-test-data}
             \caption{Table of memory segmentation testing data.}
+            \label{table:segmentation-test-data}
         \end{table}
 
     \subsubsection{Post-Development Testing}
