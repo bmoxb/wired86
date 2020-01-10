@@ -85,7 +85,7 @@
     % TODO: build system bruh.
 
 \subsection{Testing}
-    \subsubsection{Testing of Memory} \label{initial-testing-memory}
+    \subsubsection{Testing of Memory} \label{sec:initial-testing-memory}
         The \texttt{Memory} has been fully implemented and is as such ready for proper testing. Below is the unit testing code for this class (using the Catch2 framework):
 
         \inputminted{c++}{code/initial/testmemory.cpp}
@@ -110,7 +110,7 @@
 
 \subsection{Review}
     \subsubsection{Overview of Progress}
-        After completion of the first stage of development, I now have a working development environment and a codebase that, though it may not yet provide any use to the user, is a solid foundation on which to build. In terms of that foundation, a proper build system with distinctly separate locations for code (common, GUI, CLI, and testing) is provided. For 'common' code, several key emulator components - including the CPU, memory and registers - are now implemented (or at least declared). With this, the first round of testing can be performed.
+        After completion of the first stage of development, I now have a working development environment and a codebase that, though it may not yet provide any use to the user, is a solid foundation on which to build. In terms of that foundation, a proper build system with distinctly separate locations for code (common, GUI, CLI, and testing) is provided. For 'common' code, several key emulator components - including the CPU, memory and registers - are now implemented (or at least declared).
 
     \subsubsection{Success Criteria}
         This first stage of development was able to fully address one emulator success criteria (see table \ref{table:emulator-success-criteria}): \textit{Has emulated memory which can be read and written to by the emulated CPU without error.}
@@ -181,3 +181,19 @@
         \inputminted{c++}{code/second/testinstructions.cpp}
 
         All these tests ran successfully.
+
+\subsection{Review}
+    \subsubsection{Overview of Progress}
+        The second stage of development began with the implementation of a more robust logging system which should help with the diagnosis of issues with as well as the general usage of the emulator. In addition the first step towards full instruction decoding was made with the introduction of opcode representation and further improvements to the CPU code.
+
+    \subsubsection{Success Criteria}
+        While it does not yet meet it, this stage of development brought the project closer to fulfilling the following success criteria (see table \ref{table:emulator-success-criteria}): \textit{Capable of executing all instructions listed in appendix section 10 successfully including cases where those instructions may include MOD-REG-R/M, immediate and/or displacement bytes.}
+
+        To elaborate, the introduction of the \texttt{Opcode} class is the first key step to meeting the above criteria - said class has been implemented and tested.
+
+    \subsubsection{Plan}
+        As for the following stage of development, completing the instruction representation system is a key priority.
+
+
+
+\section{Implementation: Third Stage}
