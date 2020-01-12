@@ -192,8 +192,74 @@
         To elaborate, the introduction of the \texttt{Opcode} class is the first key step to meeting the above criteria - said class has been implemented and tested.
 
     \subsubsection{Plan}
-        As for the following stage of development, completing the instruction representation system is a key priority.
+        As for the following stage of development, completing the instruction representation system is a key priority. Said system should handle execution of instructions as well as the creation of assembly representations. In addition, reading/writing memory data to/from files needs to be implemented.
 
 
 
 \section{Implementation: Third Stage}
+
+\subsection{Development}
+    \subsubsection{Type Aliases} \label{sec:third-stage-aliases}
+        To begin the third stage of development, a small collection of type aliases were defined inside their own header for the purpose of improving code readability.
+
+        \inputminted{c++}{code/third/types.hpp}
+
+    \subsubsection{System Memory to/from Files}
+        Being able to save and load the state of the emulated system memory is vital for allowing the user to continue working with a specific program over multiple sessions. To allow this, I introduced to new methods to the \texttt{Memory} class that respectively allow reading and writing of all memory data to a raw binary file of a given path.
+
+        \inputminted{c++}{code/third/memory.hpp}
+
+        As mentioned previously, the \texttt{Memory} class is actually a class template so the above methods are declared and implemented directly in the header file.
+
+    \subsubsection{CPU Header Expanded}
+        It was realised during this stage that the CPU class would require some additional methods and members:
+
+        \inputminted{c++}{code/third/intel8086.hpp}
+
+        Firstly, you may have noticed that the type aliases that were declared in this class previously have been moved to their own header file (as mentioned in section \ref{sec:third-stage-aliases}). This was done as it allows \texttt{Instruction} and its derived classes to make use of said type aliases without causing a circular dependency (previously, \texttt{Instruction} would have had to include the \texttt{Intel8086} class but this would cause issues as the latter already includes the former).
+
+        Methods for interacting with the stack as well as for modifying the instruction pointer (i.e. performing jumps) have also been added.
+
+    \subsubsection{CPU Register System}
+        The existing register system, while functional, has several flaws. One such flaw being the clunky system with which register indexes are defined. Having worked with the language previously, I had come to like Java's interpretation of enumerations (in effect, treating them more like classes) as it allowed each value in an enumeration to have its own sub-properties and even methods. While my attempt to translate such a system to C++ did work, it was very awkward to use and came with drawbacks regarding efficiency and the ability to compare enumeration values. Ultimately, I have now decided that using regular C++ enumerations is the better option.
+
+        \inputminted{c++}{code/third/registers.hpp}
+
+        With this generic system created, I am now able to create the specific set of registers that make up the Intel 8086:
+
+        \inputminted{c++}{code/third/registers8086.hpp}
+
+        \inputminted{c++}{code/third/registers8086.cpp}
+
+    \subsubsection{Assembly Style}
+        In order to support different styles and types of assembly language (e.g. Intel vs AT\&T syntax), a collection of structures and enumerations are defined which indicate the exact appearance of the generated assembly code:
+
+        \inputminted{c++}{code/third/assembly.hpp}
+
+    \subsubsection{Instruction Opcode Representation}
+        Some changes have been made to opcode representation at this stage of development. For example, a method would produces a string representation of the opcode value with additional chunks of information is now provided by a \texttt{toString} method. In addition, two more methods were also introduced where one returns the 6-bit opcode value (ignoring the direction and word bits), while the other calculates what the size of the immediate value encoded in the instruction (should there be one) should be (either 1 or 2 bytes).
+
+        \inputminted{c++}{opcode.hpp}
+
+        \inputminted{c++}{opcode.cpp}
+
+    \subsubsection{MOD-REG-R/M}
+        The MOD-REG-R/M byte of an instruction is encoded with a fair amount of important data which heavily influences the running of that particular instruction. It was for this reason that a fair amount of time was spent ensuring the \texttt{ModRegRm} class is simple to use.
+
+        The header below not only declares the class itself, but also some enumerations used to indicate modes of addressing and modes/types of displacement.
+
+        \inputminted{c++}{modregrm.hpp}
+
+        \inputminted{c++}{modregrm.cpp}
+
+    \subsubsection{Instruction Arguments (Displacement and Immediate Values)}
+        The displacement and immediate values that an instruction may be encoded with are similar in the sense that they are both simply either 1 or 2 bytes included the instruction. As such, it seemed logical that the classes \texttt{Immediate} and \texttt{Displacement} would share a common base class. That base class, named \texttt{DataArgument}, would handle the storage of the data while its two subclasses would allow that data to function as either an immediate or displacement value respectively.
+
+        \inputminted{c++}{argument.hpp}
+
+        \inputminted{c++}{argument.cpp}
+
+    \subsubsection{Instruction Classes}
+        There are a wide variety of different types of instruction supported by the Intel 8086, meaning that having just a single class to represent an instruction is far from sufficient. Instead, there is an abstract base class \texttt{Instruction} from which various other classes inherit.
+
+        Each instruction will always have an assembly identifier (e.g. 'hlt', 'add') and an opcode (an instance of the \texttt{Opcode} class outlined previously).
