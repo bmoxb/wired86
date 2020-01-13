@@ -122,6 +122,7 @@
 
 
 
+\newpage
 \section{Implementation: Second Stage} % ad9b8e1c0d996710b102058cbae76fa0dc8b4745
 
 \subsection{Development}
@@ -187,7 +188,7 @@
         The second stage of development began with the implementation of a more robust logging system which should help with the diagnosis of issues with as well as the general usage of the emulator. In addition the first step towards full instruction decoding was made with the introduction of opcode representation and further improvements to the CPU code.
 
     \subsubsection{Success Criteria}
-        While it does not yet meet it, this stage of development brought the project closer to fulfilling the following success criteria (see table \ref{table:emulator-success-criteria}): \textit{Capable of executing all instructions listed in appendix section 10 successfully including cases where those instructions may include MOD-REG-R/M, immediate and/or displacement bytes.}
+        While it does not yet meet it, this stage of development brought the project closer to fulfilling the following success criteria (see table \ref{table:emulator-success-criteria}): \textit{Capable of executing the chosen subset of instructions successfully including cases where those instructions may include MOD-REG-R/M, immediate and/or displacement bytes.}
 
         To elaborate, the introduction of the \texttt{Opcode} class is the first key step to meeting the above criteria - said class has been implemented and tested.
 
@@ -196,6 +197,7 @@
 
 
 
+\newpage
 \section{Implementation: Third Stage}
 
 \subsection{Development}
@@ -211,15 +213,6 @@
 
         As mentioned previously, the \texttt{Memory} class is actually a class template so the above methods are declared and implemented directly in the header file.
 
-    \subsubsection{CPU Header Expanded}
-        It was realised during this stage that the CPU class would require some additional methods and members:
-
-        \inputminted{c++}{code/third/intel8086.hpp}
-
-        Firstly, you may have noticed that the type aliases that were declared in this class previously have been moved to their own header file (as mentioned in section \ref{sec:third-stage-aliases}). This was done as it allows \texttt{Instruction} and its derived classes to make use of said type aliases without causing a circular dependency (previously, \texttt{Instruction} would have had to include the \texttt{Intel8086} class but this would cause issues as the latter already includes the former).
-
-        Methods for interacting with the stack as well as for modifying the instruction pointer (i.e. performing jumps) have also been added.
-
     \subsubsection{CPU Register System}
         The existing register system, while functional, has several flaws. One such flaw being the clunky system with which register indexes are defined. Having worked with the language previously, I had come to like Java's interpretation of enumerations (in effect, treating them more like classes) as it allowed each value in an enumeration to have its own sub-properties and even methods. While my attempt to translate such a system to C++ did work, it was very awkward to use and came with drawbacks regarding efficiency and the ability to compare enumeration values. Ultimately, I have now decided that using regular C++ enumerations is the better option.
 
@@ -231,6 +224,15 @@
 
         \inputminted{c++}{code/third/registers8086.cpp}
 
+    \subsubsection{CPU Header Expanded}
+        It was realised during this stage that the CPU class would require some additional methods and members:
+
+        \inputminted{c++}{code/third/intel8086.hpp}
+
+        Firstly, you may have noticed that the type aliases that were declared in this class previously have been moved to their own header file (as mentioned in section \ref{sec:third-stage-aliases}). This was done as it allows \texttt{Instruction} and its derived classes to make use of said type aliases without causing a circular dependency (previously, \texttt{Instruction} would have had to include the \texttt{Intel8086} class but this would cause issues as the latter already includes the former).
+
+        Methods for interacting with the stack as well as for modifying the instruction pointer (i.e. performing jumps) have also been added.
+    
     \subsubsection{Assembly Style}
         In order to support different styles and types of assembly language (e.g. Intel vs AT\&T syntax), a collection of structures and enumerations are defined which indicate the exact appearance of the generated assembly code:
 
@@ -239,27 +241,89 @@
     \subsubsection{Instruction Opcode Representation}
         Some changes have been made to opcode representation at this stage of development. For example, a method would produces a string representation of the opcode value with additional chunks of information is now provided by a \texttt{toString} method. In addition, two more methods were also introduced where one returns the 6-bit opcode value (ignoring the direction and word bits), while the other calculates what the size of the immediate value encoded in the instruction (should there be one) should be (either 1 or 2 bytes).
 
-        \inputminted{c++}{opcode.hpp}
+        \inputminted{c++}{code/third/opcode.hpp}
 
-        \inputminted{c++}{opcode.cpp}
+        \inputminted{c++}{code/third/opcode.cpp}
 
     \subsubsection{MOD-REG-R/M}
         The MOD-REG-R/M byte of an instruction is encoded with a fair amount of important data which heavily influences the running of that particular instruction. It was for this reason that a fair amount of time was spent ensuring the \texttt{ModRegRm} class is simple to use.
 
         The header below not only declares the class itself, but also some enumerations used to indicate modes of addressing and modes/types of displacement.
 
-        \inputminted{c++}{modregrm.hpp}
+        \inputminted{c++}{code/third/modregrm.hpp}
 
-        \inputminted{c++}{modregrm.cpp}
+        \inputminted{c++}{code/third/modregrm.cpp}
 
     \subsubsection{Instruction Arguments (Displacement and Immediate Values)}
         The displacement and immediate values that an instruction may be encoded with are similar in the sense that they are both simply either 1 or 2 bytes included the instruction. As such, it seemed logical that the classes \texttt{Immediate} and \texttt{Displacement} would share a common base class. That base class, named \texttt{DataArgument}, would handle the storage of the data while its two subclasses would allow that data to function as either an immediate or displacement value respectively.
 
-        \inputminted{c++}{argument.hpp}
+        \inputminted{c++}{code/third/argument.hpp}
 
-        \inputminted{c++}{argument.cpp}
+        \inputminted{c++}{code/third/argument.cpp}
 
     \subsubsection{Instruction Classes}
         There are a wide variety of different types of instruction supported by the Intel 8086, meaning that having just a single class to represent an instruction is far from sufficient. Instead, there is an abstract base class \texttt{Instruction} from which various other classes inherit.
 
-        Each instruction will always have an assembly identifier (e.g. 'hlt', 'add') and an opcode (an instance of the \texttt{Opcode} class outlined previously).
+        Each instruction will always have an assembly identifier (e.g. 'hlt', 'add') and an opcode (an instance of the \texttt{Opcode} class outlined previously) - see the \texttt{Instruction} class below. In addition, a fair few instructions also take a register that is actually indicated by the opcode itself rather than a MOD-REG-R/M byte - for such instructions, see the \texttt{InstructionTakingRegister} class below.
+
+        \inputminted{c++}{code/third/instruction.hpp}
+
+        \inputminted{c++}{code/third/instruction.cpp}
+
+        The above classes are capable of handling instructions that do not take a MOD-REG-R/M byte. For those that do, I created an abstract \texttt{ComplexInstruction} class. This class has a number of pure virtual methods which are called depending on the value of the MOD-REG-R/M byte. This is an example of abstraction as it allows subclasses to simply override the various different virtual methods as appropriate without considering the actual value of the MOD-REG-R/M byte.
+
+        \inputminted{c++}{code/third/complexinstruction.hpp}
+
+        \inputminted{c++}{code/third/complexinstruction.cpp}
+
+        With this system, I was able to begin the (somewhat tedious) process of creating classes deriving from these instruction classes for each individual instruction. With the flexibility of the system created, this process was thankfully quite simple. Indeed, for most instructions, what the instruction actually does is not overly complex, it is just that the act of decoding it tends to be rather involved.
+
+    \subsubsection{Yet More Conversion/Helper Functions}
+        One may have noticed in the above code samples that some new conversion/helper functions need to be introduced. These are outlined in the header and source files below:
+
+        \inputminted{c++}{code/third/convert.hpp}
+
+        \inputminted{c++}{code/third/convert.cpp}
+
+    \subsubsection{CPU Implementation} \label{sec:third-cpu-implementation}
+        With instructions finally implemented, it is now possible to start work on the last piece of the puzzle: the implementation of the CPU itself.
+
+        \inputminted{c++}{code/third/intel8086.cpp}
+
+\subsection{Testing}
+    \subsubsection{Conversions}
+        In this development cycle, a number of new conversion/helper functions were introduced into the codebase. Naturally, unit testing seemed the best method with which to test such code.
+
+        \inputminted{c++}{code/third/testconversions.cpp}
+
+    \subsubsection{Instruction Representation}
+        Instructions are represented using a collection of classes and components which can (for the most part) function separately of one another, meaning unit testing is again an appropriate method of testing.
+
+        \inputminted{c++}{code/third/testinstrrep.cpp}
+
+    \subsubsection{Stack}
+        In section \ref{sec:third-cpu-implementation}, a number of additions and modifications were made to the \texttt{Intel8086} class, with one such being the introduction of methods for manipulation of the stack.
+
+        \inputminted{c++}{code/third/teststack.cpp}
+
+    \subsubsection{Unknown Instruction Handling}
+        One of the success criteria outlined in table \ref{table:emulator-success-criteria} requires that unknown/unimplemented instructions do not cause the emulator to crash or encounter other such issues. This could be considered a form of input/data validation as it prevents the user from crashing the program by trying to make the emulated CPU execute an instruction that cannot be executed.
+
+        Using the CLI front-end interface of my emulator, I passed in a number of instructions I know are not implemented. Each time, this resulted in output similar to the following:
+
+        \includegraphics[scale=0.45]{failed-instruction}
+
+        The emulator did not suddenly crash but rather display a logging warning before halting CPU execution when an unknown instruction is encountered. Thus, this fulfils that portion of the project's success criteria.
+
+\subsection{Review}
+    \subsubsection{Overview of Progress}
+        Development of emulator is now complete - all components are now implemented and testing suggest they are functioning correctly and as expected. Users are able to load programs into the emulated system memory, see the assembly code of each instruction, and have those instructions executed by the emulated Intel 8086 microprocessor.
+
+    \subsubsection{Success Criteria}
+        All of the success criteria outlined in table \ref{table:emulator-success-criteria} have now been addressed:
+        \begin{itemize}
+            \item The emulated CPU can access, read, and write to emulated system memory. This memory can written to and read from the file system also.
+            \item The emulated CPU is able to execute a number of instructions, including those with MOD-REG-R/M, immediate, and/or displacement bytes.
+            \item The program is able to produce valid assembly representations of instructions before executing them.
+            \item The program does not crash when an attempt to execute an unknown/invalid instruction is made.
+        \end{itemize}

@@ -47,13 +47,13 @@ This section of the document outlines all the key design decisions made when bui
         Class and type names are not recommended to be kept as short as namespace names and therefore can and should be more descriptive (for example, use \texttt{class InterruptHandler} instead of \texttt{class IntHandle}). Frequently used type aliases can have shorter names for the sake of convenience.
 
     \subsubsection{Examples}
-        \begin{listing}[h]
+        \begin{listing}[ht]
             \inputminted{c++}{code/enum.cpp}
             \caption{Example of coding style to use when defining enumerations.}
             \label{lst:enum-example}
         \end{listing}
 
-        \begin{listing}[h]
+        \begin{listing}[ht]
             \inputminted{c++}{code/class.hpp}
             \caption{Example of coding style to use when declaring a class or structure.}
             \label{lst:class-example}
@@ -217,7 +217,7 @@ This section of the document outlines all the key design decisions made when bui
                 \texttt{FFFF} & \texttt{FFFF} & - & erroneous \\
                 \hline
             \end{tabular}
-            \caption{Table of memory segmentation testing data.}
+            \caption{Table of example memory segmentation testing data.}
             \label{table:segmentation-test-data}
         \end{table}
 

@@ -37,7 +37,8 @@ namespace logging {
          * Initialise a new logger object.
          *
          * @param loggerLogType A string specifying the type of log message. This is prefixed to and displayed before every log message.
-         * @param loggerEscapeSequence Specify the escape sequence applied to each log message (usually a colour - see static constant expressions of Logger class).
+         * @param loggerEscapeSequence Specify the escape sequence applied to each log message (usually a colour - see static constant expressions of Logger
+                  class).
          * @param initialStream The first stream with which
          */
         Logger(std::string loggerLogType, std::string loggerEscapeSequence, std::ostream& initialStream = std::cout);

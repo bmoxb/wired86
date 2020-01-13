@@ -20,66 +20,66 @@
     \end{table}
 \end{landscape}
 
-\section{Instruction Set}
-    \label{sec:instructset}
-    \subsection{Instruction Arguments}
-    \begin{table}[h]
-        \begin{tabular} { | c | m{0.85\textwidth} | }
-            \hline
-            Argument & Meaning \\
-            \hline
-            G & General-purpose register specified by the REG component of the MOD-REG-R/M byte. \\
-            \hline
-            E & Either a general-purpose register (specified by the R/M component when in register addressing mode) or a memory address (with optional displacement from index). \\
-            \hline
-        \end{tabular}
-    \end{table}
-
-    \subsection{Instructions}
-        Note that this is not a complete list of Intel 8086 instructions but rather a list of just those that are supported by this emulator.
-
-    \begin{table}[h]
-        \begin{tabular} { | c | c | c | c | m{0.38\textwidth} | }
-            \hline
-            Opcode & Assembly & Arguments & MOD-REG-R/M & Description \\
-            \hline
-            \texttt{000000dw} & \texttt{add} & G, E & \checkmark & Add two values without carrying. \\
-            \hline
-            \texttt{0000010w} & \texttt{add} & AL/AX, I & & Add two values without carrying using AL (when w=0) or AX (when w=1) and an immediate value. \\
-            \hline
-            \texttt{00000110} & \texttt{push} & ES & & Push the value of the extra segment register onto the stack. \\
-            \hline
-            \texttt{00000111} & \texttt{pop} & ES & & Pop value off the stack and store it in extra segment register. \\
-            \hline
-            \texttt{000100dw} & \texttt{and} & G, E & \checkmark & Perform bitwise AND operation. \\
-            \hline
-            \texttt{0010010w} & \texttt{add} & AL/AX, I & & Perform bitwise AND operation with first argument being AL or AX an the second an immediate value. \\
-            \hline
-            % ADC instructions...
-            \hline
-            \texttt{0010110} & \texttt{push} & SS & & Push stack segment register. \\
-            \hline
-            \texttt{0010111} & \texttt{pop} & SS & & Pop stack segment register. \\
-            \hline
-            % AND instructions...
-            % XOR instructions...
-            \texttt{0100000} & \texttt{inc} & AX & & Add 1 to AX register value. \\
-            \hline
-            \texttt{0100001} & \texttt{inc} & CX & & Add 1 to CX register value. \\
-            \hline
-            \texttt{0100010} & \texttt{inc} & DX & & Add 1 to DX register value. \\
-            \hline
-            \texttt{0100011} & \texttt{inc} & BX & & Add 1 to BX register value. \\
-            \hline
-            \texttt{0100100} & \texttt{inc} & SP & & Add 1 to stack pointer. \\
-            \hline
-            \texttt{0100101} & \texttt{inc} & BP & & Add 1 to base pointer. \\
-            \hline
-            \texttt{0100110} & \texttt{inc} & SI & & Add 1 to source index. \\
-            \hline
-            \texttt{0100111} & \texttt{inc} & DI & & Add 1 to destination index. \\
-        \end{tabular}
-    \end{table}
+%\section{Instruction Set}
+%    \label{sec:instructset}
+%    \subsection{Instruction Arguments}
+%    \begin{table}[h]
+%        \begin{tabular} { | c | m{0.85\textwidth} | }
+%            \hline
+%            Argument & Meaning \\
+%            \hline
+%            G & General-purpose register specified by the REG component of the MOD-REG-R/M byte. \\
+%            \hline
+%            E & Either a general-purpose register (specified by the R/M component when in register addressing mode) or a memory address (with optional displacement from index). \\
+%            \hline
+%        \end{tabular}
+%    \end{table}
+%
+%    \subsection{Instructions}
+%        Note that this is not a complete list of Intel 8086 instructions but rather a list of just those that are supported by this emulator.
+%
+%    \begin{table}[h]
+%        \begin{tabular} { | c | c | c | c | m{0.38\textwidth} | }
+%            \hline
+%            Opcode & Assembly & Arguments & MOD-REG-R/M & Description \\
+%            \hline
+%            \texttt{000000dw} & \texttt{add} & G, E & \checkmark & Add two values without carrying. \\
+%            \hline
+%            \texttt{0000010w} & \texttt{add} & AL/AX, I & & Add two values without carrying using AL (when w=0) or AX (when w=1) and an immediate value. \\
+%            \hline
+%            \texttt{00000110} & \texttt{push} & ES & & Push the value of the extra segment register onto the stack. \\
+%            \hline
+%            \texttt{00000111} & \texttt{pop} & ES & & Pop value off the stack and store it in extra segment register. \\
+%            \hline
+%            \texttt{000100dw} & \texttt{and} & G, E & \checkmark & Perform bitwise AND operation. \\
+%            \hline
+%            \texttt{0010010w} & \texttt{add} & AL/AX, I & & Perform bitwise AND operation with first argument being AL or AX an the second an immediate value. \\
+%            \hline
+%            % ADC instructions...
+%            \hline
+%            \texttt{0010110} & \texttt{push} & SS & & Push stack segment register. \\
+%            \hline
+%            \texttt{0010111} & \texttt{pop} & SS & & Pop stack segment register. \\
+%            \hline
+%            % AND instructions...
+%            % XOR instructions...
+%            \texttt{0100000} & \texttt{inc} & AX & & Add 1 to AX register value. \\
+%            \hline
+%            \texttt{0100001} & \texttt{inc} & CX & & Add 1 to CX register value. \\
+%            \hline
+%            \texttt{0100010} & \texttt{inc} & DX & & Add 1 to DX register value. \\
+%            \hline
+%            \texttt{0100011} & \texttt{inc} & BX & & Add 1 to BX register value. \\
+%            \hline
+%            \texttt{0100100} & \texttt{inc} & SP & & Add 1 to stack pointer. \\
+%            \hline
+%            \texttt{0100101} & \texttt{inc} & BP & & Add 1 to base pointer. \\
+%            \hline
+%            \texttt{0100110} & \texttt{inc} & SI & & Add 1 to source index. \\
+%            \hline
+%            \texttt{0100111} & \texttt{inc} & DI & & Add 1 to destination index. \\
+%        \end{tabular}
+%    \end{table}
 
 \section{Full Interview} \label{sec:full-interview}
     \subsection{Are you satisfied with the resources you currently have available for teaching about the low-level workings of computing systems?}
@@ -99,3 +99,11 @@
     
     \subsection{What would, in your opinion, be the ideal interface for such a piece of software?}
         I'm imagining a GUI on my screen that I can use to get a bit of a demonstration of how of the operation of the system. Maybe I could hover my mouse over something and get an indication of what that particular part does. Making it as user friendly as possible would also be ideal. Colour coding could be useful to see what is active at each moment - draw one's eye to the right bit at the right time. Some sort of menu system at the top?
+
+\newpage
+\section{Sources}
+    \begin{itemize}
+        \item The primary source for the specifications of the processor: \textit{The Intel 8086 Family: User's Manual} published in 1979 by the Intel Corporation.
+        \item Convenient reference of Intel 8086 instructions: \texttt{www.mlsite.net/8086/}
+        \item Helpful breakdown of instruction encoding: \texttt{www-user.tu-chemnitz.de/~heha/viewchm.php/hs/\\x86.chm/x86.htm}
+    \end{itemize}

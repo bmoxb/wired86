@@ -191,7 +191,7 @@ This section consists of an implementation non-specific overview of the how the 
     \subsection{Control Word}
         The CPU is able to set the operating mode and format for each channel of the interval timer by writing an 8-bit control word to the PIT.
 
-        The two most significant bits of the control word indicate (when not 11 as that is unused by the 8253) the channel this control word will affect (expressed in binary). The following two bits indicate the ordering of read and writes of the high/low bytes of the counter register. The next three bits indicate the timing mode (see table \ref{...}) while the final bit indicates whether the counter will operate in binary or binary-coded decimal (note that the latter is almost never used).
+        The two most significant bits of the control word indicate (when not 11 as that is unused by the 8253) the channel this control word will affect (expressed in binary). The following two bits indicate the ordering of read and writes of the high/low bytes of the counter register. The next three bits indicate the timing mode while the final bit indicates whether the counter will operate in binary or binary-coded decimal (note that the latter is almost never used).
 
     %\subsection{Modes}
         %\subsubsection{Mode 0 (000)}
