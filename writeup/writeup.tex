@@ -1,0 +1,52 @@
+\documentclass[fontsize=11pt, oneside, a4paper, parskip=true]{scrartcl}
+
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{lscape}
+\usepackage{amssymb}
+\usepackage[htt]{hyphenat}
+\usepackage[cache=false]{minted}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage[font={small,it}]{caption}
+
+\title{Computer Science Non-Examined Assessment}
+\author{Max Black}
+\date{Candidate Number: ****\\Centre Number: *****}
+
+\lfoot{Wired86: Emulator of a 16-bit x86 System}
+\cfoot{\thepage}
+\rfoot{Max Black, A-Level Computer Science}
+
+\graphicspath{{images/}}
+
+\setminted{
+    fontsize=\tiny,
+    frame=single,
+    linenos=true
+}
+
+\begin{document}
+     \pagestyle{fancy}
+
+    \pagenumbering{gobble}
+
+    \maketitle
+    \newpage
+
+    \tableofcontents
+    %\listoflistings
+    %\listoffigures
+    %\listoftables
+    \newpage
+
+    \pagenumbering{arabic}
+
+    \include{introduction}
+    \include{analysis}
+    \include{specs}
+    \include{design}
+    \include{implementation}
+    \include{appendices}
+\end{document}

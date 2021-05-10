@@ -42,7 +42,6 @@ CTestTestfile.cmake
 _deps
 
 # Ignore latex build files/directories:
-*.pdf
 *.htm*
 *.aux
 *.lof
